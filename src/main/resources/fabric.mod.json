@@ -4,15 +4,15 @@
   "version": "${version}",
 
   "name": "Arborealis",
-  "description": "Forest Means Family",
+  "description": "Forest Means Family!\nI'm sending pictures of the most amazing trees! You'll be obsessed with all my forest expertise...",
   "authors": [
     "Anemony",
     "FatherDuckling",
     "Sticks"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://github.com/Anemony22/Arborealis",
+    "issues": "https://github.com/Anemony22/Arborealis/issues"
   },
 
   "license": "CC0-1.0",
