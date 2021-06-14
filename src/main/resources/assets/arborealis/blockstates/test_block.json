@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "arborealis:block/test_block" }
+  }
+}
