@@ -3,6 +3,7 @@ package com.youarethomas.arborealis.block_entities;
 import com.youarethomas.arborealis.Arborealis;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 
