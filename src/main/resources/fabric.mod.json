@@ -22,6 +22,11 @@
   "entrypoints": {
     "main": [
       "com.youarethomas.arborealis.Arborealis"
+    ],
+    "client": [
+      {
+        "value": "com.youarethomas.arborealis.ArborealisClient"
+      }
     ]
   },
   "mixins": [

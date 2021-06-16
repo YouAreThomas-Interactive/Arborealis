@@ -1,6 +1,6 @@
 package com.youarethomas.arborealis.items;
 
-import com.google.common.collect.ImmutableMap;
+import com.youarethomas.arborealis.Arborealis;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.*;
 import net.minecraft.client.gui.screen.Screen;
@@ -10,24 +10,18 @@ import net.minecraft.item.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public class CarvingKnife extends ToolItem {
-
-    protected static final Map<Block, Block> STRIPPED_BLOCKS;
 
     public CarvingKnife(ToolMaterial material, Settings settings) {
         super(material, settings);
@@ -56,9 +50,7 @@ public class CarvingKnife extends ToolItem {
 
             world.setBlockState(blockPos, newBlock.get(), 11);
             if (playerEntity != null) {
-                itemStack.damage(1, playerEntity, (p) -> {
-                    p.sendToolBreakStatus(context.getHand());
-                });
+                itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand()));
             }
 
             return ActionResult.success(world.isClient);
@@ -68,9 +60,11 @@ public class CarvingKnife extends ToolItem {
     }
 
     private Optional<BlockState> getStrippedState(BlockState state) {
-        return Optional.ofNullable(STRIPPED_BLOCKS.get(state.getBlock())).map((block) -> { // TODO: Learn what the -> symbol does
-            return block.getDefaultState().with(PillarBlock.AXIS, state.get(PillarBlock.AXIS));
-        });
+//        return Optional.ofNullable(STRIPPED_BLOCKS.get(state.getBlock())).map((block) -> { // TODO: Learn what the -> symbol does
+//            return block.getDefaultState();
+//        });
+
+        return Optional.ofNullable(Arborealis.CARVED_WOOD.getDefaultState());
     }
 
     @Override
@@ -82,9 +76,5 @@ public class CarvingKnife extends ToolItem {
             //tooltip.add(new LiteralText("Hold 'Shift'...").formatted(Formatting.GRAY).formatted(Formatting.ITALIC));
             tooltip.add(new TranslatableText("item.arborealis.hidden_tooltip").formatted(Formatting.GRAY).formatted(Formatting.ITALIC));
         }
-    }
-
-    static {
-        STRIPPED_BLOCKS = (new ImmutableMap.Builder()).put(Blocks.OAK_LOG, Blocks.QUARTZ_PILLAR).put(Blocks.QUARTZ_PILLAR, Blocks.OAK_LOG).build();
     }
 }

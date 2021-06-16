@@ -17,4 +17,6 @@ public class CarvedWood extends Block implements BlockEntityProvider {
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new CarvedWoodEntity(pos, state);
     }
+
+
 }

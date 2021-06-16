@@ -3,13 +3,20 @@ package com.youarethomas.arborealis.block_entities;
 import com.youarethomas.arborealis.Arborealis;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 
 public class CarvedWoodEntity extends BlockEntity {
 
-    int[] north_face;
+    int[] face = {
+            0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 1, 0, 0, 0,
+            0, 0, 0, 1, 0, 0, 0,
+            0, 1, 0, 1, 1, 1, 0,
+            0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 1, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0
+    };
 
     public CarvedWoodEntity(BlockPos pos, BlockState state) {
         super(Arborealis.CARVED_WOOD_ENTITY, pos, state);
@@ -21,7 +28,7 @@ public class CarvedWoodEntity extends BlockEntity {
         super.writeNbt(tag);
 
         // Save the current value of the number to the tag
-        tag.putIntArray("north_face", north_face);
+        tag.putIntArray("north_face", face);
 
         return tag;
     }
@@ -30,6 +37,6 @@ public class CarvedWoodEntity extends BlockEntity {
     @Override
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
-        north_face = tag.getIntArray("north_face");
+        face = tag.getIntArray("north_face");
     }
 }
