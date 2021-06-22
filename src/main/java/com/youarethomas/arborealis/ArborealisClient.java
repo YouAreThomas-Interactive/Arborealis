@@ -1,6 +1,6 @@
 package com.youarethomas.arborealis;
 
-import com.youarethomas.arborealis.models.ModelRegistry;
+import com.youarethomas.arborealis.models.DynamicModelRegistry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -10,6 +10,8 @@ public class ArborealisClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        ModelRegistry.registerModels();
+        DynamicModelRegistry.registerModels();
+
+        //ModelLoadingRegistry.INSTANCE.registerResourceProvider(rm -> new CarvedModelProvider());
     }
 }

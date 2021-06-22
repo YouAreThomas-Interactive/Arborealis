@@ -10,11 +10,14 @@ import net.minecraft.item.*;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.BlockTags;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,13 +37,21 @@ public class CarvingKnife extends ToolItem {
         PlayerEntity playerEntity = context.getPlayer();
         BlockState blockState = world.getBlockState(blockPos);
 
-        Optional<BlockState> strippedState = this.getStrippedState(blockState); // TODO: Learn what an optional is
+        Optional<BlockState> carvedState = Optional.empty();
+
+        if (blockState.isIn(BlockTags.LOGS_THAT_BURN)) {
+            carvedState = getCarvedState(blockState); // TODO: Learn what an optional is
+            playerEntity.sendMessage(new LiteralText(String.valueOf(Registry.BLOCK.getId(blockState.getBlock()))), false);
+        } else if (String.valueOf(Registry.BLOCK.getId(blockState.getBlock())).equals("arborealis:carved_wood")) {
+            playerEntity.sendMessage(new LiteralText(String.valueOf(Registry.BLOCK.getId(blockState.getBlock()))), false);
+        }
+
         ItemStack itemStack = context.getStack();
         Optional<BlockState> newBlock = Optional.empty();
 
-        if (strippedState.isPresent()) {
+        if (carvedState.isPresent()) {
             world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
-            newBlock = strippedState;
+            newBlock = carvedState;
         }
 
         if (newBlock.isPresent()) {
@@ -59,7 +70,7 @@ public class CarvingKnife extends ToolItem {
         }
     }
 
-    private Optional<BlockState> getStrippedState(BlockState state) {
+    private Optional<BlockState> getCarvedState(BlockState state) {
 //        return Optional.ofNullable(STRIPPED_BLOCKS.get(state.getBlock())).map((block) -> { // TODO: Learn what the -> symbol does
 //            return block.getDefaultState();
 //        });
