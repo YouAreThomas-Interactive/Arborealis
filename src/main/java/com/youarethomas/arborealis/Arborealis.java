@@ -20,6 +20,8 @@ import net.minecraft.util.registry.Registry;
 
 public class Arborealis implements ModInitializer {
 
+	public static final String MOD_ID = "arborealis";
+
 	// Items
 	public static final CarvingKnife CARVING_KNIFE = new CarvingKnife(CopperKnifeMaterial.INSTANCE, new FabricItemSettings().group(ItemGroup.TOOLS).maxCount(1));
 
@@ -31,7 +33,7 @@ public class Arborealis implements ModInitializer {
 
 	// Item Groups
 	public static final ItemGroup ARBOREALIS_GROUP = FabricItemGroupBuilder.create(
-			new Identifier("arborealis", "arborealis"))
+			new Identifier(MOD_ID, "arborealis"))
 			.icon(() -> new ItemStack(CARVING_KNIFE))
 			.appendItems(stacks -> {
 				stacks.add(new ItemStack(CARVING_KNIFE));
@@ -44,18 +46,18 @@ public class Arborealis implements ModInitializer {
 	public void onInitialize() {
 
 		// Item registration
-		Registry.register(Registry.ITEM, new Identifier("arborealis", "carving_knife"), CARVING_KNIFE);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "carving_knife"), CARVING_KNIFE);
 
 		// Block registration
-		Registry.register(Registry.BLOCK, new Identifier("arborealis", "test_block"), TEST_BLOCK);
-		Registry.register(Registry.BLOCK, new Identifier("arborealis", "carved_wood"), CARVED_WOOD);
+		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "test_block"), TEST_BLOCK);
+		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "carved_wood"), CARVED_WOOD);
 
 		// Block entity registration
-		CARVED_WOOD_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, "arborealis:carved_wood_entity", FabricBlockEntityTypeBuilder.create(CarvedWoodEntity::new, CARVED_WOOD).build(null));
+		CARVED_WOOD_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, MOD_ID + ":carved_wood_entity", FabricBlockEntityTypeBuilder.create(CarvedWoodEntity::new, CARVED_WOOD).build(null));
 
 		// Block item registration
-		Registry.register(Registry.ITEM, new Identifier("arborealis", "test_block"), new BlockItem(TEST_BLOCK, new FabricItemSettings()));
-		Registry.register(Registry.ITEM, new Identifier("arborealis", "carved_wood"), new BlockItem(CARVED_WOOD, new FabricItemSettings()));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "test_block"), new BlockItem(TEST_BLOCK, new FabricItemSettings()));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "carved_wood"), new BlockItem(CARVED_WOOD, new FabricItemSettings()));
 
 		System.out.println("Arborealis Initialised!");
 	}

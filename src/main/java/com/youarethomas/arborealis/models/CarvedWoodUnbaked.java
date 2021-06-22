@@ -34,16 +34,20 @@ import java.util.function.Supplier;
 
 public class CarvedWoodUnbaked implements UnbakedModel {
 
+    private static final CarvedWoodUnbaked INSTANCE = new CarvedWoodUnbaked();
+
     private static final SpriteIdentifier[] SPRITE_IDS = new SpriteIdentifier[]{
             new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("minecraft:block/oak_log")),
-            new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:block/error"))
+            new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:block/oak_log_top"))
     };
+
     private Sprite[] SPRITES = new Sprite[2];
 
     private Mesh mesh;
 
     @Override
     public Collection<Identifier> getModelDependencies() {
+        // Trying to use a JSON template... not sure what to do from this point
         Collection<Identifier> dependencies = new ArrayList<>();
 
         dependencies.add(new Identifier("arborealis:block/carved_wood_template"));
@@ -68,7 +72,7 @@ public class CarvedWoodUnbaked implements UnbakedModel {
         MeshBuilder builder = renderer.meshBuilder();
         QuadEmitter emitter = builder.getEmitter();
 
-        for(Direction direction : Direction.values()) {
+        /*for(Direction direction : Direction.values()) {
             int spriteIdx = direction == Direction.UP || direction == Direction.DOWN ? 1 : 0;
             // Add a new face to the mesh
             if (direction == Direction.UP || direction == Direction.DOWN) {
@@ -81,7 +85,9 @@ public class CarvedWoodUnbaked implements UnbakedModel {
             emitter.spriteBake(0, SPRITES[spriteIdx], MutableQuadView.BAKE_LOCK_UV);
             emitter.spriteColor(0, -1, -1, -1, -1);
             emitter.emit();
-        }
+        }*/
+
+
 
         mesh = builder.build();
 
@@ -142,7 +148,18 @@ public class CarvedWoodUnbaked implements UnbakedModel {
 
         @Override
         public ModelOverrideList getOverrides() {
-            return null;
+            return ModelOverrideList.EMPTY;
+        }
+    }
+
+    public static enum VariantProvider implements ModelVariantProvider
+    {
+        INSTANCE;
+
+        @Override
+        public UnbakedModel loadModelVariant(ModelIdentifier modelId, ModelProviderContext context) throws ModelProviderException
+        {
+            return modelId.getNamespace().equals(Arborealis.MOD_ID) && modelId.getPath().equals("carved_wood") ? CarvedWoodUnbaked.INSTANCE : null;
         }
     }
 }
