@@ -9,7 +9,9 @@ import net.minecraft.util.math.BlockPos;
 
 public class CarvedWoodEntity extends BlockEntity {
 
-    int[] face = {
+    public String logID = "minecraft:block/oak_log";
+
+    public int[] face = {
             0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 1, 0, 0, 0,
             0, 0, 0, 1, 0, 0, 0,

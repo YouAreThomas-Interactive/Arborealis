@@ -10,7 +10,7 @@ public class DynamicModelRegistry {
 
     private static Collection<DynamicModelProvider> modelProviders = new ArrayList<>();
 
-    public static void register(DynamicModel model, Identifier identifier) {
+    public static void register(CarvedWoodModel model, Identifier identifier) {
         modelProviders.add(new DynamicModelProvider(model, identifier));
     }
 

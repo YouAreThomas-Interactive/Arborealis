@@ -9,10 +9,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class DynamicModelProvider implements ModelResourceProvider {
 
-    private DynamicModel model;
+    private CarvedWoodModel model;
     private final Identifier identifier;
 
-    public DynamicModelProvider(DynamicModel model, Identifier identifier) {
+    public DynamicModelProvider(CarvedWoodModel model, Identifier identifier) {
         this.model = model;
         this.identifier = identifier;
     }
