@@ -1,12 +1,16 @@
 package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -21,7 +25,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class CarvingKnife extends ToolItem {
@@ -32,34 +38,41 @@ public class CarvingKnife extends ToolItem {
 
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
+        // Fields
         World world = context.getWorld();
         BlockPos blockPos = context.getBlockPos();
         PlayerEntity playerEntity = context.getPlayer();
         BlockState blockState = world.getBlockState(blockPos);
 
-        Optional<BlockState> carvedState = Optional.empty();
+        // Creating the carved block and entity
+        BlockState carvedState = null;
+        CarvedWoodEntity carvedEntity = null;
 
-        if (blockState.isIn(BlockTags.LOGS_THAT_BURN)) {
-            carvedState = getCarvedState(blockState); // TODO: Learn what an optional is
-            playerEntity.sendMessage(new LiteralText(String.valueOf(Registry.BLOCK.getId(blockState.getBlock()))), false);
-        } else if (String.valueOf(Registry.BLOCK.getId(blockState.getBlock())).equals("arborealis:carved_wood")) {
-            playerEntity.sendMessage(new LiteralText(String.valueOf(Registry.BLOCK.getId(blockState.getBlock()))), false);
+        // If the block clicked on is wood, create a new carved wood block
+        if (blockState.isIn(BlockTags.LOGS)) {
+            carvedState = Arborealis.CARVED_WOOD.getDefaultState();
         }
 
+        // Get held item and the new block
         ItemStack itemStack = context.getStack();
-        Optional<BlockState> newBlock = Optional.empty();
 
-        if (carvedState.isPresent()) {
+        if (carvedState != null) {
             world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
-            newBlock = carvedState;
-        }
 
-        if (newBlock.isPresent()) {
             if (playerEntity instanceof ServerPlayerEntity) {
                 Criteria.ITEM_USED_ON_BLOCK.test((ServerPlayerEntity)playerEntity, blockPos, itemStack);
             }
 
-            world.setBlockState(blockPos, newBlock.get(), 11);
+            world.setBlockState(blockPos, carvedState, 11);
+
+            carvedEntity = (CarvedWoodEntity) world.getBlockEntity(blockPos);
+
+            NbtCompound tag = new NbtCompound();
+            tag.putString("log_id", String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
+
+            carvedEntity.readNbt(tag);
+            carvedEntity.markDirty();
+
             if (playerEntity != null) {
                 itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand()));
             }
@@ -68,14 +81,6 @@ public class CarvingKnife extends ToolItem {
         } else {
             return ActionResult.PASS;
         }
-    }
-
-    private Optional<BlockState> getCarvedState(BlockState state) {
-//        return Optional.ofNullable(STRIPPED_BLOCKS.get(state.getBlock())).map((block) -> { // TODO: Learn what the -> symbol does
-//            return block.getDefaultState();
-//        });
-
-        return Optional.ofNullable(Arborealis.CARVED_WOOD.getDefaultState());
     }
 
     @Override

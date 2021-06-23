@@ -9,7 +9,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class CarvedWoodEntity extends BlockEntity {
 
-    public String logID = "minecraft:block/oak_log";
+    private String logID;
 
     public int[] face = {
             0, 0, 0, 0, 0, 0, 0,
@@ -32,6 +32,7 @@ public class CarvedWoodEntity extends BlockEntity {
 
         // Save the current value of the number to the tag
         tag.putIntArray("north_face", face);
+        tag.putString("log_id", logID);
 
         return tag;
     }
@@ -41,5 +42,6 @@ public class CarvedWoodEntity extends BlockEntity {
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
         face = tag.getIntArray("north_face");
+        logID = tag.getString("log_id");
     }
 }

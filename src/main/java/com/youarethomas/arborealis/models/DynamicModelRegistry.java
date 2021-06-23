@@ -18,6 +18,7 @@ public class DynamicModelRegistry {
     {
         for (DynamicModelProvider modelProvider : modelProviders) {
             ModelLoadingRegistry.INSTANCE.registerResourceProvider(rm -> modelProvider);
+            //ModelLoadingRegistry.INSTANCE.registerVariantProvider(manager -> CarvedWoodModel.VariantProvider.INSTANCE);
         }
     }
 }
