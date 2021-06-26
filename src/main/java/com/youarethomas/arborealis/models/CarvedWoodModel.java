@@ -132,11 +132,8 @@ public class CarvedWoodModel implements UnbakedModel {
             BlockEntity entity = blockView.getBlockEntity(pos);
 
             if (entity instanceof CarvedWoodEntity) {
-                NbtCompound tag = new NbtCompound();
-                tag = entity.writeNbt(tag);
-                String logID = tag.getString("log_id");
 
-                System.out.println(logID);
+                String logID = ((CarvedWoodEntity) entity).getLogID();
 
                 if (logID.contains("minecraft")) {
                     System.out.println("ID Found!");

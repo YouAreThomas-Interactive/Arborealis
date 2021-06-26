@@ -46,7 +46,6 @@ public class CarvingKnife extends ToolItem {
 
         // Creating the carved block and entity
         BlockState carvedState = null;
-        CarvedWoodEntity carvedEntity = null;
 
         // If the block clicked on is wood, create a new carved wood block
         if (blockState.isIn(BlockTags.LOGS)) {
@@ -65,13 +64,8 @@ public class CarvingKnife extends ToolItem {
 
             world.setBlockState(blockPos, carvedState, 11);
 
-            carvedEntity = (CarvedWoodEntity) world.getBlockEntity(blockPos);
-
-            NbtCompound tag = new NbtCompound();
-            tag.putString("log_id", String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
-
-            carvedEntity.readNbt(tag);
-            carvedEntity.markDirty();
+            CarvedWoodEntity carvedEntity = (CarvedWoodEntity) world.getBlockEntity(blockPos);
+            carvedEntity.setLogID(String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
 
             if (playerEntity != null) {
                 itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand()));
