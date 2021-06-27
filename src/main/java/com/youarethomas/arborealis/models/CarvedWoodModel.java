@@ -63,19 +63,39 @@ public class CarvedWoodModel implements UnbakedModel {
         String strippedLog = idParts[0] + ":block/stripped_" + idParts[1];
         String logTop = idParts[0] + ":block/" + idParts[1] + "_top";
 
+        // Core
         DynamicCuboid core = new DynamicCuboid(1, 1, 1, 14, 14, 14);
         core.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(strippedLog)));
         addFixedCuboid(core);
 
+        // Top
         DynamicCuboid top = new DynamicCuboid(0, 15, 0, 16, 1, 16);
         top.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
         top.applyTexture(Direction.UP, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
         addFixedCuboid(top);
 
+        // Bottom
         DynamicCuboid bottom = new DynamicCuboid(0, 0, 0, 16, 1, 16);
         bottom.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
         bottom.applyTexture(Direction.DOWN, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
         addFixedCuboid(bottom);
+
+        // Pillars
+        DynamicCuboid pillar1 = new DynamicCuboid(0, 1, 0, 1, 14, 1);
+        pillar1.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+        addFixedCuboid(pillar1);
+
+        DynamicCuboid pillar2 = new DynamicCuboid(0, 1, 15, 1, 14, 1);
+        pillar2.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+        addFixedCuboid(pillar2);
+
+        DynamicCuboid pillar3 = new DynamicCuboid(15, 1, 15, 1, 14, 1);
+        pillar3.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+        addFixedCuboid(pillar3);
+
+        DynamicCuboid pillar4 = new DynamicCuboid(15, 1, 0, 1, 14, 1);
+        pillar4.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+        addFixedCuboid(pillar4);
     }
 
     public void addFixedCuboid(DynamicCuboid cuboid) {
@@ -134,17 +154,74 @@ public class CarvedWoodModel implements UnbakedModel {
             if (entity instanceof CarvedWoodEntity) {
 
                 String logID = ((CarvedWoodEntity) entity).getLogID();
+                String[] idParts = logID.split(":");
+                String log = "minecraft:block/oak_log";
 
                 if (logID.contains("minecraft")) {
                     System.out.println("ID Found!");
                     loadFixedCuboids(logID);
+                    log = idParts[0] + ":block/" + idParts[1];
                 } else {
                     loadFixedCuboids("minecraft:oak_log");
                 }
 
+                // Wood frame
                 for (DynamicCuboid cuboid : fixedCuboids) {
                     cuboid.create(emitter, textureGetter);
                 }
+
+                // Carved side north
+                int northFaceCount = 0;
+                for (int y = 1; y <= 13; y += 2) {
+                    for (int x = 13; x >= 1; x -= 2) {
+                        if (((CarvedWoodEntity) entity).faceNorth[northFaceCount] == 0) {
+                            DynamicCuboid cuboid = new DynamicCuboid(x, y, 0, 2, 2, 1);
+                            cuboid.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+                            cuboid.create(emitter, textureGetter);
+                        }
+                        northFaceCount++;
+                    }
+                }
+
+                // Carved side east
+                int eastSideCount = 0;
+                for (int y = 1; y <= 13; y += 2) {
+                    for (int z = 13; z >= 1; z -= 2) {
+                        if (((CarvedWoodEntity) entity).faceEast[eastSideCount] == 0) {
+                            DynamicCuboid cuboid = new DynamicCuboid(15, y, z, 1, 2, 2);
+                            cuboid.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+                            cuboid.create(emitter, textureGetter);
+                        }
+                        eastSideCount++;
+                    }
+                }
+
+                // Carved side south
+                int southSideCount = 0;
+                for (int y = 1; y <= 13; y += 2) {
+                    for (int x = 1; x <= 13; x += 2) {
+                        if (((CarvedWoodEntity) entity).faceSouth[southSideCount] == 0) {
+                            DynamicCuboid cuboid = new DynamicCuboid(x, y, 15, 2, 2, 1);
+                            cuboid.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+                            cuboid.create(emitter, textureGetter);
+                        }
+                        southSideCount++;
+                    }
+                }
+
+                // Carved side west
+                int westSideCount = 0;
+                for (int y = 1; y <= 13; y += 2) {
+                    for (int z = 1; z <= 13; z += 2) {
+                        if (((CarvedWoodEntity) entity).faceWest[westSideCount] == 0) {
+                            DynamicCuboid cuboid = new DynamicCuboid(0, y, z, 1, 2, 2);
+                            cuboid.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+                            cuboid.create(emitter, textureGetter);
+                        }
+                        westSideCount++;
+                    }
+                }
+
 
                 mesh = builder.build();
 

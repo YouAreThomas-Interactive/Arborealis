@@ -33,7 +33,7 @@ public class CarvedWood extends Block implements BlockEntityProvider {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (!world.isClient) {
-            player.sendMessage(new LiteralText(BLOCK_ENTITY.getLogID()), false);
+            player.sendMessage(new LiteralText(((CarvedWoodEntity)world.getBlockEntity(pos)).getLogID()), false);
         }
 
         return ActionResult.SUCCESS;

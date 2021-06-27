@@ -12,11 +12,38 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
     private String logID = "";
 
-    private int[] face = {
+    public int[] faceNorth = {
             0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 1, 0, 0, 0,
             0, 0, 0, 1, 0, 0, 0,
             0, 1, 0, 1, 1, 1, 0,
+            0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 1, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0
+    };
+    public int[] faceEast = {
+            0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 1, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0,
+            0, 1, 0, 1, 1, 1, 0,
+            0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 1, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0
+    };
+    public int[] faceSouth = {
+            0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 1, 0, 0, 0,
+            0, 0, 0, 1, 0, 0, 0,
+            0, 1, 0, 1, 1, 1, 0,
+            0, 0, 0, 1, 0, 0, 0,
+            0, 0, 0, 1, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0
+    };
+    public int[] faceWest = {
+            0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 1, 0, 0, 0,
+            0, 0, 0, 1, 0, 0, 0,
+            0, 1, 1, 1, 1, 1, 0,
             0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 1, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0
@@ -30,13 +57,13 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         NbtCompound tag = new NbtCompound();
         tag.putString("log_id", logID);
 
-        fromClientTag(tag);
+        readNbt(tag);
         markDirty();
     }
 
     public String getLogID() {
         NbtCompound tag = new NbtCompound();
-        tag = toClientTag(tag);
+        tag = writeNbt(tag);
 
         return tag.getString("log_id");
     }
@@ -46,8 +73,8 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     public NbtCompound writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
 
-        // Save the current value of the number to the tag
-        tag.putIntArray("north_face", face);
+        toClientTag(tag);
+
         tag.putString("log_id", logID);
 
         return tag;
@@ -57,25 +84,22 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     @Override
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
-        face = tag.getIntArray("north_face");
+
+        fromClientTag(tag);
+
         logID = tag.getString("log_id");
     }
 
     @Override
     public void fromClientTag(NbtCompound tag) {
         super.readNbt(tag);
-        face = tag.getIntArray("north_face");
         logID = tag.getString("log_id");
     }
 
     @Override
     public NbtCompound toClientTag(NbtCompound tag) {
         super.writeNbt(tag);
-
-        // Save the current value of the number to the tag
-        tag.putIntArray("north_face", face);
         tag.putString("log_id", logID);
-
         return tag;
     }
 }

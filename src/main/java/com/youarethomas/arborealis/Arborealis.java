@@ -59,7 +59,7 @@ public class Arborealis implements ModInitializer {
 
 		// Block item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "test_block"), new BlockItem(TEST_BLOCK, new FabricItemSettings()));
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "carved_wood"), new BlockItem(CARVED_WOOD, new FabricItemSettings()));
+		//Registry.register(Registry.ITEM, new Identifier(MOD_ID, "carved_wood"), new BlockItem(CARVED_WOOD, new FabricItemSettings()));
 
 		// Model registration
 
