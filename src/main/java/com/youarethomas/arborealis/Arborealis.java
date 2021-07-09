@@ -29,7 +29,7 @@ public class Arborealis implements ModInitializer {
 
 	// Blocks
 	public static final TestBlock TEST_BLOCK = new TestBlock(FabricBlockSettings.of(Material.STONE));
-	public static final CarvedWood CARVED_WOOD = new CarvedWood(FabricBlockSettings.of(Material.WOOD).nonOpaque());
+	public static final CarvedWood CARVED_WOOD = new CarvedWood(FabricBlockSettings.of(Material.WOOD));
 
 	public static BlockEntityType<CarvedWoodEntity> CARVED_WOOD_ENTITY;
 
@@ -46,7 +46,6 @@ public class Arborealis implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-
 		// Item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "carving_knife"), CARVING_KNIFE);
 
