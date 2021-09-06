@@ -21,14 +21,12 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public class CarvingKnife extends ToolItem {
 
@@ -43,6 +41,23 @@ public class CarvingKnife extends ToolItem {
         BlockPos blockPos = context.getBlockPos();
         PlayerEntity playerEntity = context.getPlayer();
         BlockState blockState = world.getBlockState(blockPos);
+
+        if (!world.isClient()) {
+            if (blockState == Arborealis.CARVED_WOOD.getDefaultState()) {
+                if (playerEntity.isSneaking()) {
+                    playerEntity.sendMessage(new LiteralText("Rune carved on side " + context.getSide().toString()), false);
+
+                    switch (context.getSide()) {
+                        case NORTH -> {
+                            ((CarvedWoodEntity) Objects.requireNonNull(world.getBlockEntity(blockPos))).performCarve(Direction.NORTH);
+                        }
+                        case EAST -> ((CarvedWoodEntity) Objects.requireNonNull(world.getBlockEntity(blockPos))).performCarve(Direction.EAST);
+                        case SOUTH -> ((CarvedWoodEntity) Objects.requireNonNull(world.getBlockEntity(blockPos))).performCarve(Direction.SOUTH);
+                        case WEST -> ((CarvedWoodEntity) Objects.requireNonNull(world.getBlockEntity(blockPos))).performCarve(Direction.WEST);
+                    }
+                }
+            }
+        }
 
         // Creating the carved block and entity
         BlockState carvedState = null;

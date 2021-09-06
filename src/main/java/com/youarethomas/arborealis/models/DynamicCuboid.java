@@ -21,6 +21,7 @@ public class DynamicCuboid {
     private final float xSize;
     private final float ySize;
     private final float zSize;
+    private final int colour;
 
     public DynamicCuboid(float x, float y, float z, float xSize, float ySize, float zSize) {
         this.x = x;
@@ -29,6 +30,21 @@ public class DynamicCuboid {
         this.xSize = xSize;
         this.ySize = ySize;
         this.zSize = zSize;
+        this.colour = -1;
+
+        for (Direction direction : Direction.values()) {
+            spriteIds.put(direction, null);
+        }
+    }
+
+    public DynamicCuboid(float x, float y, float z, float xSize, float ySize, float zSize, int colour) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.xSize = xSize;
+        this.ySize = ySize;
+        this.zSize = zSize;
+        this.colour = colour;
 
         for (Direction direction : Direction.values()) {
             spriteIds.put(direction, null);
@@ -82,7 +98,7 @@ public class DynamicCuboid {
                 }
             }
 
-            emitter.spriteColor(0, -1, -1, -1, -1);
+            emitter.spriteColor(0, colour, colour, colour, colour);
             emitter.emit();
         }
     }

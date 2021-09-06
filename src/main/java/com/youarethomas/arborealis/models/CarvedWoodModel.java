@@ -139,8 +139,6 @@ public class CarvedWoodModel implements UnbakedModel {
         emitter = builder.getEmitter();
         this.textureGetter = textureGetter;
 
-
-
         return new ModelBaseBaked();
     }
 
@@ -174,8 +172,21 @@ public class CarvedWoodModel implements UnbakedModel {
                 int northFaceCount = 0;
                 for (int y = 1; y <= 13; y += 2) {
                     for (int x = 13; x >= 1; x -= 2) {
-                        if (((CarvedWoodEntity) entity).faceNorth[northFaceCount] == 0) {
-                            DynamicCuboid cuboid = new DynamicCuboid(x, y, 0, 2, 2, 1);
+                        int carveState = ((CarvedWoodEntity) entity).faceNorth[northFaceCount];
+
+                        // Where a state of 1 means carved - do not render anything
+                        if (carveState != 1) {
+                            DynamicCuboid cuboid;
+
+                            // 2 means highlighted
+                            if (carveState == 2) {
+                                cuboid = new DynamicCuboid(x, y, 0, 2, 2, 1, 0xffa200);
+                            }
+                            // Otherwise, draw the wood piece (un-carved)
+                            else {
+                                cuboid = new DynamicCuboid(x, y, 0, 2, 2, 1);
+                            }
+
                             cuboid.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
                             cuboid.create(emitter, textureGetter);
                         }
