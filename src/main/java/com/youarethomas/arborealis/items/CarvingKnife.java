@@ -48,15 +48,14 @@ public class CarvingKnife extends ToolItem {
                     playerEntity.sendMessage(new LiteralText("Rune carved on side " + context.getSide().toString()), false);
 
                     switch (context.getSide()) {
-                        case NORTH -> {
-                            ((CarvedWoodEntity) Objects.requireNonNull(world.getBlockEntity(blockPos))).performCarve(Direction.NORTH);
-                        }
+                        case NORTH -> ((CarvedWoodEntity) Objects.requireNonNull(world.getBlockEntity(blockPos))).performCarve(Direction.NORTH);
                         case EAST -> ((CarvedWoodEntity) Objects.requireNonNull(world.getBlockEntity(blockPos))).performCarve(Direction.EAST);
                         case SOUTH -> ((CarvedWoodEntity) Objects.requireNonNull(world.getBlockEntity(blockPos))).performCarve(Direction.SOUTH);
                         case WEST -> ((CarvedWoodEntity) Objects.requireNonNull(world.getBlockEntity(blockPos))).performCarve(Direction.WEST);
                     }
                 }
             }
+
         }
 
         // Creating the carved block and entity
@@ -81,15 +80,24 @@ public class CarvingKnife extends ToolItem {
 
             CarvedWoodEntity carvedEntity = (CarvedWoodEntity) world.getBlockEntity(blockPos);
             carvedEntity.setLogID(String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
+            carvedEntity.faceNorth = new int[] {
+                    0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 1, 0, 0, 0,
+                    0, 0, 0, 1, 0, 0, 0,
+                    0, 2, 0, 1, 1, 1, 0,
+                    0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 2, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0,
+            };
 
             if (playerEntity != null) {
                 itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand()));
             }
 
             return ActionResult.success(world.isClient);
-        } else {
-            return ActionResult.PASS;
         }
+
+        return ActionResult.PASS;
     }
 
     @Override

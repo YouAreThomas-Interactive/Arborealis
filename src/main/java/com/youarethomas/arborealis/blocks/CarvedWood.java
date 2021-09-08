@@ -55,9 +55,12 @@ public class CarvedWood extends Block implements BlockEntityProvider {
                 }
 
                 player.sendMessage(new LiteralText((pixelHit.getPos().toString())), false);
+
+                return ActionResult.SUCCESS;
             }
         }
 
-        return ActionResult.SUCCESS;
+        return ActionResult.PASS;
     }
+
 }

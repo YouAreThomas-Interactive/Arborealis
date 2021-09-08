@@ -168,7 +168,7 @@ public class CarvedWoodModel implements UnbakedModel {
                     cuboid.create(emitter, textureGetter);
                 }
 
-                // Carved side north
+               /* // Carved side north
                 int northFaceCount = 0;
                 for (int y = 1; y <= 13; y += 2) {
                     for (int x = 13; x >= 1; x -= 2) {
@@ -231,7 +231,7 @@ public class CarvedWoodModel implements UnbakedModel {
                         }
                         westSideCount++;
                     }
-                }
+                }*/
 
 
                 mesh = builder.build();
