@@ -56,12 +56,7 @@ public class CarvedWoodModel implements UnbakedModel {
         setBreakTexture(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("minecraft:block/oak_log")));
     }
 
-    public void loadFixedCuboids(String logID) {
-        String[] idParts = logID.split(":");
-
-        String log = idParts[0] + ":block/" + idParts[1];
-        String strippedLog = idParts[0] + ":block/stripped_" + idParts[1];
-        String logTop = idParts[0] + ":block/" + idParts[1] + "_top";
+    public void loadFixedCuboids(String log, String strippedLog, String logTop) {
 
         // Core
         DynamicCuboid core = new DynamicCuboid(1, 1, 1, 14, 14, 14);
@@ -154,13 +149,21 @@ public class CarvedWoodModel implements UnbakedModel {
                 String logID = ((CarvedWoodEntity) entity).getLogID();
                 String[] idParts = logID.split(":");
                 String log = "minecraft:block/oak_log";
+                String strippedLog;
+                String logTop;
 
-                if (logID.contains("minecraft")) {
-                    System.out.println("ID Found!");
-                    loadFixedCuboids(logID);
+                if (Objects.equals(((CarvedWoodEntity) entity).getLogID(), "pumpkin")) {
+                    log = "minecraft:block/pumpkin_side";
+                    strippedLog = "arborealis:block/pumpkin_side_carved";
+                    logTop = "minecraft:block/pumpkin_top";
+
+                    loadFixedCuboids(log, strippedLog, logTop);
+                } else if (idParts.length > 1) {
                     log = idParts[0] + ":block/" + idParts[1];
-                } else {
-                    loadFixedCuboids("minecraft:oak_log");
+                    strippedLog = idParts[0] + ":block/stripped_" + idParts[1];
+                    logTop = idParts[0] + ":block/" + idParts[1] + "_top";
+
+                    loadFixedCuboids(log, strippedLog, logTop);
                 }
 
                 // Wood frame

@@ -17,6 +17,8 @@ import java.util.Arrays;
 
 public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSerializable {
 
+    private boolean isPumpkin = false;
+
     private String logID = "";
 
     private int[] faceNorth = new int[49];
@@ -28,8 +30,11 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         super(Arborealis.CARVED_WOOD_ENTITY, pos, state);
     }
 
-    public void performCarve(Direction face) {
-        setFaceArray(face, Arrays.stream(getFaceArray(face)).map(i -> i == 2 ? 1 : i).toArray());
+    public void performCarve() {
+        setFaceArray(Direction.NORTH, Arrays.stream(getFaceArray(Direction.NORTH)).map(i -> i == 2 ? 1 : i).toArray());
+        setFaceArray(Direction.EAST, Arrays.stream(getFaceArray(Direction.EAST)).map(i -> i == 2 ? 1 : i).toArray());
+        setFaceArray(Direction.SOUTH, Arrays.stream(getFaceArray(Direction.SOUTH)).map(i -> i == 2 ? 1 : i).toArray());
+        setFaceArray(Direction.WEST, Arrays.stream(getFaceArray(Direction.WEST)).map(i -> i == 2 ? 1 : i).toArray());
 
         System.out.println(StringUtils.join(ArrayUtils.toObject(getFaceArray(Direction.NORTH)), ", "));
     }
@@ -41,6 +46,15 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
     public String getLogID() {
         return logID;
+    }
+
+    public void setIsPumpkin(boolean isPumpkin) {
+        this.isPumpkin = isPumpkin;
+        updateListeners();
+    }
+
+    public boolean getIsPumpkin() {
+        return isPumpkin;
     }
 
     public void setFaceArray(Direction direction, int[] array) {
@@ -79,6 +93,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     public NbtCompound writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
 
+        tag.putBoolean("is_pumpkin", isPumpkin);
         tag.putString("log_id", logID);
         tag.putIntArray("face_north", faceNorth);
         tag.putIntArray("face_east", faceEast);
@@ -93,6 +108,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
 
+        isPumpkin = tag.getBoolean("is_pumpkin");
         logID = tag.getString("log_id");
         faceNorth = tag.getIntArray("face_north");
         faceEast = tag.getIntArray("face_east");
