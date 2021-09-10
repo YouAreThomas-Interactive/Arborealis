@@ -51,18 +51,17 @@ public class CarvingKnife extends ToolItem {
                 Criteria.ITEM_USED_ON_BLOCK.test((ServerPlayerEntity)playerEntity, blockPos, itemStack);
             }
 
+            // Swap the block out with a carved wood block...
             world.setBlockState(blockPos, Arborealis.CARVED_WOOD.getDefaultState(), 11);
-
             CarvedWoodEntity carvedEntity = (CarvedWoodEntity) world.getBlockEntity(blockPos);
 
-            if (blockState.isIn(BlockTags.LOGS)) {
-                carvedEntity.setLogID(String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
-            } else if (blockState.isOf(Blocks.PUMPKIN)) {
-                carvedEntity.setLogID("pumpkin");
-            }
-
-            if (playerEntity != null) {
-                itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand()));
+            // ... and assign relevant NBT data
+            if (carvedEntity != null) {
+                if (blockState.isIn(BlockTags.LOGS)) {
+                    carvedEntity.setLogID(String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
+                } else if (blockState.isOf(Blocks.PUMPKIN)) {
+                    carvedEntity.setLogID("pumpkin");
+                }
             }
 
             drawCarvePlan(carvedEntity, context.getSide(), world, playerEntity); // Draw rune after creating the block
@@ -74,9 +73,9 @@ public class CarvingKnife extends ToolItem {
         if (blockState == Arborealis.CARVED_WOOD.getDefaultState()) {
             if (playerEntity.isSneaking()) {
                 if (!world.isClient()) {
-                    //playerEntity.sendMessage(new LiteralText("Rune carved on side " + context.getSide().toString()), false);
 
                     ((CarvedWoodEntity) world.getBlockEntity(blockPos)).performCarve();
+                    itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand())); // Damage carving knife when carving is applied
 
                 } else {
                     world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
@@ -85,8 +84,6 @@ public class CarvingKnife extends ToolItem {
                 drawCarvePlan((CarvedWoodEntity) world.getBlockEntity(blockPos), context.getSide(), world, playerEntity);
             }
 
-            itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand()));
-
             return ActionResult.SUCCESS;
         }
 
@@ -94,6 +91,7 @@ public class CarvingKnife extends ToolItem {
     }
 
     private void drawCarvePlan(CarvedWoodEntity carvedWoodEntity, Direction side, World world, PlayerEntity player) {
+        // Get the raytrace hit
         MinecraftClient client = MinecraftClient.getInstance();
         HitResult pixelHit = client.crosshairTarget;
         double pixelSize = 1.0D / 16.0D;
@@ -103,13 +101,14 @@ public class CarvingKnife extends ToolItem {
             double y = Math.abs(pixelHit.getPos().y % 1);
             double z = Math.abs(pixelHit.getPos().z % 1);
 
-            // Translate into 7x7 segments
+            // Convert into 7x7 segments
             int segmentX = (int)Math.ceil((x - pixelSize) * 8);
             int segmentY = (int)Math.ceil((y - pixelSize) * 8);
             int segmentZ = (int)Math.ceil((z - pixelSize) * 8);
 
             int segmentID = -1;
 
+            // Convert array position
             switch (side) {
                 case NORTH -> segmentID = ((segmentY - 1) * 7) + (7 - segmentX);
                 case SOUTH -> segmentID = ((segmentY - 1) * 7) + (segmentX - 1);
@@ -117,6 +116,7 @@ public class CarvingKnife extends ToolItem {
                 case WEST -> segmentID = ((segmentY - 1) * 7) + (7 - segmentZ);
             }
 
+            // Then set array position value to highlighted if normal, normal if highlighted, or do nothing if carved out
             int[] faceArray = carvedWoodEntity.getFaceArray(side);
             if (segmentID != -1) {
                 if (faceArray[segmentID] == 0) {
@@ -127,8 +127,6 @@ public class CarvingKnife extends ToolItem {
             }
 
             carvedWoodEntity.setFaceArray(side, faceArray);
-
-            player.sendMessage(new LiteralText("%s, %s, %s - %s".formatted(segmentX, segmentY, segmentZ, segmentID)), false);
         }
     }
 
@@ -136,9 +134,10 @@ public class CarvingKnife extends ToolItem {
     // Append tooltip when pressing shift key
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         if (Screen.hasShiftDown()) {
-            tooltip.add(new TranslatableText("item.arborealis.carving_knife.tooltip").formatted(Formatting.GRAY));
+            tooltip.add(new TranslatableText("item.arborealis.carving_knife.tooltip1").formatted(Formatting.GRAY));
+            tooltip.add(new TranslatableText("item.arborealis.carving_knife.tooltip2").formatted(Formatting.GRAY));
+            tooltip.add(new TranslatableText("item.arborealis.carving_knife.tooltip3").formatted(Formatting.GRAY));
         } else {
-            //tooltip.add(new LiteralText("Hold 'Shift'...").formatted(Formatting.GRAY).formatted(Formatting.ITALIC));
             tooltip.add(new TranslatableText("item.arborealis.hidden_tooltip").formatted(Formatting.GRAY).formatted(Formatting.ITALIC));
         }
     }

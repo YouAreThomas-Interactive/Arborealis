@@ -4,5 +4,7 @@
   "item.arborealis.hidden_tooltip": "Hold Shift...",
 
   "item.arborealis.carving_knife": "Carving Knife",
-  "item.arborealis.carving_knife.tooltip": "Used for carving runes on trees."
+  "item.arborealis.carving_knife.tooltip1": "Used for carving runes on trees.",
+  "item.arborealis.carving_knife.tooltip2": "Right click to create a carving plan,",
+  "item.arborealis.carving_knife.tooltip3": "then shift+right click to carve."
 }

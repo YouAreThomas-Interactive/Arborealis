@@ -1,14 +1,9 @@
 package com.youarethomas.arborealis.models;
 
 import com.mojang.datafixers.util.Pair;
-import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
-import net.fabricmc.fabric.api.client.model.ModelProviderContext;
-import net.fabricmc.fabric.api.client.model.ModelProviderException;
-import net.fabricmc.fabric.api.client.model.ModelVariantProvider;
 import net.fabricmc.fabric.api.renderer.v1.Renderer;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
-import net.fabricmc.fabric.api.renderer.v1.mesh.Mesh;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel;
@@ -20,15 +15,11 @@ import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockRenderView;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,15 +30,11 @@ import java.util.stream.Stream;
 
 public class CarvedWoodModel implements UnbakedModel {
 
-    public static final CarvedWoodModel INSTANCE = new CarvedWoodModel();
-
-    private Collection<DynamicCuboid> fixedCuboids = new ArrayList<>();
+    private final Collection<DynamicCuboid> fixedCuboids = new ArrayList<>();
 
     private MeshBuilder builder;
     private QuadEmitter emitter;
     private Function<SpriteIdentifier, Sprite> textureGetter;
-
-    private Mesh mesh;
 
     private SpriteIdentifier breakTextureIdentifier;
     private Sprite breakTextureSprite;
@@ -114,7 +101,6 @@ public class CarvedWoodModel implements UnbakedModel {
 
     @Override
     public Collection<Identifier> getModelDependencies() {
-        // TODO: Bring in a JSON model or existing model as a template
         return Collections.emptyList();
     }
 
@@ -141,32 +127,30 @@ public class CarvedWoodModel implements UnbakedModel {
 
         @Override
         public void emitBlockQuads(BlockRenderView blockView, BlockState state, BlockPos pos, Supplier<Random> randomSupplier, RenderContext context) {
-
             BlockEntity entity = blockView.getBlockEntity(pos);
 
             if (entity instanceof CarvedWoodEntity) {
-
+                // Bunch of ID stuff...
                 String logID = ((CarvedWoodEntity) entity).getLogID();
                 String[] idParts = logID.split(":");
                 String log = "minecraft:block/oak_log";
-                String strippedLog;
-                String logTop;
 
+                // ... made needlessly complicated due to pumpkins
                 if (Objects.equals(((CarvedWoodEntity) entity).getLogID(), "pumpkin")) {
                     log = "minecraft:block/pumpkin_side";
-                    strippedLog = "arborealis:block/pumpkin_side_carved";
-                    logTop = "minecraft:block/pumpkin_top";
+                    String strippedLog = "arborealis:block/pumpkin_side_carved";
+                    String logTop = "minecraft:block/pumpkin_top";
 
                     loadFixedCuboids(log, strippedLog, logTop);
                 } else if (idParts.length > 1) {
                     log = idParts[0] + ":block/" + idParts[1];
-                    strippedLog = idParts[0] + ":block/stripped_" + idParts[1];
-                    logTop = idParts[0] + ":block/" + idParts[1] + "_top";
+                    String strippedLog = idParts[0] + ":block/stripped_" + idParts[1];
+                    String logTop = idParts[0] + ":block/" + idParts[1] + "_top";
 
                     loadFixedCuboids(log, strippedLog, logTop);
                 }
 
-                // Wood frame
+                // Render the fixed cuboids for the frame
                 for (DynamicCuboid cuboid : fixedCuboids) {
                     cuboid.create(emitter, textureGetter);
                 }
@@ -208,11 +192,9 @@ public class CarvedWoodModel implements UnbakedModel {
                         if (carveState != 1) {
                             DynamicCuboid cuboid;
 
-                            // 2 means highlighted
                             if (carveState == 2) {
                                 cuboid = new DynamicCuboid(15, y, z, 1, 2, 2, 0xffa200);
                             }
-                            // Otherwise, draw the wood piece (un-carved)
                             else {
                                 cuboid = new DynamicCuboid(15, y, z, 1, 2, 2);
                             }
@@ -230,15 +212,12 @@ public class CarvedWoodModel implements UnbakedModel {
                     for (int x = 1; x <= 13; x += 2) {
                         int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.SOUTH)[southSideCount];
 
-                        // Where a state of 1 means carved - do not render anything
                         if (carveState != 1) {
                             DynamicCuboid cuboid;
 
-                            // 2 means highlighted
                             if (carveState == 2) {
                                 cuboid = new DynamicCuboid(x, y, 15, 2, 2, 1, 0xffa200);
                             }
-                            // Otherwise, draw the wood piece (un-carved)
                             else {
                                 cuboid = new DynamicCuboid(x, y, 15, 2, 2, 1);
                             }
@@ -256,15 +235,12 @@ public class CarvedWoodModel implements UnbakedModel {
                     for (int z = 1; z <= 13; z += 2) {
                         int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.WEST)[westSideCount];
 
-                        // Where a state of 1 means carved - do not render anything
                         if (carveState != 1) {
                             DynamicCuboid cuboid;
 
-                            // 2 means highlighted
                             if (carveState == 2) {
                                 cuboid = new DynamicCuboid(0, y, z, 1, 2, 2, 0xffa200);
                             }
-                            // Otherwise, draw the wood piece (un-carved)
                             else {
                                 cuboid = new DynamicCuboid(0, y, z, 1, 2, 2);
                             }
@@ -278,15 +254,14 @@ public class CarvedWoodModel implements UnbakedModel {
 
                 //endregion
 
-                mesh = builder.build();
-
-                context.meshConsumer().accept(mesh);
+                // And send her off!
+                context.meshConsumer().accept(builder.build());
             }
         }
 
         @Override
         public void emitItemQuads(ItemStack stack, Supplier<Random> randomSupplier, RenderContext context) {
-
+            // No. I don't think I will
         }
 
         @Override
@@ -333,6 +308,5 @@ public class CarvedWoodModel implements UnbakedModel {
         public ModelOverrideList getOverrides() {
             return ModelOverrideList.EMPTY;
         }
-
     }
 }

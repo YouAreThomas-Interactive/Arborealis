@@ -17,8 +17,6 @@ import java.util.Arrays;
 
 public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSerializable {
 
-    private boolean isPumpkin = false;
-
     private String logID = "";
 
     private int[] faceNorth = new int[49];
@@ -46,15 +44,6 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
     public String getLogID() {
         return logID;
-    }
-
-    public void setIsPumpkin(boolean isPumpkin) {
-        this.isPumpkin = isPumpkin;
-        updateListeners();
-    }
-
-    public boolean getIsPumpkin() {
-        return isPumpkin;
     }
 
     public void setFaceArray(Direction direction, int[] array) {
@@ -88,12 +77,11 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         }
     }
 
-    // Serialize the BlockEntity
+    // Serialize the BlockEntity - storing data
     @Override
     public NbtCompound writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
 
-        tag.putBoolean("is_pumpkin", isPumpkin);
         tag.putString("log_id", logID);
         tag.putIntArray("face_north", faceNorth);
         tag.putIntArray("face_east", faceEast);
@@ -103,12 +91,11 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         return tag;
     }
 
-    // Deserialize the BlockEntity
+    // Deserialize the BlockEntity - retrieving data
     @Override
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
 
-        isPumpkin = tag.getBoolean("is_pumpkin");
         logID = tag.getString("log_id");
         faceNorth = tag.getIntArray("face_north");
         faceEast = tag.getIntArray("face_east");
@@ -128,7 +115,10 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     }
 
     private void updateListeners() {
+        // This method is the magic that makes the whole carving system work. No touchy
         this.markDirty();
-        this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.NOTIFY_ALL);
+        if (this.world != null) {
+            this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.NOTIFY_ALL);
+        }
     }
 }

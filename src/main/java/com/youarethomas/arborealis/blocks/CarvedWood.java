@@ -22,9 +22,4 @@ public class CarvedWood extends Block implements BlockEntityProvider {
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new CarvedWoodEntity(pos, state);
     }
-
-    @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        return ActionResult.PASS;
-    }
 }
