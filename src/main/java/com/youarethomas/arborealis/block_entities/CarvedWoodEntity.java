@@ -31,9 +31,6 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     public void performCarve(Direction face) {
         setFaceArray(face, Arrays.stream(getFaceArray(face)).map(i -> i == 2 ? 1 : i).toArray());
 
-
-
-
         System.out.println(StringUtils.join(ArrayUtils.toObject(getFaceArray(Direction.NORTH)), ", "));
     }
 
@@ -106,7 +103,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     @Override
     public void fromClientTag(NbtCompound tag) {
         readNbt(tag);
-        //MinecraftClient.getInstance().worldRenderer.scheduleBlockRenders(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
+        MinecraftClient.getInstance().worldRenderer.scheduleBlockRenders(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
     }
 
     @Override

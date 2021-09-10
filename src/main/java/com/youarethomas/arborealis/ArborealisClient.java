@@ -1,6 +1,5 @@
 package com.youarethomas.arborealis;
 
-import com.youarethomas.arborealis.models.CarvedWoodEntityRenderer;
 import com.youarethomas.arborealis.models.DynamicModelRegistry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
@@ -13,6 +12,5 @@ public class ArborealisClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         DynamicModelRegistry.registerModels();
-        BlockEntityRendererRegistry.INSTANCE.register(Arborealis.CARVED_WOOD_ENTITY, CarvedWoodEntityRenderer::new);
     }
 }

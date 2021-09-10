@@ -168,6 +168,113 @@ public class CarvedWoodModel implements UnbakedModel {
                     cuboid.create(emitter, textureGetter);
                 }
 
+                //region Carved Face Rendering
+
+                // Carved side north
+                int northSideCount = 0;
+                for (int y = 1; y <= 13; y += 2) {
+                    for (int x = 13; x >= 1; x -= 2) {
+                        int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.NORTH)[northSideCount];
+
+                        // Where a state of 1 means carved - do not render anything
+                        if (carveState != 1) {
+                            DynamicCuboid cuboid;
+
+                            // 2 means highlighted
+                            if (carveState == 2) {
+                                cuboid = new DynamicCuboid(x, y, 0, 2, 2, 1, 0xffa200);
+                            }
+                            // Otherwise, draw the wood piece (un-carved)
+                            else {
+                                cuboid = new DynamicCuboid(x, y, 0, 2, 2, 1);
+                            }
+
+                            cuboid.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+                            cuboid.create(emitter, textureGetter);
+                        }
+                        northSideCount++;
+                    }
+                }
+
+                // Carved side east
+                int eastSideCount = 0;
+                for (int y = 1; y <= 13; y += 2) {
+                    for (int z = 13; z >= 1; z -= 2) {
+                        int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.EAST)[eastSideCount];
+
+                        if (carveState != 1) {
+                            DynamicCuboid cuboid;
+
+                            // 2 means highlighted
+                            if (carveState == 2) {
+                                cuboid = new DynamicCuboid(15, y, z, 1, 2, 2, 0xffa200);
+                            }
+                            // Otherwise, draw the wood piece (un-carved)
+                            else {
+                                cuboid = new DynamicCuboid(15, y, z, 1, 2, 2);
+                            }
+
+                            cuboid.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+                            cuboid.create(emitter, textureGetter);
+                        }
+                        eastSideCount++;
+                    }
+                }
+
+                // Carved side south
+                int southSideCount = 0;
+                for (int y = 1; y <= 13; y += 2) {
+                    for (int x = 1; x <= 13; x += 2) {
+                        int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.SOUTH)[southSideCount];
+
+                        // Where a state of 1 means carved - do not render anything
+                        if (carveState != 1) {
+                            DynamicCuboid cuboid;
+
+                            // 2 means highlighted
+                            if (carveState == 2) {
+                                cuboid = new DynamicCuboid(x, y, 15, 2, 2, 1, 0xffa200);
+                            }
+                            // Otherwise, draw the wood piece (un-carved)
+                            else {
+                                cuboid = new DynamicCuboid(x, y, 15, 2, 2, 1);
+                            }
+
+                            cuboid.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+                            cuboid.create(emitter, textureGetter);
+                        }
+                        southSideCount++;
+                    }
+                }
+
+                // Carved side west
+                int westSideCount = 0;
+                for (int y = 1; y <= 13; y += 2) {
+                    for (int z = 1; z <= 13; z += 2) {
+                        int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.WEST)[westSideCount];
+
+                        // Where a state of 1 means carved - do not render anything
+                        if (carveState != 1) {
+                            DynamicCuboid cuboid;
+
+                            // 2 means highlighted
+                            if (carveState == 2) {
+                                cuboid = new DynamicCuboid(0, y, z, 1, 2, 2, 0xffa200);
+                            }
+                            // Otherwise, draw the wood piece (un-carved)
+                            else {
+                                cuboid = new DynamicCuboid(0, y, z, 1, 2, 2);
+                            }
+
+                            cuboid.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+                            cuboid.create(emitter, textureGetter);
+                        }
+                        westSideCount++;
+                    }
+                }
+
+                //endregion
+
                 mesh = builder.build();
 
                 context.meshConsumer().accept(mesh);
