@@ -168,72 +168,6 @@ public class CarvedWoodModel implements UnbakedModel {
                     cuboid.create(emitter, textureGetter);
                 }
 
-               /* // Carved side north
-                int northFaceCount = 0;
-                for (int y = 1; y <= 13; y += 2) {
-                    for (int x = 13; x >= 1; x -= 2) {
-                        int carveState = ((CarvedWoodEntity) entity).faceNorth[northFaceCount];
-
-                        // Where a state of 1 means carved - do not render anything
-                        if (carveState != 1) {
-                            DynamicCuboid cuboid;
-
-                            // 2 means highlighted
-                            if (carveState == 2) {
-                                cuboid = new DynamicCuboid(x, y, 0, 2, 2, 1, 0xffa200);
-                            }
-                            // Otherwise, draw the wood piece (un-carved)
-                            else {
-                                cuboid = new DynamicCuboid(x, y, 0, 2, 2, 1);
-                            }
-
-                            cuboid.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
-                            cuboid.create(emitter, textureGetter);
-                        }
-                        northFaceCount++;
-                    }
-                }
-
-                // Carved side east
-                int eastSideCount = 0;
-                for (int y = 1; y <= 13; y += 2) {
-                    for (int z = 13; z >= 1; z -= 2) {
-                        if (((CarvedWoodEntity) entity).faceEast[eastSideCount] == 0) {
-                            DynamicCuboid cuboid = new DynamicCuboid(15, y, z, 1, 2, 2);
-                            cuboid.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
-                            cuboid.create(emitter, textureGetter);
-                        }
-                        eastSideCount++;
-                    }
-                }
-
-                // Carved side south
-                int southSideCount = 0;
-                for (int y = 1; y <= 13; y += 2) {
-                    for (int x = 1; x <= 13; x += 2) {
-                        if (((CarvedWoodEntity) entity).faceSouth[southSideCount] == 0) {
-                            DynamicCuboid cuboid = new DynamicCuboid(x, y, 15, 2, 2, 1);
-                            cuboid.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
-                            cuboid.create(emitter, textureGetter);
-                        }
-                        southSideCount++;
-                    }
-                }
-
-                // Carved side west
-                int westSideCount = 0;
-                for (int y = 1; y <= 13; y += 2) {
-                    for (int z = 1; z <= 13; z += 2) {
-                        if (((CarvedWoodEntity) entity).faceWest[westSideCount] == 0) {
-                            DynamicCuboid cuboid = new DynamicCuboid(0, y, z, 1, 2, 2);
-                            cuboid.applyTextureToAllSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
-                            cuboid.create(emitter, textureGetter);
-                        }
-                        westSideCount++;
-                    }
-                }*/
-
-
                 mesh = builder.build();
 
                 context.meshConsumer().accept(mesh);
@@ -290,19 +224,5 @@ public class CarvedWoodModel implements UnbakedModel {
             return ModelOverrideList.EMPTY;
         }
 
-    }
-
-    public static enum VariantProvider implements ModelVariantProvider {
-        INSTANCE;
-
-        @Override
-        public @Nullable UnbakedModel loadModelVariant(ModelIdentifier modelId, ModelProviderContext context) throws ModelProviderException {
-
-            if (modelId.getNamespace().equals(Arborealis.MOD_ID) && modelId.getPath().equals("carved_wood_model")) {
-                return CarvedWoodModel.INSTANCE;
-            } else {
-                return null;
-            }
-        }
     }
 }

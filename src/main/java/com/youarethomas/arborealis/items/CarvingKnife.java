@@ -42,21 +42,19 @@ public class CarvingKnife extends ToolItem {
         PlayerEntity playerEntity = context.getPlayer();
         BlockState blockState = world.getBlockState(blockPos);
 
-        if (!world.isClient()) {
-            if (blockState == Arborealis.CARVED_WOOD.getDefaultState()) {
-                if (playerEntity.isSneaking()) {
+
+        if (blockState == Arborealis.CARVED_WOOD.getDefaultState()) {
+            if (playerEntity.isSneaking()) {
+                if (!world.isClient()) {
                     playerEntity.sendMessage(new LiteralText("Rune carved on side " + context.getSide().toString()), false);
 
-                    switch (context.getSide()) {
-                        case NORTH -> ((CarvedWoodEntity) Objects.requireNonNull(world.getBlockEntity(blockPos))).performCarve(Direction.NORTH);
-                        case EAST -> ((CarvedWoodEntity) Objects.requireNonNull(world.getBlockEntity(blockPos))).performCarve(Direction.EAST);
-                        case SOUTH -> ((CarvedWoodEntity) Objects.requireNonNull(world.getBlockEntity(blockPos))).performCarve(Direction.SOUTH);
-                        case WEST -> ((CarvedWoodEntity) Objects.requireNonNull(world.getBlockEntity(blockPos))).performCarve(Direction.WEST);
-                    }
+                    ((CarvedWoodEntity) world.getBlockEntity(blockPos)).performCarve(context.getSide());
+                } else {
+                    world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
                 }
             }
-
         }
+
 
         // Creating the carved block and entity
         BlockState carvedState = null;
@@ -70,7 +68,6 @@ public class CarvingKnife extends ToolItem {
         ItemStack itemStack = context.getStack();
 
         if (carvedState != null) {
-            world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
 
             if (playerEntity instanceof ServerPlayerEntity) {
                 Criteria.ITEM_USED_ON_BLOCK.test((ServerPlayerEntity)playerEntity, blockPos, itemStack);
@@ -80,7 +77,16 @@ public class CarvingKnife extends ToolItem {
 
             CarvedWoodEntity carvedEntity = (CarvedWoodEntity) world.getBlockEntity(blockPos);
             carvedEntity.setLogID(String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
-            carvedEntity.faceNorth = new int[] {
+            carvedEntity.setFaceArray(Direction.NORTH, new int[] {
+                    0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 2, 0, 0, 0,
+                    0, 0, 0, 2, 0, 0, 0,
+                    0, 2, 0, 2, 2, 2, 0,
+                    0, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 2, 0, 0, 0,
+                    0, 0, 0, 0, 0, 0, 0,
+            });
+            carvedEntity.setFaceArray(Direction.SOUTH, new int[] {
                     0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 1, 0, 0, 0,
                     0, 0, 0, 1, 0, 0, 0,
@@ -88,7 +94,7 @@ public class CarvingKnife extends ToolItem {
                     0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 2, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0,
-            };
+            });
 
             if (playerEntity != null) {
                 itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand()));

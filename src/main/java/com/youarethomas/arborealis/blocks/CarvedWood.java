@@ -58,6 +58,8 @@ public class CarvedWood extends Block implements BlockEntityProvider {
 
                 return ActionResult.SUCCESS;
             }
+        } else {
+            player.sendMessage(new LiteralText("log_id: " + BLOCK_ENTITY.getLogID()), false);
         }
 
         return ActionResult.PASS;
