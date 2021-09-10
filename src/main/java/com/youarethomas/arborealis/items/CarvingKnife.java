@@ -4,14 +4,11 @@ import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -52,6 +49,7 @@ public class CarvingKnife extends ToolItem {
             }
 
             // Swap the block out with a carved wood block...
+            // TODO: Add in support for horizontal logs
             world.setBlockState(blockPos, Arborealis.CARVED_WOOD.getDefaultState(), 11);
             CarvedWoodEntity carvedEntity = (CarvedWoodEntity) world.getBlockEntity(blockPos);
 
@@ -97,9 +95,13 @@ public class CarvingKnife extends ToolItem {
         double pixelSize = 1.0D / 16.0D;
 
         if (!world.isClient && pixelHit != null) {
-            double x = Math.abs(pixelHit.getPos().x % 1);
-            double y = Math.abs(pixelHit.getPos().y % 1);
-            double z = Math.abs(pixelHit.getPos().z % 1);
+            double x = pixelHit.getPos().x % 1;
+            double y = pixelHit.getPos().y % 1;
+            double z = pixelHit.getPos().z % 1;
+
+            if (x < 0) x = 1 - Math.abs(x);
+            if (y < 0) y = 1 - Math.abs(y);
+            if (z < 0) z = 1 - Math.abs(z);
 
             // Convert into 7x7 segments
             int segmentX = (int)Math.ceil((x - pixelSize) * 8);
@@ -112,8 +114,8 @@ public class CarvingKnife extends ToolItem {
             switch (side) {
                 case NORTH -> segmentID = ((segmentY - 1) * 7) + (7 - segmentX);
                 case SOUTH -> segmentID = ((segmentY - 1) * 7) + (segmentX - 1);
-                case EAST -> segmentID = ((segmentY - 1) * 7) + (segmentZ - 1);
-                case WEST -> segmentID = ((segmentY - 1) * 7) + (7 - segmentZ);
+                case EAST -> segmentID = ((segmentY - 1) * 7) + (7 - segmentZ);
+                case WEST -> segmentID = ((segmentY - 1) * 7) + (segmentZ - 1);
             }
 
             // Then set array position value to highlighted if normal, normal if highlighted, or do nothing if carved out
@@ -125,6 +127,8 @@ public class CarvingKnife extends ToolItem {
                     faceArray[segmentID] = 0;
                 }
             }
+
+            player.sendMessage(new LiteralText("%s, %s, %s -> %s".formatted(segmentX, segmentY, segmentZ, segmentID)), false);
 
             carvedWoodEntity.setFaceArray(side, faceArray);
         }
