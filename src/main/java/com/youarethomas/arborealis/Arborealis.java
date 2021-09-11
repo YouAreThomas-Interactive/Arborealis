@@ -10,6 +10,7 @@ import com.youarethomas.arborealis.items.TreeCore;
 import com.youarethomas.arborealis.models.CarvedWoodModel;
 import com.youarethomas.arborealis.models.utils.DynamicModelRegistry;
 import com.youarethomas.arborealis.tool_materials.CopperKnifeMaterial;
+import com.youarethomas.arborealis.util.RuneManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -54,6 +55,8 @@ public class Arborealis implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		RuneManager.initializeRunes();
+
 		// Block registration
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "test_block"), TEST_BLOCK);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "carved_wood"), CARVED_WOOD);

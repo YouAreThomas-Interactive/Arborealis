@@ -1,6 +1,8 @@
 package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.blocks.CarvedWood;
+import com.youarethomas.arborealis.util.RuneManager;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -14,6 +16,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSerializable {
 
@@ -35,6 +38,8 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         setFaceArray(Direction.WEST, Arrays.stream(getFaceArray(Direction.WEST)).map(i -> i == 2 ? 1 : i).toArray());
 
         System.out.println(StringUtils.join(ArrayUtils.toObject(getFaceArray(Direction.NORTH)), ", "));
+
+        checkForRunes();
     }
 
     public void setLogID(String logID) {
@@ -120,5 +125,12 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         if (this.world != null) {
             this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.NOTIFY_ALL);
         }
+    }
+
+    private void checkForRunes() {
+        if (Objects.equals(RuneManager.getRuneName(faceNorth), "light")) {
+            world.setBlockState(pos, world.getBlockState(pos).with(CarvedWood.LIT, true));
+        }
+        updateListeners();
     }
 }

@@ -168,13 +168,10 @@ public class CarvedWoodModel implements UnbakedModel {
                         if (carveState != 1) {
                             DynamicCuboid cuboid;
 
+                            cuboid = new DynamicCuboid(x, y, 0, 2, 2, 1);
                             // 2 means highlighted
                             if (carveState == 2) {
-                                cuboid = new DynamicCuboid(x, y, 0, 2, 2, 1, 0xffa200);
-                            }
-                            // Otherwise, draw the wood piece (un-carved)
-                            else {
-                                cuboid = new DynamicCuboid(x, y, 0, 2, 2, 1);
+                                cuboid.setSideOverlay(Direction.NORTH, 0xffa200);
                             }
 
                             cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
@@ -193,11 +190,9 @@ public class CarvedWoodModel implements UnbakedModel {
                         if (carveState != 1) {
                             DynamicCuboid cuboid;
 
+                            cuboid = new DynamicCuboid(15, y, z, 1, 2, 2);
                             if (carveState == 2) {
-                                cuboid = new DynamicCuboid(15, y, z, 1, 2, 2, 0xffa200);
-                            }
-                            else {
-                                cuboid = new DynamicCuboid(15, y, z, 1, 2, 2);
+                                cuboid.setSideOverlay(Direction.EAST, 0xffa200);
                             }
 
                             cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
@@ -216,11 +211,9 @@ public class CarvedWoodModel implements UnbakedModel {
                         if (carveState != 1) {
                             DynamicCuboid cuboid;
 
+                            cuboid = new DynamicCuboid(x, y, 15, 2, 2, 1);
                             if (carveState == 2) {
-                                cuboid = new DynamicCuboid(x, y, 15, 2, 2, 1, 0xffa200);
-                            }
-                            else {
-                                cuboid = new DynamicCuboid(x, y, 15, 2, 2, 1);
+                                cuboid.setSideOverlay(Direction.SOUTH, 0xffa200);
                             }
 
                             cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
@@ -239,11 +232,9 @@ public class CarvedWoodModel implements UnbakedModel {
                         if (carveState != 1) {
                             DynamicCuboid cuboid;
 
+                            cuboid = new DynamicCuboid(0, y, z, 1, 2, 2);
                             if (carveState == 2) {
-                                cuboid = new DynamicCuboid(0, y, z, 1, 2, 2, 0xffa200);
-                            }
-                            else {
-                                cuboid = new DynamicCuboid(0, y, z, 1, 2, 2);
+                                cuboid.setSideOverlay(Direction.WEST, 0xffa200);
                             }
 
                             cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
