@@ -1,18 +1,20 @@
-package com.youarethomas.arborealis.models;
+package com.youarethomas.arborealis.models.utils;
 
+import com.youarethomas.arborealis.models.CarvedWoodModel;
 import net.fabricmc.fabric.api.client.model.ModelProviderContext;
 import net.fabricmc.fabric.api.client.model.ModelProviderException;
 import net.fabricmc.fabric.api.client.model.ModelResourceProvider;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public class DynamicModelProvider implements ModelResourceProvider {
 
-    private CarvedWoodModel model;
+    private UnbakedModel model;
     private final Identifier identifier;
 
-    public DynamicModelProvider(CarvedWoodModel model, Identifier identifier) {
+    public DynamicModelProvider(UnbakedModel model, Identifier identifier) {
         this.model = model;
         this.identifier = identifier;
     }

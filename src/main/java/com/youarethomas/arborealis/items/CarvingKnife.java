@@ -50,7 +50,7 @@ public class CarvingKnife extends ToolItem {
 
             // Swap the block out with a carved wood block...
             // TODO: Add in support for horizontal logs
-            world.setBlockState(blockPos, Arborealis.CARVED_WOOD.getDefaultState(), 11);
+            world.setBlockState(blockPos, Arborealis.CARVED_WOOD.getDefaultState());
             CarvedWoodEntity carvedEntity = (CarvedWoodEntity) world.getBlockEntity(blockPos);
 
             // ... and assign relevant NBT data
@@ -95,10 +95,12 @@ public class CarvingKnife extends ToolItem {
         double pixelSize = 1.0D / 16.0D;
 
         if (!world.isClient && pixelHit != null) {
+            // Grab the decimal part of the block hit
             double x = pixelHit.getPos().x % 1;
             double y = pixelHit.getPos().y % 1;
             double z = pixelHit.getPos().z % 1;
 
+            // Turn negative numbers into non-negatives and uniform
             if (x < 0) x = 1 - Math.abs(x);
             if (y < 0) y = 1 - Math.abs(y);
             if (z < 0) z = 1 - Math.abs(z);
@@ -128,7 +130,7 @@ public class CarvingKnife extends ToolItem {
                 }
             }
 
-            player.sendMessage(new LiteralText("%s, %s, %s -> %s".formatted(segmentX, segmentY, segmentZ, segmentID)), false);
+            //player.sendMessage(new LiteralText("%s, %s, %s -> %s".formatted(segmentX, segmentY, segmentZ, segmentID)), false);
 
             carvedWoodEntity.setFaceArray(side, faceArray);
         }
@@ -138,11 +140,11 @@ public class CarvingKnife extends ToolItem {
     // Append tooltip when pressing shift key
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         if (Screen.hasShiftDown()) {
-            tooltip.add(new TranslatableText("item.arborealis.carving_knife.tooltip1").formatted(Formatting.GRAY));
-            tooltip.add(new TranslatableText("item.arborealis.carving_knife.tooltip2").formatted(Formatting.GRAY));
-            tooltip.add(new TranslatableText("item.arborealis.carving_knife.tooltip3").formatted(Formatting.GRAY));
+            tooltip.add(new TranslatableText("item.arborealis.carving_knife.tooltip1"));
+            tooltip.add(new TranslatableText("item.arborealis.carving_knife.tooltip2"));
+            tooltip.add(new TranslatableText("item.arborealis.carving_knife.tooltip3"));
         } else {
-            tooltip.add(new TranslatableText("item.arborealis.hidden_tooltip").formatted(Formatting.GRAY).formatted(Formatting.ITALIC));
+            tooltip.add(new TranslatableText("item.arborealis.hidden_tooltip"));
         }
     }
 }

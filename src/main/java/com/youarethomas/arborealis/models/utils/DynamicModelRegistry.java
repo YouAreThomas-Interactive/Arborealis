@@ -1,6 +1,9 @@
-package com.youarethomas.arborealis.models;
+package com.youarethomas.arborealis.models.utils;
 
+import com.youarethomas.arborealis.models.CarvedWoodModel;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
@@ -10,7 +13,7 @@ public class DynamicModelRegistry {
 
     private static Collection<DynamicModelProvider> modelProviders = new ArrayList<>();
 
-    public static void register(CarvedWoodModel model, Identifier identifier) {
+    public static void register(UnbakedModel model, Identifier identifier) {
         modelProviders.add(new DynamicModelProvider(model, identifier));
     }
 

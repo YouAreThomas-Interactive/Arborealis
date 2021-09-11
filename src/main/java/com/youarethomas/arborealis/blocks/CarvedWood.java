@@ -11,6 +11,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 public class CarvedWood extends Block implements BlockEntityProvider {
 
@@ -18,6 +19,7 @@ public class CarvedWood extends Block implements BlockEntityProvider {
         super(settings);
     }
 
+    @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new CarvedWoodEntity(pos, state);

@@ -1,10 +1,15 @@
 {
   "itemGroup.arborealis.arborealis": "Arborealis",
 
-  "item.arborealis.hidden_tooltip": "Hold Shift...",
+  "item.arborealis.hidden_tooltip": "§8Hold Shift...",
 
   "item.arborealis.carving_knife": "Carving Knife",
-  "item.arborealis.carving_knife.tooltip1": "Used for carving runes on trees.",
-  "item.arborealis.carving_knife.tooltip2": "Right click to create a carving plan,",
-  "item.arborealis.carving_knife.tooltip3": "then shift+right click to carve."
+  "item.arborealis.carving_knife.tooltip1": "§7Used for carving runes on trees.",
+  "item.arborealis.carving_knife.tooltip2": "§2Right click §8to create a carving plan,",
+  "item.arborealis.carving_knife.tooltip3": "§8then §2shift+right click §8to carve.",
+
+  "item.arborealis.tree_core": "Tree Core",
+  "item.arborealis.tree_core.tooltip1": "§7Increases a tree's life force.",
+  "item.arborealis.tree_core.tooltip2": "§8Place inside a §2Hollowed Log §8to increase",
+  "item.arborealis.tree_core.tooltip3": "§8energy available to carved runes."
 }

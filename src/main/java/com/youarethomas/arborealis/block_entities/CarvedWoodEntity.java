@@ -106,7 +106,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     @Override
     public void fromClientTag(NbtCompound tag) {
         readNbt(tag);
-        MinecraftClient.getInstance().worldRenderer.scheduleBlockRenders(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
+        updateListeners();
     }
 
     @Override

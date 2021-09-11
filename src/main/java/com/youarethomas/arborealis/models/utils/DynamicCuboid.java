@@ -1,4 +1,4 @@
-package com.youarethomas.arborealis.models;
+package com.youarethomas.arborealis.models.utils;
 
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
@@ -22,6 +22,9 @@ public class DynamicCuboid {
     private final float ySize;
     private final float zSize;
     private final int colour;
+
+    enum Rotation { ROTATION_0, ROTATE_90, ROTATE_180, ROTATE_270 }
+    private Rotation rotation = Rotation.ROTATION_0;
 
     public DynamicCuboid(float x, float y, float z, float xSize, float ySize, float zSize) {
         this.x = x;
@@ -51,12 +54,24 @@ public class DynamicCuboid {
         }
     }
 
-    public void applyTextureToAllSides(SpriteIdentifier spriteIdentifier) {
+    public void applyTextureToAll(SpriteIdentifier spriteIdentifier) {
         spriteIds.clear();
 
         for (Direction direction : Direction.values()) {
             spriteIds.put(direction, spriteIdentifier);
         }
+    }
+
+    public void applyTextureTopAndBottom(SpriteIdentifier spriteIdentifier) {
+        spriteIds.replace(Direction.UP, spriteIdentifier);
+        spriteIds.replace(Direction.DOWN, spriteIdentifier);
+    }
+
+    public void applyTextureSides(SpriteIdentifier spriteIdentifier) {
+        spriteIds.replace(Direction.NORTH, spriteIdentifier);
+        spriteIds.replace(Direction.EAST, spriteIdentifier);
+        spriteIds.replace(Direction.SOUTH, spriteIdentifier);
+        spriteIds.replace(Direction.WEST, spriteIdentifier);
     }
 
     public void applyTexture(Direction side, SpriteIdentifier spriteIdentifier) {
