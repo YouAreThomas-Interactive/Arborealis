@@ -1,5 +1,7 @@
 package com.youarethomas.arborealis.models.utils;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
 import net.minecraft.client.texture.Sprite;
@@ -69,6 +71,7 @@ public class DynamicCuboid {
         spriteIds.replace(side, spriteIdentifier);
     }
 
+    @Environment(EnvType.CLIENT)
     public void create(QuadEmitter emitter, Function<SpriteIdentifier, Sprite> textureGetter) {
 
         /* So emitters are kinda complicated:

@@ -37,8 +37,6 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         setFaceArray(Direction.SOUTH, Arrays.stream(getFaceArray(Direction.SOUTH)).map(i -> i == 2 ? 1 : i).toArray());
         setFaceArray(Direction.WEST, Arrays.stream(getFaceArray(Direction.WEST)).map(i -> i == 2 ? 1 : i).toArray());
 
-        System.out.println(StringUtils.join(ArrayUtils.toObject(getFaceArray(Direction.NORTH)), ", "));
-
         checkForRunes();
     }
 
@@ -128,9 +126,23 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     }
 
     private void checkForRunes() {
-        if (Objects.equals(RuneManager.getRuneName(faceNorth), "light")) {
-            world.setBlockState(pos, world.getBlockState(pos).with(CarvedWood.LIT, true));
+        // Create array of face arrays to iterate through
+        int[][] directions = new int[][] { getFaceArray(Direction.NORTH), getFaceArray(Direction.EAST), getFaceArray(Direction.SOUTH), getFaceArray(Direction.WEST) };
+
+        // TODO: There's probably a better way to do this
+        if (world != null) {
+            for (int[] direction : directions) {
+                // Light
+                if (Objects.equals(RuneManager.getRuneName(direction), "light")) {
+                    world.setBlockState(pos, world.getBlockState(pos).with(CarvedWood.LIT, true));
+                    return;
+                }
+            }
+
+            // If no runes found
+            world.setBlockState(pos, world.getBlockState(pos).with(CarvedWood.LIT, false));
+
+            updateListeners();
         }
-        updateListeners();
     }
 }

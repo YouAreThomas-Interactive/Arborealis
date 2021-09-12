@@ -1,6 +1,12 @@
 package com.youarethomas.arborealis.util;
 
+import net.minecraft.util.math.Direction;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class RuneManager {
 
@@ -21,26 +27,22 @@ public class RuneManager {
     }
 
     public static boolean isValidRune(int[] faceArray) {
-        System.out.println("Rune valid: %s".formatted(Runes.containsKey(faceArray)));
-        return Runes.containsKey(reverse(faceArray, faceArray.length));
+        faceArray = Arrays.stream(faceArray).map(i -> i == 2 ? 0 : i).toArray();
+
+        for (int[] runeArray : Runes.keySet()) {
+            if (Arrays.deepEquals(ArrayUtils.toObject(faceArray), ArrayUtils.toObject(runeArray))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static String getRuneName(int[] faceArray) {
-        if (isValidRune(faceArray)) {
-            return Runes.get(reverse(faceArray, faceArray.length));
-        } else {
-            return null;
+        for (int[] runeArray : Runes.keySet()) {
+            if (Arrays.deepEquals(ArrayUtils.toObject(faceArray), ArrayUtils.toObject(runeArray))) {
+                return Runes.get(runeArray);
+            }
         }
-    }
-
-    static int[] reverse(int[] array, int arrayLength)
-    {
-        int[] reversed = new int[arrayLength];
-        for (int i = 0; i < arrayLength; i++) {
-            reversed[arrayLength - 1] = array[i];
-            arrayLength = arrayLength - 1;
-        }
-
-        return reversed;
+        return null;
     }
 }

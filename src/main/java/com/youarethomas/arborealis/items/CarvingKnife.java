@@ -68,7 +68,7 @@ public class CarvingKnife extends ToolItem {
         }
 
         // If shift-right click on a carved wood block, turn all carving plans into actual carvings
-        if (blockState == Arborealis.CARVED_WOOD.getDefaultState()) {
+        if (blockState.isOf(Arborealis.CARVED_WOOD)) {
             if (playerEntity.isSneaking()) {
                 if (!world.isClient()) {
 
@@ -114,10 +114,10 @@ public class CarvingKnife extends ToolItem {
 
             // Convert array position
             switch (side) {
-                case NORTH -> segmentID = ((segmentY - 1) * 7) + (7 - segmentX);
-                case SOUTH -> segmentID = ((segmentY - 1) * 7) + (segmentX - 1);
-                case EAST -> segmentID = ((segmentY - 1) * 7) + (7 - segmentZ);
-                case WEST -> segmentID = ((segmentY - 1) * 7) + (segmentZ - 1);
+                case NORTH -> segmentID = ((7 - segmentY) * 7) + (7 - segmentX);
+                case SOUTH -> segmentID = ((7 - segmentY) * 7) + (segmentX - 1);
+                case EAST -> segmentID = ((7 - segmentY) * 7) + (7 - segmentZ);
+                case WEST -> segmentID = ((7 - segmentY) * 7) + (segmentZ - 1);
             }
 
             // Then set array position value to highlighted if normal, normal if highlighted, or do nothing if carved out
