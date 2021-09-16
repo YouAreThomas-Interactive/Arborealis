@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.math.Direction;
@@ -79,48 +80,50 @@ public class DynamicCuboid {
            the left and bottom numbers are smaller than the right and top numbers, otherwise you'll
            get inverted planes (texture on the wrong side). */
 
-        for (Direction direction : Direction.values()) {
-            int overlayColour = -1;
-            if (overlays.containsKey(direction)) {
-                overlayColour = overlays.get(direction);
-            }
+        if (MinecraftClient.getInstance().world.isClient()) {
+            for (Direction direction : Direction.values()) {
+                int overlayColour = -1;
+                if (overlays.containsKey(direction)) {
+                    overlayColour = overlays.get(direction);
+                }
 
-            switch (direction) {
-                case NORTH -> {
-                    emitter.square(direction, 1f - ((x + xSize) * PIXEL_SIZE), y * PIXEL_SIZE, 1f - (x * PIXEL_SIZE), (y + ySize) * PIXEL_SIZE, z * PIXEL_SIZE);
-                    emitter.spriteBake(0, textureGetter.apply(spriteIds.get(Direction.NORTH)), MutableQuadView.BAKE_LOCK_UV);
-                    emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
-                    emitter.emit();
-                }
-                case SOUTH -> {
-                    emitter.square(direction, x * PIXEL_SIZE, y * PIXEL_SIZE, (x + xSize) * PIXEL_SIZE, (y + ySize) * PIXEL_SIZE, 1f - ((z + zSize) * PIXEL_SIZE));
-                    emitter.spriteBake(0, textureGetter.apply(spriteIds.get(Direction.SOUTH)), MutableQuadView.BAKE_LOCK_UV);
-                    emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
-                    emitter.emit();
-                }
-                case EAST -> {
-                    emitter.square(direction, 1f - ((z + zSize) * PIXEL_SIZE), y * PIXEL_SIZE, 1f - (z * PIXEL_SIZE), (y + ySize) * PIXEL_SIZE, 1f - ((x + xSize) * PIXEL_SIZE));
-                    emitter.spriteBake(0, textureGetter.apply(spriteIds.get(Direction.EAST)), MutableQuadView.BAKE_LOCK_UV);
-                    emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
-                    emitter.emit();
-                }
-                case WEST -> {
-                    emitter.square(direction, z * PIXEL_SIZE, y * PIXEL_SIZE, (z + zSize) * PIXEL_SIZE, (y + ySize) * PIXEL_SIZE, x * PIXEL_SIZE);
-                    emitter.spriteBake(0, textureGetter.apply(spriteIds.get(Direction.WEST)), MutableQuadView.BAKE_LOCK_UV);
-                    emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
-                    emitter.emit();
-                }
-                case UP -> {
-                    emitter.square(direction, x * PIXEL_SIZE, 1f - ((z + zSize) * PIXEL_SIZE), (x + xSize) * PIXEL_SIZE, 1f - (z * PIXEL_SIZE), 1f - ((y + ySize) * PIXEL_SIZE));
-                    emitter.spriteBake(0, textureGetter.apply(spriteIds.get(Direction.UP)), MutableQuadView.BAKE_LOCK_UV);
-                    emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
-                    emitter.emit();
-                }
-                case DOWN -> {
-                    emitter.square(direction, x * PIXEL_SIZE, z * PIXEL_SIZE, (x + xSize) * PIXEL_SIZE, (z + zSize) * PIXEL_SIZE, y * PIXEL_SIZE);
-                    emitter.spriteBake(0, textureGetter.apply(spriteIds.get(Direction.DOWN)), MutableQuadView.BAKE_LOCK_UV);
-                    emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
-                    emitter.emit();
+                switch (direction) {
+                    case NORTH -> {
+                        emitter.square(direction, 1f - ((x + xSize) * PIXEL_SIZE), y * PIXEL_SIZE, 1f - (x * PIXEL_SIZE), (y + ySize) * PIXEL_SIZE, z * PIXEL_SIZE);
+                        emitter.spriteBake(0, textureGetter.apply(spriteIds.get(Direction.NORTH)), MutableQuadView.BAKE_LOCK_UV);
+                        emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
+                        emitter.emit();
+                    }
+                    case SOUTH -> {
+                        emitter.square(direction, x * PIXEL_SIZE, y * PIXEL_SIZE, (x + xSize) * PIXEL_SIZE, (y + ySize) * PIXEL_SIZE, 1f - ((z + zSize) * PIXEL_SIZE));
+                        emitter.spriteBake(0, textureGetter.apply(spriteIds.get(Direction.SOUTH)), MutableQuadView.BAKE_LOCK_UV);
+                        emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
+                        emitter.emit();
+                    }
+                    case EAST -> {
+                        emitter.square(direction, 1f - ((z + zSize) * PIXEL_SIZE), y * PIXEL_SIZE, 1f - (z * PIXEL_SIZE), (y + ySize) * PIXEL_SIZE, 1f - ((x + xSize) * PIXEL_SIZE));
+                        emitter.spriteBake(0, textureGetter.apply(spriteIds.get(Direction.EAST)), MutableQuadView.BAKE_LOCK_UV);
+                        emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
+                        emitter.emit();
+                    }
+                    case WEST -> {
+                        emitter.square(direction, z * PIXEL_SIZE, y * PIXEL_SIZE, (z + zSize) * PIXEL_SIZE, (y + ySize) * PIXEL_SIZE, x * PIXEL_SIZE);
+                        emitter.spriteBake(0, textureGetter.apply(spriteIds.get(Direction.WEST)), MutableQuadView.BAKE_LOCK_UV);
+                        emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
+                        emitter.emit();
+                    }
+                    case UP -> {
+                        emitter.square(direction, x * PIXEL_SIZE, 1f - ((z + zSize) * PIXEL_SIZE), (x + xSize) * PIXEL_SIZE, 1f - (z * PIXEL_SIZE), 1f - ((y + ySize) * PIXEL_SIZE));
+                        emitter.spriteBake(0, textureGetter.apply(spriteIds.get(Direction.UP)), MutableQuadView.BAKE_LOCK_UV);
+                        emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
+                        emitter.emit();
+                    }
+                    case DOWN -> {
+                        emitter.square(direction, x * PIXEL_SIZE, z * PIXEL_SIZE, (x + xSize) * PIXEL_SIZE, (z + zSize) * PIXEL_SIZE, y * PIXEL_SIZE);
+                        emitter.spriteBake(0, textureGetter.apply(spriteIds.get(Direction.DOWN)), MutableQuadView.BAKE_LOCK_UV);
+                        emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
+                        emitter.emit();
+                    }
                 }
             }
         }

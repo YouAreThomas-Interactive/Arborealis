@@ -7,9 +7,11 @@ import com.youarethomas.arborealis.blocks.HollowedLog;
 import com.youarethomas.arborealis.blocks.TestBlock;
 import com.youarethomas.arborealis.items.CarvingKnife;
 import com.youarethomas.arborealis.items.TreeCore;
+import com.youarethomas.arborealis.items.WoodDrill;
 import com.youarethomas.arborealis.models.CarvedWoodModel;
 import com.youarethomas.arborealis.models.utils.DynamicModelRegistry;
 import com.youarethomas.arborealis.tool_materials.CopperKnifeMaterial;
+import com.youarethomas.arborealis.tool_materials.WoodDrillMaterial;
 import com.youarethomas.arborealis.util.RuneManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
@@ -30,6 +32,7 @@ public class Arborealis implements ModInitializer {
 
 	// Items
 	public static final CarvingKnife CARVING_KNIFE = new CarvingKnife(CopperKnifeMaterial.INSTANCE, new FabricItemSettings().maxCount(1));
+	public static final WoodDrill WOOD_DRILL = new WoodDrill(WoodDrillMaterial.INSTANCE, new FabricItemSettings().maxCount(1));
 	public static final TreeCore TREE_CORE = new TreeCore(new FabricItemSettings().maxCount(8));
 
 	// Blocks
@@ -50,6 +53,7 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(CARVING_KNIFE));
 				stacks.add(new ItemStack(TREE_CORE));
 				stacks.add(new ItemStack(HOLLOWED_LOG));
+				stacks.add(new ItemStack(WOOD_DRILL));
 			})
 			.build();
 
@@ -72,6 +76,7 @@ public class Arborealis implements ModInitializer {
 
 		// Item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "carving_knife"), CARVING_KNIFE);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wood_drill"), WOOD_DRILL);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tree_core"), TREE_CORE);
 
 		// Model registration
