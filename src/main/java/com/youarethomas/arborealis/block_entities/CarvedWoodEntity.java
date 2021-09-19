@@ -7,13 +7,9 @@ import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -133,9 +129,12 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         if (world != null) {
             for (int[] direction : directions) {
                 // Light
-                if (Objects.equals(RuneManager.getRuneName(direction), "light")) {
-                    world.setBlockState(pos, world.getBlockState(pos).with(CarvedWood.LIT, true));
-                    return;
+                if (RuneManager.getRuneFromArray(direction) != null)
+                {
+                    if (Objects.equals(Objects.requireNonNull(RuneManager.getRuneFromArray(direction)).name, "light")) {
+                        world.setBlockState(pos, world.getBlockState(pos).with(CarvedWood.LIT, true));
+                        return;
+                    }
                 }
             }
 

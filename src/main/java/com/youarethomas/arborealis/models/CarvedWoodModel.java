@@ -3,7 +3,10 @@ package com.youarethomas.arborealis.models;
 import com.mojang.datafixers.util.Pair;
 import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
 import com.youarethomas.arborealis.models.utils.DynamicCuboid;
+import com.youarethomas.arborealis.util.Rune;
 import com.youarethomas.arborealis.util.RuneManager;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.renderer.v1.Renderer;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
@@ -93,6 +96,7 @@ public class CarvedWoodModel implements UnbakedModel {
 
     public class ModelBaseBaked implements BakedModel, FabricBakedModel {
 
+        @Environment(EnvType.CLIENT)
         @Override
         public void emitBlockQuads(BlockRenderView blockView, BlockState state, BlockPos pos, Supplier<Random> randomSupplier, RenderContext context) {
             BlockEntity entity = blockView.getBlockEntity(pos);
@@ -130,8 +134,10 @@ public class CarvedWoodModel implements UnbakedModel {
                 // If the face has a rune, make it glow
                 Direction[] runeDirections = new Direction[] { Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST };
                 for (Direction direction : runeDirections) {
-                    if (RuneManager.isValidRune(((CarvedWoodEntity) entity).getFaceArray(direction))) {
-                        core.setSideOverlay(direction, 0xffce2b);
+                    int[] faceArray = ((CarvedWoodEntity) entity).getFaceArray(direction);
+                    if (RuneManager.isValidRune(faceArray)) {
+                        Rune rune = RuneManager.getRuneFromArray(faceArray);
+                        core.setSideOverlay(direction, rune.getColour());
                     }
                 }
 
