@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 public class TestBlock extends Block {
 
     public TestBlock(Settings settings) {
-        super(settings);
+        super(settings.strength(2.0F));
     }
 
     @Override

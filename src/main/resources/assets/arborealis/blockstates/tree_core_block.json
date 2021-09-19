@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "logid=0": { "model": "arborealis:block/tree_cores/tree_core_block_oak" },
+    "logid=1": { "model": "arborealis:block/tree_cores/tree_core_block_spruce" },
+    "logid=2": { "model": "arborealis:block/tree_cores/tree_core_block_birch" },
+    "logid=3": { "model": "arborealis:block/tree_cores/tree_core_block_jungle" },
+    "logid=4": { "model": "arborealis:block/tree_cores/tree_core_block_dark_oak" },
+    "logid=5": { "model": "arborealis:block/tree_cores/tree_core_block_acacia" },
+    "logid=6": { "model": "arborealis:block/tree_cores/tree_core_block_crimson" },
+    "logid=7": { "model": "arborealis:block/tree_cores/tree_core_block_warped" }
+  }
+}

@@ -4,10 +4,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,11 +15,6 @@ public class TreeCore extends Item {
 
     public TreeCore(Settings settings) {
         super(settings);
-    }
-
-    @Override
-    public ActionResult useOnBlock(ItemUsageContext context) {
-        return ActionResult.PASS;
     }
 
     @Override

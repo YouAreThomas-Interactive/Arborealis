@@ -9,10 +9,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,7 +22,7 @@ public class CarvedWood extends Block implements BlockEntityProvider {
     public static BooleanProperty LIT = BooleanProperty.of("lit");
 
     public CarvedWood(Settings settings) {
-        super(settings.luminance(createLightLevelFromLitBlockState(15)));
+        super(settings.luminance(createLightLevelFromLitBlockState(15)).strength(2.0F));
         setDefaultState(getStateManager().getDefaultState().with(LIT, false));
     }
 
@@ -40,5 +39,13 @@ public class CarvedWood extends Block implements BlockEntityProvider {
 
     private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {
         return (state) -> (Boolean)state.get(Properties.LIT) ? litLevel : 0;
+    }
+    @Override
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        super.onBreak(world, pos, state, player);
+        if (!player.isCreative()) {
+            CarvedWoodEntity entity = (CarvedWoodEntity)world.getBlockEntity(pos);
+            dropStack(world, pos, Registry.ITEM.get(new Identifier(entity.getLogID())).getDefaultStack());
+        }
     }
 }

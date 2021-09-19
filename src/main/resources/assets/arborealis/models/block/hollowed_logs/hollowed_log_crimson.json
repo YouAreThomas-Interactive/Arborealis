@@ -1,5 +1,5 @@
 {
-  "parent": "arborealis:block/template_hollowed_log",
+  "parent": "arborealis:block/hollowed_logs/template_hollowed_log",
   "textures": {
     "log": "minecraft:block/crimson_stem",
     "logtop": "minecraft:block/crimson_stem_top",

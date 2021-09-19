@@ -1,5 +1,5 @@
 {
-  "parent": "arborealis:block/template_hollowed_log",
+  "parent": "arborealis:block/hollowed_logs/template_hollowed_log",
   "textures": {
     "log": "minecraft:block/acacia_log",
     "logtop": "minecraft:block/acacia_log_top",

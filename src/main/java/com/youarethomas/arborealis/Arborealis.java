@@ -5,6 +5,7 @@ import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
 import com.youarethomas.arborealis.blocks.CarvedWood;
 import com.youarethomas.arborealis.blocks.HollowedLog;
 import com.youarethomas.arborealis.blocks.TestBlock;
+import com.youarethomas.arborealis.blocks.TreeCoreBlock;
 import com.youarethomas.arborealis.items.CarvingKnife;
 import com.youarethomas.arborealis.items.TreeCore;
 import com.youarethomas.arborealis.items.WoodDrill;
@@ -29,10 +30,22 @@ import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
+import java.util.HashMap;
+
 public class Arborealis implements ModInitializer {
 
 	public static final String MOD_ID = "arborealis";
 
+	public static final HashMap<Integer, Identifier> LogIDs = new HashMap<>() {{
+		put(0, new Identifier("minecraft:oak_log"));
+		put(1, new Identifier("minecraft:spruce_log"));
+		put(2, new Identifier("minecraft:birch_log"));
+		put(3, new Identifier("minecraft:jungle_log"));
+		put(4, new Identifier("minecraft:dark_oak_log"));
+		put(5, new Identifier("minecraft:acacia_log"));
+		put(6, new Identifier("minecraft:crimson_stem"));
+		put(7, new Identifier("minecraft:warped_stem"));
+	}};
 
 	// Items
 	public static final CarvingKnife CARVING_KNIFE = new CarvingKnife(CopperKnifeMaterial.INSTANCE, new FabricItemSettings().maxCount(1));
@@ -43,7 +56,7 @@ public class Arborealis implements ModInitializer {
 	public static final TestBlock TEST_BLOCK = new TestBlock(FabricBlockSettings.of(Material.STONE));
 	public static final CarvedWood CARVED_WOOD = new CarvedWood(FabricBlockSettings.of(Material.WOOD));
 	public static final HollowedLog HOLLOWED_LOG = new HollowedLog(FabricBlockSettings.of(Material.WOOD));
-	public static final Block TREE_CORE_BLOCK = new Block(FabricBlockSettings.of(Material.ICE));
+	public static final TreeCoreBlock TREE_CORE_BLOCK = new TreeCoreBlock(FabricBlockSettings.of(Material.WOOD));
 
 	// Block Entities
 	public static BlockEntityType<CarvedWoodEntity> CARVED_WOOD_ENTITY;
@@ -56,9 +69,9 @@ public class Arborealis implements ModInitializer {
 			.appendItems(stacks -> {
 				stacks.add(new ItemStack(TEST_BLOCK));
 				stacks.add(new ItemStack(CARVING_KNIFE));
-				stacks.add(new ItemStack(TREE_CORE));
-				stacks.add(new ItemStack(HOLLOWED_LOG));
 				stacks.add(new ItemStack(WOOD_DRILL));
+				stacks.add(new ItemStack(TREE_CORE));
+				stacks.add(new ItemStack(TREE_CORE_BLOCK));
 			})
 			.build();
 
@@ -70,6 +83,7 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "test_block"), TEST_BLOCK);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "carved_wood"), CARVED_WOOD);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "hollowed_log"), HOLLOWED_LOG);
+		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "tree_core_block"), TREE_CORE_BLOCK);
 
 		// Block entity registration
 		CARVED_WOOD_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, MOD_ID + ":carved_wood_entity", FabricBlockEntityTypeBuilder.create(CarvedWoodEntity::new, CARVED_WOOD).build(null));
@@ -77,7 +91,6 @@ public class Arborealis implements ModInitializer {
 
 		// Block item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "test_block"), new BlockItem(TEST_BLOCK, new FabricItemSettings()));
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "hollowed_log"), new BlockItem(HOLLOWED_LOG, new FabricItemSettings()));
 
 		// Item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "carving_knife"), CARVING_KNIFE);

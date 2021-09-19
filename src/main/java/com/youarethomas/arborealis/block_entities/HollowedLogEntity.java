@@ -5,25 +5,26 @@ import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 
 public class HollowedLogEntity extends BlockEntity implements BlockEntityClientSerializable {
 
-    private String logID = "minecraft:block/oak_log";
+    private String itemID = "arborealis:item/tree_core";
 
     public HollowedLogEntity(BlockPos pos, BlockState state) {
         super(Arborealis.HOLLOWED_LOG_ENTITY, pos, state);
+
+        setItemID("");
     }
 
-    public void setLogID(String logID) {
-        this.logID = logID;
+    public void setItemID(String itemID) {
+        this.itemID = itemID;
         updateListeners();
     }
 
-    public String getLogID() {
-        return logID;
+    public String getItemID() {
+        return itemID;
     }
 
     // Serialize the BlockEntity - storing data
@@ -31,7 +32,7 @@ public class HollowedLogEntity extends BlockEntity implements BlockEntityClientS
     public NbtCompound writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
 
-        tag.putString("log_id", logID);
+        tag.putString("item_id", itemID);
 
         return tag;
     }
@@ -41,7 +42,7 @@ public class HollowedLogEntity extends BlockEntity implements BlockEntityClientS
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
 
-        logID = tag.getString("log_id");
+        itemID = tag.getString("item_id");
     }
 
     @Override
