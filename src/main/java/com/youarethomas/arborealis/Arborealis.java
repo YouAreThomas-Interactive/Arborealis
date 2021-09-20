@@ -2,10 +2,7 @@ package com.youarethomas.arborealis;
 
 import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
-import com.youarethomas.arborealis.blocks.CarvedWood;
-import com.youarethomas.arborealis.blocks.HollowedLog;
-import com.youarethomas.arborealis.blocks.TestBlock;
-import com.youarethomas.arborealis.blocks.TreeCoreBlock;
+import com.youarethomas.arborealis.blocks.*;
 import com.youarethomas.arborealis.items.CarvingKnife;
 import com.youarethomas.arborealis.items.TreeCore;
 import com.youarethomas.arborealis.items.WoodDrill;
@@ -29,12 +26,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 
 public class Arborealis implements ModInitializer {
 
 	public static final String MOD_ID = "arborealis";
+
+	public static final Logger LOGGER = LogManager.getLogger();
 
 	public static final HashMap<Integer, Identifier> LogIDs = new HashMap<>() {{
 		put(0, new Identifier("minecraft:oak_log"));
@@ -57,6 +58,7 @@ public class Arborealis implements ModInitializer {
 	public static final CarvedWood CARVED_WOOD = new CarvedWood(FabricBlockSettings.of(Material.WOOD));
 	public static final HollowedLog HOLLOWED_LOG = new HollowedLog(FabricBlockSettings.of(Material.WOOD));
 	public static final TreeCoreBlock TREE_CORE_BLOCK = new TreeCoreBlock(FabricBlockSettings.of(Material.WOOD));
+	public static final TreeTap TREE_TAP = new TreeTap(FabricBlockSettings.of(Material.METAL));
 
 	// Block Entities
 	public static BlockEntityType<CarvedWoodEntity> CARVED_WOOD_ENTITY;
@@ -71,7 +73,7 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(CARVING_KNIFE));
 				stacks.add(new ItemStack(WOOD_DRILL));
 				stacks.add(new ItemStack(TREE_CORE));
-				stacks.add(new ItemStack(TREE_CORE_BLOCK));
+				stacks.add(new ItemStack(TREE_TAP));
 			})
 			.build();
 
@@ -84,6 +86,7 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "carved_wood"), CARVED_WOOD);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "hollowed_log"), HOLLOWED_LOG);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "tree_core_block"), TREE_CORE_BLOCK);
+		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "tree_tap"), TREE_TAP);
 
 		// Block entity registration
 		CARVED_WOOD_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, MOD_ID + ":carved_wood_entity", FabricBlockEntityTypeBuilder.create(CarvedWoodEntity::new, CARVED_WOOD).build(null));
@@ -91,6 +94,7 @@ public class Arborealis implements ModInitializer {
 
 		// Block item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "test_block"), new BlockItem(TEST_BLOCK, new FabricItemSettings()));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tree_tap"), new BlockItem(TREE_TAP, new FabricItemSettings()));
 
 		// Item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "carving_knife"), CARVING_KNIFE);
@@ -100,6 +104,6 @@ public class Arborealis implements ModInitializer {
 		// Model registration
 		DynamicModelRegistry.register(new CarvedWoodModel(), new Identifier("arborealis:block/carved_wood_model"));
 
-		System.out.println("Arborealis Initialised!");
+		LOGGER.info("Arborealis Initialised!");
 	}
 }

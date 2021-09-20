@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "arborealis:block/tree_tap", "uvlock": false },
+    "facing=east":  { "model": "arborealis:block/tree_tap", "y":  90, "uvlock": false },
+    "facing=south": { "model": "arborealis:block/tree_tap", "y": 180, "uvlock": false },
+    "facing=west":  { "model": "arborealis:block/tree_tap", "y": 270, "uvlock": false }
+  }
+}
