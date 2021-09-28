@@ -14,13 +14,25 @@
   "item.arborealis.wood_drill.tooltip3": "§8out, and then right click to add",
   "item.arborealis.wood_drill.tooltip4": "§8items or a §2Life Core.",
 
+  "item.arborealis.regrowth_spoon": "Spoon of Regrowth",
+  "item.arborealis.regrowth_spoon.tooltip1": "§7Spooooonnnnnnn",
+
   "item.arborealis.tree_core": "Life Core",
   "item.arborealis.tree_core.tooltip1": "§7Increases a tree's life force.",
   "item.arborealis.tree_core.tooltip2": "§8Place inside a §2Hollowed Log §8to increase",
   "item.arborealis.tree_core.tooltip3": "§8energy available to carved runes.",
 
+  "item.arborealis.bottled_sap": "Bottled Sap",
+
+  "item.arborealis.glowing_sap": "Glowing Sap",
+
+  "item.arborealis.infused_sap": "Infused Sap",
+
+  "item.arborealis.conductive_sap": "Conductive Sap",
+
   "block.arborealis.tree_tap": "Tree Tap",
-  "block.arborealis.tree_tap.tooltip1": "§7Increases a tree's life force.",
-  "block.arborealis.tree_tap.tooltip2": "§8Place inside a §2Hollowed Log §8to increase",
-  "block.arborealis.tree_tap.tooltip3": "§8energy available to carved runes."
+  "block.arborealis.tree_tap.tooltip1": "§7Allows sap to be drained from trees.",
+  "block.arborealis.tree_tap.tooltip2": "§8Place on a tree, and then §2right click",
+  "block.arborealis.tree_tap.tooltip3": "§8on a dripping tap with an §2Glass Bottle",
+  "block.arborealis.tree_tap.tooltip4": "§8to collect §2Bottled Sap."
 }

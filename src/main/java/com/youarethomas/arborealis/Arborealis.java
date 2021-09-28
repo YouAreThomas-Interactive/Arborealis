@@ -4,11 +4,13 @@ import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
 import com.youarethomas.arborealis.blocks.*;
 import com.youarethomas.arborealis.items.CarvingKnife;
+import com.youarethomas.arborealis.items.RegrowthSpoon;
 import com.youarethomas.arborealis.items.TreeCore;
 import com.youarethomas.arborealis.items.WoodDrill;
 import com.youarethomas.arborealis.models.CarvedWoodModel;
 import com.youarethomas.arborealis.models.utils.DynamicModelRegistry;
 import com.youarethomas.arborealis.tool_materials.CopperKnifeMaterial;
+import com.youarethomas.arborealis.tool_materials.RegrowthSpoonMaterial;
 import com.youarethomas.arborealis.tool_materials.WoodDrillMaterial;
 import com.youarethomas.arborealis.util.RuneManager;
 import net.fabricmc.api.ModInitializer;
@@ -20,9 +22,7 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -48,10 +48,18 @@ public class Arborealis implements ModInitializer {
 		put(7, new Identifier("minecraft:warped_stem"));
 	}};
 
-	// Items
+	// Tool Items
 	public static final CarvingKnife CARVING_KNIFE = new CarvingKnife(CopperKnifeMaterial.INSTANCE, new FabricItemSettings().maxCount(1));
 	public static final WoodDrill WOOD_DRILL = new WoodDrill(WoodDrillMaterial.INSTANCE, new FabricItemSettings().maxCount(1));
+	public static final RegrowthSpoon REGROWTH_SPOON = new RegrowthSpoon(RegrowthSpoonMaterial.INSTANCE, new FabricItemSettings().maxCount(1));
+
+	// Items
 	public static final TreeCore TREE_CORE = new TreeCore(new FabricItemSettings().maxCount(8));
+
+	public static final Item BOTTLED_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE));
+	public static final Item INFUSED_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE));
+	public static final Item GLOWING_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE));
+	public static final Item CONDUCTIVE_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE));
 
 	// Blocks
 	public static final TestBlock TEST_BLOCK = new TestBlock(FabricBlockSettings.of(Material.STONE));
@@ -69,11 +77,15 @@ public class Arborealis implements ModInitializer {
 			new Identifier(MOD_ID, "arborealis"))
 			.icon(() -> new ItemStack(CARVING_KNIFE))
 			.appendItems(stacks -> {
-				stacks.add(new ItemStack(TEST_BLOCK));
 				stacks.add(new ItemStack(CARVING_KNIFE));
 				stacks.add(new ItemStack(WOOD_DRILL));
+				stacks.add(new ItemStack(REGROWTH_SPOON));
 				stacks.add(new ItemStack(TREE_CORE));
 				stacks.add(new ItemStack(TREE_TAP));
+				stacks.add(new ItemStack(BOTTLED_SAP));
+				stacks.add(new ItemStack(INFUSED_SAP));
+				stacks.add(new ItemStack(GLOWING_SAP));
+				stacks.add(new ItemStack(CONDUCTIVE_SAP));
 			})
 			.build();
 
@@ -96,10 +108,17 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "test_block"), new BlockItem(TEST_BLOCK, new FabricItemSettings()));
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tree_tap"), new BlockItem(TREE_TAP, new FabricItemSettings()));
 
-		// Item registration
+		// Tool Item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "carving_knife"), CARVING_KNIFE);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wood_drill"), WOOD_DRILL);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "regrowth_spoon"), REGROWTH_SPOON);
+
+		// Item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tree_core"), TREE_CORE);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bottled_sap"), BOTTLED_SAP);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "infused_sap"), INFUSED_SAP);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "glowing_sap"), GLOWING_SAP);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "conductive_sap"), CONDUCTIVE_SAP);
 
 		// Model registration
 		DynamicModelRegistry.register(new CarvedWoodModel(), new Identifier("arborealis:block/carved_wood_model"));

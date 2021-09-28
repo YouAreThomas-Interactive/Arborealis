@@ -76,6 +76,7 @@ public class TreeTap extends HorizontalFacingBlock {
             tooltip.add(new TranslatableText("block.arborealis.tree_tap.tooltip1"));
             tooltip.add(new TranslatableText("block.arborealis.tree_tap.tooltip2"));
             tooltip.add(new TranslatableText("block.arborealis.tree_tap.tooltip3"));
+            tooltip.add(new TranslatableText("block.arborealis.tree_tap.tooltip4"));
         } else {
             tooltip.add(new TranslatableText("item.arborealis.hidden_tooltip"));
         }
