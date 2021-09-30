@@ -3,10 +3,7 @@ package com.youarethomas.arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
 import com.youarethomas.arborealis.blocks.*;
-import com.youarethomas.arborealis.items.CarvingKnife;
-import com.youarethomas.arborealis.items.RegrowthSpoon;
-import com.youarethomas.arborealis.items.TreeCore;
-import com.youarethomas.arborealis.items.WoodDrill;
+import com.youarethomas.arborealis.items.*;
 import com.youarethomas.arborealis.models.CarvedWoodModel;
 import com.youarethomas.arborealis.models.utils.DynamicModelRegistry;
 import com.youarethomas.arborealis.tool_materials.CopperKnifeMaterial;
@@ -18,13 +15,11 @@ import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.*;
-import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,10 +49,10 @@ public class Arborealis implements ModInitializer {
 	public static final RegrowthSpoon REGROWTH_SPOON = new RegrowthSpoon(RegrowthSpoonMaterial.INSTANCE, new FabricItemSettings().maxCount(1));
 
 	// Items
-	public static final TreeCore TREE_CORE = new TreeCore(new FabricItemSettings().maxCount(8));
+	public static final TreeCore TREE_CORE = new TreeCore(new FabricItemSettings().maxCount(8).rarity(Rarity.UNCOMMON));
 
 	public static final Item BOTTLED_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE));
-	public static final Item INFUSED_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE));
+	public static final InfusedSap INFUSED_SAP = new InfusedSap(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE).rarity(Rarity.UNCOMMON));
 	public static final Item GLOWING_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE));
 	public static final Item CONDUCTIVE_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE));
 

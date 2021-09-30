@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ITI",
+    "GDG",
+    "ITI"
+  ],
+  "key": {
+    "I": {
+      "item": "arborealis:infused_sap"
+    },
+    "T": {
+      "tag": "minecraft:saplings"
+    },
+    "G": {
+      "item": "arborealis:glowing_sap"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "result": {
+    "item": "arborealis:tree_core",
+    "count": 1
+  }
+}

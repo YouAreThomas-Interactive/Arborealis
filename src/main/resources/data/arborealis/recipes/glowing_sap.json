@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:glowstone_dust"
+    },
+    {
+      "item": "arborealis:bottled_sap"
+    }
+  ],
+  "result": {
+    "item": "arborealis:glowing_sap"
+  }
+}

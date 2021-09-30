@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "minecraft:redstone"
+    },
+    {
+      "item": "arborealis:bottled_sap"
+    }
+  ],
+  "result": {
+    "item": "arborealis:conductive_sap"
+  }
+}
