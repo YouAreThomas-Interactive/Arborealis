@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "arborealis:carved_wood"
+          "name": "arborealis:tree_tap"
         }
       ],
       "conditions": [

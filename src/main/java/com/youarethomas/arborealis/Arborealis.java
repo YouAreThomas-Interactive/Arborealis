@@ -81,6 +81,8 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(INFUSED_SAP));
 				stacks.add(new ItemStack(GLOWING_SAP));
 				stacks.add(new ItemStack(CONDUCTIVE_SAP));
+
+				stacks.add(new ItemStack(TEST_BLOCK));
 			})
 			.build();
 
@@ -101,7 +103,7 @@ public class Arborealis implements ModInitializer {
 
 		// Block item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "test_block"), new BlockItem(TEST_BLOCK, new FabricItemSettings()));
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tree_tap"), new BlockItem(TREE_TAP, new FabricItemSettings()));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tree_tap"), new BlockItem(TREE_TAP, new FabricItemSettings().maxCount(16)));
 
 		// Tool Item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "carving_knife"), CARVING_KNIFE);
