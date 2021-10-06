@@ -140,7 +140,12 @@ public class CarvedWoodModel implements UnbakedModel {
                         int[] faceArray = ((CarvedWoodEntity) entity).getFaceArray(direction);
                         if (RuneManager.isValidRune(faceArray)) {
                             Rune rune = RuneManager.getRuneFromArray(faceArray);
-                            core.setSideOverlay(direction, rune.getColour());
+                            if (rune != null) {
+                                core.setSideOverlay(direction, rune.getColour());
+                            } else {
+                                core.setSideOverlay(direction, -1);
+                            }
+
                         }
                     }
 

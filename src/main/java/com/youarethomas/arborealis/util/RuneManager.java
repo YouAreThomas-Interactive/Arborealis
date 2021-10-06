@@ -8,6 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.InputStream;
@@ -53,7 +54,8 @@ public class RuneManager {
         faceArray = Arrays.stream(faceArray).map(i -> i == 2 ? 0 : i).toArray();
 
         for (Rune rune : Runes) {
-            if (Arrays.deepEquals(ArrayUtils.toObject(faceArray), ArrayUtils.toObject(rune.shape))) {
+            int[] faceCarved = Arrays.stream(faceArray).map(i -> i == 2 ? 0 : i).toArray();
+            if (Arrays.deepEquals(ArrayUtils.toObject(faceCarved), ArrayUtils.toObject(rune.shape))) {
                 return true;
             }
         }
@@ -62,7 +64,8 @@ public class RuneManager {
 
     public static Rune getRuneFromArray(int[] faceArray) {
         for (Rune rune : Runes) {
-            if (Arrays.deepEquals(ArrayUtils.toObject(faceArray), ArrayUtils.toObject(rune.shape))) {
+            int[] faceCarved = Arrays.stream(faceArray).map(i -> i == 2 ? 0 : i).toArray();
+            if (Arrays.deepEquals(ArrayUtils.toObject(faceCarved), ArrayUtils.toObject(rune.shape))) {
                 return rune;
             }
         }
