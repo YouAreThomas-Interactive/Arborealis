@@ -15,6 +15,7 @@ import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.*;
@@ -119,6 +120,10 @@ public class Arborealis implements ModInitializer {
 
 		// Model registration
 		DynamicModelRegistry.register(new CarvedWoodModel(), new Identifier("arborealis:block/carved_wood_model"));
+
+		// SET IT ON FIRE!
+		// TODO: Make the nether log variants not burn...
+		FlammableBlockRegistry.getDefaultInstance().add(CARVED_WOOD, 5, 5);
 
 		LOGGER.info("Arborealis Initialised!");
 	}

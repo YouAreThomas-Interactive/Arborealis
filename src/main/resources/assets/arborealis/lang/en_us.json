@@ -15,7 +15,9 @@
   "item.arborealis.wood_drill.tooltip4": "§8items or a §2Life Core.",
 
   "item.arborealis.regrowth_spoon": "Spoon of Regrowth",
-  "item.arborealis.regrowth_spoon.tooltip1": "§7Spooooonnnnnnn",
+  "item.arborealis.regrowth_spoon.tooltip1": "§7Allows logs to be 'un-carved'",
+  "item.arborealis.regrowth_spoon.tooltip2": "§2Right click §8on a carved log to",
+  "item.arborealis.regrowth_spoon.tooltip3": "§8revert that side to its original state",
 
   "item.arborealis.tree_core": "Life Core",
   "item.arborealis.tree_core.tooltip1": "§7Increases a tree's life force.",

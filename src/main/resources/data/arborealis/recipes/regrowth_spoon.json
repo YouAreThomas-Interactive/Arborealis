@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " IP",
+    " TB",
+    "S  "
+  ],
+  "key": {
+    "T": {
+      "tag": "minecraft:saplings"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    },
+    "I": {
+      "item": "arborealis:infused_sap"
+    },
+    "B": {
+      "item": "minecraft:bone_meal"
+    }
+  },
+  "result": {
+    "item": "arborealis:regrowth_spoon",
+    "count": 1
+  }
+}
