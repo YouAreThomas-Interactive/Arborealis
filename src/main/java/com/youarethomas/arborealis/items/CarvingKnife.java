@@ -13,6 +13,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -23,6 +24,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.util.*;
 
 public class CarvingKnife extends ToolItem {
@@ -65,9 +67,7 @@ public class CarvingKnife extends ToolItem {
                 }
             }
 
-            drawCarvePlan(carvedEntity, context.getSide(), world, playerEntity); // Draw rune after creating the block
-
-            return ActionResult.success(world.isClient);
+            return drawCarvePlan(carvedEntity, context.getSide(), world, playerEntity); // Draw rune after creating the block
         }
 
         // If shift-right click on a carved wood block, turn all carving plans into actual carvings
@@ -81,17 +81,16 @@ public class CarvingKnife extends ToolItem {
                 } else {
                     world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
                 }
+                return ActionResult.SUCCESS;
             } else {
-                drawCarvePlan((CarvedWoodEntity) world.getBlockEntity(blockPos), context.getSide(), world, playerEntity);
+                return drawCarvePlan((CarvedWoodEntity) world.getBlockEntity(blockPos), context.getSide(), world, playerEntity);
             }
-
-            return ActionResult.SUCCESS;
         }
 
         return ActionResult.PASS;
     }
 
-    private void drawCarvePlan(CarvedWoodEntity carvedWoodEntity, Direction side, World world, PlayerEntity player) {
+    private ActionResult drawCarvePlan(CarvedWoodEntity carvedWoodEntity, Direction side, World world, PlayerEntity player) {
         // Get the raytrace hit
         MinecraftClient client = MinecraftClient.getInstance();
         HitResult pixelHit = client.crosshairTarget;
@@ -113,6 +112,10 @@ public class CarvingKnife extends ToolItem {
             int segmentY = (int)Math.ceil((y - pixelSize) * 8);
             int segmentZ = (int)Math.ceil((z - pixelSize) * 8);
 
+            // Stop clicking on the left or right of the valid area from registering
+            if ((segmentX == 0 || segmentX == 8) && segmentZ == 0)  return ActionResult.FAIL;
+            if ((segmentZ == 0 || segmentZ == 8) && segmentX == 0) return ActionResult.FAIL;
+
             int segmentID = -1;
 
             // Convert array position
@@ -123,19 +126,26 @@ public class CarvingKnife extends ToolItem {
                 case WEST -> segmentID = ((7 - segmentY) * 7) + (segmentZ - 1);
             }
 
+            // Stop click on the top or bottom of the valid area from registering
+            if (segmentID > 48 || segmentID < 0) return ActionResult.FAIL;
+
             // Then set array position value to highlighted if normal, normal if highlighted, or do nothing if carved out
             int[] faceArray = carvedWoodEntity.getFaceArray(side);
-            if (segmentID != -1) {
-                if (faceArray[segmentID] == 0) {
-                    faceArray[segmentID] = 2;
-                } else if (faceArray[segmentID] == 2) {
-                    faceArray[segmentID] = 0;
-                }
+            if (faceArray[segmentID] == 0) {
+                faceArray[segmentID] = 2;
+            } else if (faceArray[segmentID] == 2) {
+                faceArray[segmentID] = 0;
+            } else {
+                return ActionResult.FAIL;
             }
 
             //player.sendMessage(new LiteralText("%s, %s, %s -> %s".formatted(segmentX, segmentY, segmentZ, segmentID)), false);
 
             carvedWoodEntity.setFaceArray(side, faceArray);
+
+            return ActionResult.SUCCESS;
+        } else {
+            return ActionResult.PASS;
         }
     }
 
