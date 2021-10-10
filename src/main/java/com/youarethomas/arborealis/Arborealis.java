@@ -59,11 +59,14 @@ public class Arborealis implements ModInitializer {
 
 	// Blocks
 	public static final TestBlock TEST_BLOCK = new TestBlock(FabricBlockSettings.of(Material.STONE));
+
 	public static final CarvedWood CARVED_WOOD = new CarvedWood(FabricBlockSettings.of(Material.WOOD));
 	public static final CarvedNetherWood CARVED_NETHER_WOOD = new CarvedNetherWood(FabricBlockSettings.of(Material.WOOD));
 	public static final HollowedLog HOLLOWED_LOG = new HollowedLog(FabricBlockSettings.of(Material.WOOD));
 	public static final TreeCoreBlock TREE_CORE_BLOCK = new TreeCoreBlock(FabricBlockSettings.of(Material.WOOD));
+
 	public static final TreeTap TREE_TAP = new TreeTap(FabricBlockSettings.of(Material.METAL));
+	public static final WoodenBucket WOODEN_BUCKET = new WoodenBucket(FabricBlockSettings.of(Material.WOOD));
 
 	// Block Entities
 	public static BlockEntityType<CarvedWoodEntity> CARVED_WOOD_ENTITY;
@@ -83,6 +86,8 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(INFUSED_SAP));
 				stacks.add(new ItemStack(GLOWING_SAP));
 				stacks.add(new ItemStack(CONDUCTIVE_SAP));
+
+				stacks.add(new ItemStack(WOODEN_BUCKET));
 			})
 			.build();
 
@@ -92,11 +97,14 @@ public class Arborealis implements ModInitializer {
 
 		// Block registration
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "test_block"), TEST_BLOCK);
+
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "carved_wood"), CARVED_WOOD);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "carved_nether_wood"), CARVED_NETHER_WOOD);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "hollowed_log"), HOLLOWED_LOG);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "tree_core_block"), TREE_CORE_BLOCK);
+
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "tree_tap"), TREE_TAP);
+		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "wooden_bucket"), WOODEN_BUCKET);
 
 		// Block entity registration
 		CARVED_WOOD_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "carved_wood_entity"), FabricBlockEntityTypeBuilder.create(CarvedWoodEntity::new, CARVED_WOOD).build(null));
@@ -104,7 +112,9 @@ public class Arborealis implements ModInitializer {
 
 		// Block item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "test_block"), new BlockItem(TEST_BLOCK, new FabricItemSettings()));
+
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tree_tap"), new BlockItem(TREE_TAP, new FabricItemSettings().maxCount(16)));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wooden_bucket"), new BlockItem(WOODEN_BUCKET, new FabricItemSettings().maxCount(16)));
 
 		// Tool Item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "carving_knife"), CARVING_KNIFE);
@@ -113,6 +123,7 @@ public class Arborealis implements ModInitializer {
 
 		// Item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tree_core"), TREE_CORE);
+
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bottled_sap"), BOTTLED_SAP);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "infused_sap"), INFUSED_SAP);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "glowing_sap"), GLOWING_SAP);

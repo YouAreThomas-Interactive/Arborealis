@@ -16,8 +16,8 @@
 
   "item.arborealis.regrowth_spoon": "Spoon of Regrowth",
   "item.arborealis.regrowth_spoon.tooltip1": "§7Allows logs to be 'un-carved'",
-  "item.arborealis.regrowth_spoon.tooltip2": "§2Right click §8on a carved log to",
-  "item.arborealis.regrowth_spoon.tooltip3": "§8revert that side to its original state",
+  "item.arborealis.regrowth_spoon.tooltip2": "§2Right click §8on a carved log to revert",
+  "item.arborealis.regrowth_spoon.tooltip3": "§8that side to its original state",
 
   "item.arborealis.tree_core": "Life Core",
   "item.arborealis.tree_core.tooltip1": "§7Increases a tree's life force.",
@@ -25,16 +25,18 @@
   "item.arborealis.tree_core.tooltip3": "§8energy available to carved runes.",
 
   "item.arborealis.bottled_sap": "Bottled Sap",
-
   "item.arborealis.glowing_sap": "Glowing Sap",
-
   "item.arborealis.infused_sap": "Infused Sap",
-
   "item.arborealis.conductive_sap": "Conductive Sap",
 
   "block.arborealis.tree_tap": "Tree Tap",
   "block.arborealis.tree_tap.tooltip1": "§7Allows sap to be drained from trees.",
   "block.arborealis.tree_tap.tooltip2": "§8Place on a tree, and then §2right click",
   "block.arborealis.tree_tap.tooltip3": "§8on a dripping tap with an §2Glass Bottle",
-  "block.arborealis.tree_tap.tooltip4": "§8to collect §2Bottled Sap."
+  "block.arborealis.tree_tap.tooltip4": "§8to collect §2Bottled Sap.",
+
+  "block.arborealis.wooden_bucket": "Wooden Bucket",
+  "block.arborealis.wooden_bucket.tooltip1": "§7Allows sap to be collected and stored",
+  "block.arborealis.wooden_bucket.tooltip2": "§8Place under a tree tap to begin collecting",
+  "block.arborealis.wooden_bucket.tooltip3": "§8sap, then extract with a §2Glass Bottle."
 }

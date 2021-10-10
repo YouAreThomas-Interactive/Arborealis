@@ -92,7 +92,7 @@ public class CarvedWoodModel implements UnbakedModel {
             BlockEntity entity = blockView.getBlockEntity(pos);
             World world = MinecraftClient.getInstance().world;
 
-            if (world.isClient()) {
+            if (Objects.requireNonNull(world).isClient()) {
 
                 if (entity instanceof CarvedWoodEntity) {
                     CarvedWoodEntity carvedEntity = (CarvedWoodEntity)entity;
