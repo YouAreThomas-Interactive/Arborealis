@@ -55,7 +55,7 @@ public class WoodDrill extends ToolItem {
                 world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
             }
         // If the block is a carved wood block
-        } else if (blockState.isOf(Arborealis.CARVED_WOOD)) {
+        } else if (blockState.isOf(Arborealis.CARVED_WOOD) || blockState.isOf(Arborealis.CARVED_NETHER_WOOD)) {
             CarvedWoodEntity carvedEntity = (CarvedWoodEntity) world.getBlockEntity(blockPos);
 
             if (carvedEntity != null) {

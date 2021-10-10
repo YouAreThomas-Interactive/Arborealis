@@ -104,7 +104,7 @@ public class TreeTap extends HorizontalFacingBlock {
         if (random.nextInt(2) == 0) {
             System.out.println(state.get(Properties.HORIZONTAL_FACING));
             BlockState blockBehind = world.getBlockState(pos.offset(state.get(Properties.HORIZONTAL_FACING), -1)); // Get the block behind the tap
-            if (blockBehind.isIn(BlockTags.LOGS) || blockBehind.isOf(Arborealis.CARVED_WOOD))
+            if (blockBehind.isIn(BlockTags.LOGS) || blockBehind.isOf(Arborealis.CARVED_WOOD) || blockBehind.isOf(Arborealis.CARVED_NETHER_WOOD))
             {
                 world.setBlockState(pos, state.with(READY, true), Block.NOTIFY_LISTENERS);
             }

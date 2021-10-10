@@ -60,6 +60,7 @@ public class Arborealis implements ModInitializer {
 	// Blocks
 	public static final TestBlock TEST_BLOCK = new TestBlock(FabricBlockSettings.of(Material.STONE));
 	public static final CarvedWood CARVED_WOOD = new CarvedWood(FabricBlockSettings.of(Material.WOOD));
+	public static final CarvedNetherWood CARVED_NETHER_WOOD = new CarvedNetherWood(FabricBlockSettings.of(Material.WOOD));
 	public static final HollowedLog HOLLOWED_LOG = new HollowedLog(FabricBlockSettings.of(Material.WOOD));
 	public static final TreeCoreBlock TREE_CORE_BLOCK = new TreeCoreBlock(FabricBlockSettings.of(Material.WOOD));
 	public static final TreeTap TREE_TAP = new TreeTap(FabricBlockSettings.of(Material.METAL));
@@ -82,8 +83,6 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(INFUSED_SAP));
 				stacks.add(new ItemStack(GLOWING_SAP));
 				stacks.add(new ItemStack(CONDUCTIVE_SAP));
-
-				stacks.add(new ItemStack(TEST_BLOCK));
 			})
 			.build();
 
@@ -94,6 +93,7 @@ public class Arborealis implements ModInitializer {
 		// Block registration
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "test_block"), TEST_BLOCK);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "carved_wood"), CARVED_WOOD);
+		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "carved_nether_wood"), CARVED_NETHER_WOOD);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "hollowed_log"), HOLLOWED_LOG);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "tree_core_block"), TREE_CORE_BLOCK);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "tree_tap"), TREE_TAP);
@@ -122,7 +122,6 @@ public class Arborealis implements ModInitializer {
 		DynamicModelRegistry.register(new CarvedWoodModel(), new Identifier("arborealis:block/carved_wood_model"));
 
 		// SET IT ON FIRE!
-		// TODO: Make the nether log variants not burn...
 		FlammableBlockRegistry.getDefaultInstance().add(CARVED_WOOD, 5, 5);
 
 		LOGGER.info("Arborealis Initialised!");

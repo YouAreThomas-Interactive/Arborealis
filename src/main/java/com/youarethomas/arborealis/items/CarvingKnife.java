@@ -48,7 +48,12 @@ public class CarvingKnife extends ToolItem {
 
             // Swap the block out with a carved wood block...
             // TODO: Add in support for horizontal logs
-            world.setBlockState(blockPos, Arborealis.CARVED_WOOD.getDefaultState());
+            if (blockState.isIn(BlockTags.LOGS_THAT_BURN)) {
+                world.setBlockState(blockPos, Arborealis.CARVED_WOOD.getDefaultState());
+            } else {
+                world.setBlockState(blockPos, Arborealis.CARVED_NETHER_WOOD.getDefaultState());
+            }
+
             CarvedWoodEntity carvedEntity = (CarvedWoodEntity) world.getBlockEntity(blockPos);
 
             // ... and assign relevant NBT data
@@ -66,7 +71,7 @@ public class CarvingKnife extends ToolItem {
         }
 
         // If shift-right click on a carved wood block, turn all carving plans into actual carvings
-        if (blockState.isOf(Arborealis.CARVED_WOOD)) {
+        if (blockState.isOf(Arborealis.CARVED_WOOD) || blockState.isOf(Arborealis.CARVED_NETHER_WOOD)) {
             if (playerEntity.isSneaking()) {
                 if (!world.isClient()) {
 

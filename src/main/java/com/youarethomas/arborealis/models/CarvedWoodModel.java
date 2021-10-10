@@ -44,19 +44,10 @@ public class CarvedWoodModel implements UnbakedModel {
     private QuadEmitter emitter;
     private Function<SpriteIdentifier, Sprite> textureGetter;
 
-    private SpriteIdentifier breakTextureIdentifier;
     private Sprite breakTextureSprite;
-
-    public CarvedWoodModel() {
-        setBreakTexture(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("minecraft:block/oak_log")));
-    }
 
     public void addFixedCuboid(DynamicCuboid cuboid) {
         fixedCuboids.add(cuboid);
-    }
-
-    public void setBreakTexture(SpriteIdentifier spriteIdentifier) {
-        breakTextureIdentifier = spriteIdentifier;
     }
 
     public Collection<SpriteIdentifier> getTextures() {
@@ -83,8 +74,7 @@ public class CarvedWoodModel implements UnbakedModel {
     @Nullable
     @Override
     public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
-
-        breakTextureSprite = textureGetter.apply(breakTextureIdentifier);
+        //breakTextureSprite = textureGetter.apply(breakTextureIdentifier);
 
         Renderer renderer = RendererAccess.INSTANCE.getRenderer();
         builder = renderer.meshBuilder();
@@ -105,14 +95,15 @@ public class CarvedWoodModel implements UnbakedModel {
             if (world.isClient()) {
 
                 if (entity instanceof CarvedWoodEntity) {
+                    CarvedWoodEntity carvedEntity = (CarvedWoodEntity)entity;
                     // Bunch of ID stuff...
-                    String logID = ((CarvedWoodEntity) entity).getLogID();
+                    String logID = carvedEntity.getLogID();
                     String[] idParts = logID.split(":");
                     String log = "minecraft:block/oak_log";
                     String strippedLog = "minecraft:block/stripped_oak_log";
 
                     // ... made needlessly complicated due to pumpkins
-                    if (Objects.equals(((CarvedWoodEntity) entity).getLogID(), "pumpkin")) {
+                    if (Objects.equals(carvedEntity.getLogID(), "pumpkin")) {
                         log = "minecraft:block/pumpkin_side";
                         if (state.get(Properties.LIT)) {
                             strippedLog = "arborealis:block/pumpkin_side_lit";
@@ -129,6 +120,8 @@ public class CarvedWoodModel implements UnbakedModel {
 
                         loadFixedCuboids(log, strippedLog, logTop);
                     }
+
+                    breakTextureSprite = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)).getSprite();
 
                     // Core
                     DynamicCuboid core = new DynamicCuboid(1, 1, 1, 14, 14, 14);

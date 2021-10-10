@@ -39,7 +39,7 @@ public class RegrowthSpoon extends ToolItem {
 
         Direction[] directions = { Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST };
 
-        if (blockState.isOf(Arborealis.CARVED_WOOD)) {
+        if (blockState.isOf(Arborealis.CARVED_WOOD) || blockState.isOf(Arborealis.CARVED_NETHER_WOOD)) {
             CarvedWoodEntity carvedEntity = (CarvedWoodEntity) world.getBlockEntity(blockPos);
 
             if (carvedEntity != null) {
