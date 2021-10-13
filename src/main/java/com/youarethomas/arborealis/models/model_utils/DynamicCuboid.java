@@ -1,4 +1,4 @@
-package com.youarethomas.arborealis.models.utils;
+package com.youarethomas.arborealis.models.model_utils;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

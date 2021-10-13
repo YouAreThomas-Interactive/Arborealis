@@ -5,7 +5,7 @@ import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
 import com.youarethomas.arborealis.blocks.*;
 import com.youarethomas.arborealis.items.*;
 import com.youarethomas.arborealis.models.CarvedWoodModel;
-import com.youarethomas.arborealis.models.utils.DynamicModelRegistry;
+import com.youarethomas.arborealis.models.model_utils.DynamicModelRegistry;
 import com.youarethomas.arborealis.tool_materials.CopperKnifeMaterial;
 import com.youarethomas.arborealis.tool_materials.RegrowthSpoonMaterial;
 import com.youarethomas.arborealis.tool_materials.WoodDrillMaterial;

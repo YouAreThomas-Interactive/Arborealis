@@ -2,7 +2,7 @@ package com.youarethomas.arborealis.models;
 
 import com.mojang.datafixers.util.Pair;
 import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
-import com.youarethomas.arborealis.models.utils.DynamicCuboid;
+import com.youarethomas.arborealis.models.model_utils.DynamicCuboid;
 import com.youarethomas.arborealis.util.Rune;
 import com.youarethomas.arborealis.util.RuneManager;
 import net.fabricmc.api.EnvType;

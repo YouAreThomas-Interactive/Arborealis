@@ -1,10 +1,8 @@
-package com.youarethomas.arborealis.models.utils;
+package com.youarethomas.arborealis.models.model_utils;
 
-import com.youarethomas.arborealis.models.CarvedWoodModel;
 import net.fabricmc.fabric.api.client.model.ModelProviderContext;
 import net.fabricmc.fabric.api.client.model.ModelProviderException;
 import net.fabricmc.fabric.api.client.model.ModelResourceProvider;
-import net.minecraft.client.model.Model;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;

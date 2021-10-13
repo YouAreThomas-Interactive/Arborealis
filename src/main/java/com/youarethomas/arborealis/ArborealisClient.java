@@ -1,7 +1,7 @@
 package com.youarethomas.arborealis;
 
 import com.youarethomas.arborealis.block_entity_renderers.HollowedLogEntityRenderer;
-import com.youarethomas.arborealis.models.utils.DynamicModelRegistry;
+import com.youarethomas.arborealis.models.model_utils.DynamicModelRegistry;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
