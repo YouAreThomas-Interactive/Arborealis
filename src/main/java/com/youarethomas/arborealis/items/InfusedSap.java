@@ -27,7 +27,9 @@ public class InfusedSap extends Item {
     // Test Method
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
-        TreeManager.getTreeStructureFromBlock(context.getBlockPos());
+        if (!context.getWorld().isClient) {
+            TreeManager.getTreeStructureFromBlock(context.getBlockPos(), context.getWorld());
+        }
 
         return ActionResult.PASS;
     }

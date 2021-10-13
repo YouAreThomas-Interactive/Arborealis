@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -11,8 +12,8 @@ import java.util.List;
  */
 public class TreeStructure {
 
-    private List<BlockPos> leaves;
-    public List<BlockPos> logs;
+    private HashSet<BlockPos> leaves;
+    public HashSet<BlockPos> logs;
     public int logCount() {
         return logs.size();
     }
