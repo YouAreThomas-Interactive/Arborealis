@@ -24,6 +24,10 @@ public class TreeManager {
 
         int logsCounted = 0; // Cap in case something goes horribly wrong
 
+        if (!world.getBlockState(currentPos).isIn(BlockTags.LOGS)) {
+            return structure;
+        }
+
         do {
             // 3x3x3 cube to search around
             BlockPos scanCubeStart = currentPos.down().south().west();

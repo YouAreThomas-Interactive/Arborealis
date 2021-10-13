@@ -3,6 +3,7 @@ package com.youarethomas.arborealis.util;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 import java.util.HashSet;
 import java.util.List;
@@ -12,8 +13,8 @@ import java.util.List;
  */
 public class TreeStructure {
 
-    private HashSet<BlockPos> leaves;
-    public HashSet<BlockPos> logs;
+    private HashSet<BlockPos> leaves = new HashSet<>();
+    public HashSet<BlockPos> logs = new HashSet<>();
     public int logCount() {
         return logs.size();
     }
@@ -28,8 +29,10 @@ public class TreeStructure {
         return true;
     }
 
-    public void replaceLogStructure(Block replacementBlock) {
-        // TODO: Replace all logs and leaves in the structure with replacementBlock
+    public void replaceLogStructure(World world, Block replacementBlock) {
+        for (BlockPos pos : logs) {
+            world.setBlockState(pos, replacementBlock.getDefaultState());
+        }
     }
 
     public void replaceLeafStructure(Block replacementBlock) {
