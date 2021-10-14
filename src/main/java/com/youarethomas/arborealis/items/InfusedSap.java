@@ -31,8 +31,9 @@ public class InfusedSap extends Item {
     public ActionResult useOnBlock(ItemUsageContext context) {
         if (!context.getWorld().isClient) {
             TreeStructure structure = TreeManager.getTreeStructureFromBlock(context.getBlockPos(), context.getWorld());
-            structure.replaceLogStructure(context.getWorld(), Blocks.BONE_BLOCK);
-            structure.replaceLeafStructure(context.getWorld(), Blocks.GLASS);
+            structure.replaceTreeStructure(context.getWorld(), Blocks.AIR);
+            /*structure.replaceLogStructure(context.getWorld(), Blocks.BONE_BLOCK);
+            structure.replaceLeafStructure(context.getWorld(), Blocks.GLASS);*/
         }
 
         return ActionResult.PASS;
