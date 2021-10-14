@@ -2,6 +2,7 @@ package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.util.TreeManager;
 import com.youarethomas.arborealis.util.TreeStructure;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
@@ -30,7 +31,8 @@ public class InfusedSap extends Item {
     public ActionResult useOnBlock(ItemUsageContext context) {
         if (!context.getWorld().isClient) {
             TreeStructure structure = TreeManager.getTreeStructureFromBlock(context.getBlockPos(), context.getWorld());
-            structure.replaceLogStructure(context.getWorld(), Blocks.GLOWSTONE);
+            structure.replaceLogStructure(context.getWorld(), Blocks.BONE_BLOCK);
+            structure.replaceLeafStructure(context.getWorld(), Blocks.GLASS);
         }
 
         return ActionResult.PASS;

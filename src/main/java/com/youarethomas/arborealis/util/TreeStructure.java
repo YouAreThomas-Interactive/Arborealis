@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class TreeStructure {
 
-    private HashSet<BlockPos> leaves = new HashSet<>();
+    public HashSet<BlockPos> leaves = new HashSet<>();
     public HashSet<BlockPos> logs = new HashSet<>();
     public int logCount() {
         return logs.size();
@@ -29,14 +29,20 @@ public class TreeStructure {
         return true;
     }
 
+    public boolean isEmpty() {
+        return logs.isEmpty();
+    }
+
     public void replaceLogStructure(World world, Block replacementBlock) {
         for (BlockPos pos : logs) {
             world.setBlockState(pos, replacementBlock.getDefaultState());
         }
     }
 
-    public void replaceLeafStructure(Block replacementBlock) {
-        // TODO: Replace all logs and leaves in the structure with replacementBlock
+    public void replaceLeafStructure(World world, Block replacementBlock) {
+        for (BlockPos pos : leaves) {
+            world.setBlockState(pos, replacementBlock.getDefaultState());
+        }
     }
 
     public void replaceTreeStructure(Block replacementBlock) {
