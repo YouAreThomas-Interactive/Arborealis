@@ -17,9 +17,14 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
+import net.fabricmc.fabric.api.tag.TagRegistry;
+import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.*;
+import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagManager;
+import net.minecraft.tag.TagManagerLoader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
@@ -73,6 +78,9 @@ public class Arborealis implements ModInitializer {
 	public static BlockEntityType<CarvedWoodEntity> CARVED_WOOD_ENTITY;
 	public static BlockEntityType<HollowedLogEntity> HOLLOWED_LOG_ENTITY;
 	public static BlockEntityType<WoodenBucketEntity> WOODEN_BUCKET_ENTITY;
+
+	// Tags
+	public static final Tag<Block> MODIFIED_LOGS = TagRegistry.block(new Identifier(MOD_ID, "modified_logs"));
 
 	// Item Groups
 	public static final ItemGroup ARBOREALIS_GROUP = FabricItemGroupBuilder.create(

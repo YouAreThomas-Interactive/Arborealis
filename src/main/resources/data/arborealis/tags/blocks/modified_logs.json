@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "arborealis:carved_wood",
+    "arborealis:carved_nether_wood",
+    "arborealis:hollowed_log",
+    "arborealis:tree_core_block"
+  ]
+}

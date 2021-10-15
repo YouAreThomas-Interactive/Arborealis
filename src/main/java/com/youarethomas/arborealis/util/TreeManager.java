@@ -1,5 +1,7 @@
 package com.youarethomas.arborealis.util;
 
+import com.youarethomas.arborealis.Arborealis;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -21,9 +23,10 @@ public class TreeManager {
      */
     public static TreeStructure getTreeStructureFromBlock(BlockPos startingPos, World world) {
         TreeStructure structure = new TreeStructure();
+        BlockState clickedBlock = world.getBlockState(startingPos);
 
         // Return and empty tree structure if the starting position is not a log
-        if (!world.getBlockState(startingPos).isIn(BlockTags.LOGS)) {
+        if (!(clickedBlock.isIn(BlockTags.LOGS) || clickedBlock.isIn(Arborealis.MODIFIED_LOGS))) {
             return structure;
         }
 
@@ -53,8 +56,9 @@ public class TreeManager {
             visited.add(currentPos); // Add the current log into visited
 
             for (BlockPos pos : BlockPos.iterate(scanCubeStart, scanCubeEnd)) {
+                BlockState currentBlockState = world.getBlockState(pos);
                 // If a log is detected that hasn't been iterated over yet, add to the list of blocks to get around to
-                if (world.getBlockState(pos).isIn(BlockTags.LOGS) && !visited.contains(pos)) {
+                if ((currentBlockState.isIn(BlockTags.LOGS) || currentBlockState.isIn(Arborealis.MODIFIED_LOGS)) && !visited.contains(pos)) {
                     toVisit.add(pos.mutableCopy()); // mutableCopy() required because Java is a tool
                 }
             }
