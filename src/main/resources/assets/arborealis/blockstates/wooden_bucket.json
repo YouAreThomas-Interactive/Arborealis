@@ -1,0 +1,9 @@
+{
+  "variants": {
+    "sap_level=0": { "model": "arborealis:block/wooden_buckets/wooden_bucket" },
+    "sap_level=1": { "model": "arborealis:block/wooden_buckets/wooden_bucket_lvl1" },
+    "sap_level=2": { "model": "arborealis:block/wooden_buckets/wooden_bucket_lvl2" },
+    "sap_level=3": { "model": "arborealis:block/wooden_buckets/wooden_bucket_lvl3" },
+    "sap_level=4": { "model": "arborealis:block/wooden_buckets/wooden_bucket_lvl4" }
+  }
+}
