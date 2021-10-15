@@ -2,6 +2,7 @@ package com.youarethomas.arborealis;
 
 import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
+import com.youarethomas.arborealis.block_entities.WoodenBucketEntity;
 import com.youarethomas.arborealis.blocks.*;
 import com.youarethomas.arborealis.items.*;
 import com.youarethomas.arborealis.models.CarvedWoodModel;
@@ -71,6 +72,7 @@ public class Arborealis implements ModInitializer {
 	// Block Entities
 	public static BlockEntityType<CarvedWoodEntity> CARVED_WOOD_ENTITY;
 	public static BlockEntityType<HollowedLogEntity> HOLLOWED_LOG_ENTITY;
+	public static BlockEntityType<WoodenBucketEntity> WOODEN_BUCKET_ENTITY;
 
 	// Item Groups
 	public static final ItemGroup ARBOREALIS_GROUP = FabricItemGroupBuilder.create(
@@ -109,6 +111,7 @@ public class Arborealis implements ModInitializer {
 		// Block entity registration
 		CARVED_WOOD_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "carved_wood_entity"), FabricBlockEntityTypeBuilder.create(CarvedWoodEntity::new, CARVED_WOOD).build(null));
 		HOLLOWED_LOG_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "hollowed_log_entity"), FabricBlockEntityTypeBuilder.create(HollowedLogEntity::new, HOLLOWED_LOG).build(null));
+		WOODEN_BUCKET_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "wooden_bucket_entity"), FabricBlockEntityTypeBuilder.create(WoodenBucketEntity::new, WOODEN_BUCKET).build(null));
 
 		// Block item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "test_block"), new BlockItem(TEST_BLOCK, new FabricItemSettings()));
