@@ -2,6 +2,7 @@ package com.youarethomas.arborealis.blocks;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.WoodenBucketEntity;
+import com.youarethomas.arborealis.util.TreeManager;
 import net.minecraft.block.*;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
@@ -105,9 +106,7 @@ public class TreeTap extends HorizontalFacingBlock {
         WoodenBucketEntity bucketEntity = (WoodenBucketEntity)world.getBlockEntity(pos.down());
 
         if (random.nextInt(2) == 0) {
-            BlockState blockBehind = world.getBlockState(pos.offset(state.get(Properties.HORIZONTAL_FACING), -1)); // Get the block behind the tap
-
-            if (blockBehind.isIn(BlockTags.LOGS) || blockBehind.isOf(Arborealis.CARVED_WOOD) || blockBehind.isOf(Arborealis.CARVED_NETHER_WOOD))
+            if (TreeManager.getTreeStructureFromBlock(pos.offset(state.get(Properties.HORIZONTAL_FACING), -1), world).isNatural())
             {
                 if (bucketEntity != null && bucketEntity.getSapAmount() < 12) {
                     WoodenBucket.changeSapLevel(world, pos.down(), 1);

@@ -5,6 +5,7 @@ import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
 import com.youarethomas.arborealis.models.model_utils.DynamicCuboid;
 import com.youarethomas.arborealis.util.Rune;
 import com.youarethomas.arborealis.util.RuneManager;
+import com.youarethomas.arborealis.util.TreeManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.renderer.v1.Renderer;
@@ -93,7 +94,6 @@ public class CarvedWoodModel implements UnbakedModel {
             World world = MinecraftClient.getInstance().world;
 
             if (Objects.requireNonNull(world).isClient()) {
-
                 if (entity instanceof CarvedWoodEntity) {
                     CarvedWoodEntity carvedEntity = (CarvedWoodEntity)entity;
                     // Bunch of ID stuff...
@@ -131,7 +131,9 @@ public class CarvedWoodModel implements UnbakedModel {
                     Direction[] runeDirections = new Direction[]{Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
                     for (Direction direction : runeDirections) {
                         int[] faceArray = ((CarvedWoodEntity) entity).getFaceArray(direction);
-                        if (RuneManager.isValidRune(faceArray)) {
+
+                        // Check if rune is valid and tree is natural
+                        if (RuneManager.isValidRune(faceArray) && TreeManager.getTreeStructureFromBlock(pos, world).isNatural()) {
                             Rune rune = RuneManager.getRuneFromArray(faceArray);
                             if (rune != null) {
                                 core.setSideOverlay(direction, rune.getColour());

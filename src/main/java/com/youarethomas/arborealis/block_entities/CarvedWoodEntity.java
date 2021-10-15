@@ -3,6 +3,7 @@ package com.youarethomas.arborealis.block_entities;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.blocks.CarvedWood;
 import com.youarethomas.arborealis.util.RuneManager;
+import com.youarethomas.arborealis.util.TreeManager;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -125,16 +126,13 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         // Create array of face arrays to iterate through
         int[][] directions = new int[][] { getFaceArray(Direction.NORTH), getFaceArray(Direction.EAST), getFaceArray(Direction.SOUTH), getFaceArray(Direction.WEST) };
 
-        // TODO: There's probably a better way to do this
-        if (world != null) {
-            for (int[] direction : directions) {
-                // Light
-                if (RuneManager.getRuneFromArray(direction) != null)
-                {
-                    if (Objects.equals(Objects.requireNonNull(RuneManager.getRuneFromArray(direction)).name, "light")) {
-                        world.setBlockState(pos, world.getBlockState(pos).with(CarvedWood.LIT, true));
-                        return;
-                    }
+        for (int[] direction : directions) {
+            // Light
+            if (RuneManager.getRuneFromArray(direction) != null && TreeManager.getTreeStructureFromBlock(pos, world).isNatural())
+            {
+                if (Objects.equals(Objects.requireNonNull(RuneManager.getRuneFromArray(direction)).name, "light")) {
+                    world.setBlockState(pos, world.getBlockState(pos).with(CarvedWood.LIT, true));
+                    return;
                 }
             }
 

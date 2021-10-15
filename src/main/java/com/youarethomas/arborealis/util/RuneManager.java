@@ -45,7 +45,7 @@ public class RuneManager {
                     }
                 }
 
-                Arborealis.LOGGER.info(toString().formatted("%s runes found and registered!", runesRegistered));
+                Arborealis.LOGGER.info(String.format("%s runes found and registered!", runesRegistered));
             }
         });
     }
