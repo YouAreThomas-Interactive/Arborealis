@@ -6,6 +6,7 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.entity.ConduitBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -57,6 +58,6 @@ public class CarvedWood extends BlockWithEntity implements BlockEntityProvider {
 
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, Arborealis.CARVED_WOOD_ENTITY, (world1, pos, state1, be) -> CarvedWoodEntity.tick(world1, pos, state1, be));
+        return checkType(type, Arborealis.CARVED_WOOD_ENTITY, world.isClient ? CarvedWoodEntity::clientTick : CarvedWoodEntity::serverTick);
     }
 }

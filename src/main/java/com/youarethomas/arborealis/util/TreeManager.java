@@ -34,10 +34,6 @@ public class TreeManager {
 
         structure.leaves.addAll(getTreeLeaves(world, structure.logs)); // Add all the founded leaves to the TreeStructure
 
-        // TODO: Step 3 - Remove leaves associated with other trees
-        // use BlockPos.iterateOutwards() - Manhattan, but one further than step 2
-        // if a log block is found that ISN'T in our log set, then
-
         return structure;
     }
 
