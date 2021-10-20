@@ -313,7 +313,7 @@ public class CarvedWoodModel implements UnbakedModel {
         }
 
         @Override
-        public Sprite getSprite() {
+        public Sprite getParticleSprite() {
             return breakTextureSprite;
         }
 

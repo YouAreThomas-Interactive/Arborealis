@@ -45,7 +45,7 @@ public class CarvingKnife extends ToolItem {
         // If the block clicked on is wood, create a new carved wood block
         if (blockState.isIn(BlockTags.LOGS) || blockState.isOf(Blocks.PUMPKIN)) {
             if (playerEntity instanceof ServerPlayerEntity) {
-                Criteria.ITEM_USED_ON_BLOCK.test((ServerPlayerEntity)playerEntity, blockPos, itemStack);
+                Criteria.ITEM_USED_ON_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos, itemStack);
             }
 
             // Swap the block out with a carved wood block...
