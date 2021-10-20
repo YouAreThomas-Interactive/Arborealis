@@ -2,21 +2,15 @@ package com.youarethomas.arborealis.blocks;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
-import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockState;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -24,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.ToIntFunction;
 
-public class CarvedWood extends Block implements BlockEntityProvider {
+public class CarvedWood extends BlockWithEntity implements BlockEntityProvider {
 
     public static BooleanProperty LIT = BooleanProperty.of("lit");
 
@@ -54,5 +48,15 @@ public class CarvedWood extends Block implements BlockEntityProvider {
             CarvedWoodEntity entity = (CarvedWoodEntity)world.getBlockEntity(pos);
             dropStack(world, pos, Registry.ITEM.get(new Identifier(entity.getLogID())).getDefaultStack());
         }
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
+    }
+
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return checkType(type, Arborealis.CARVED_WOOD_ENTITY, (world1, pos, state1, be) -> CarvedWoodEntity.tick(world1, pos, state1, be));
     }
 }
