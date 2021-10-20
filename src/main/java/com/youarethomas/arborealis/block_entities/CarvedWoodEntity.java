@@ -13,12 +13,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -43,7 +40,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState state, CarvedWoodEntity be) {
-
+        createParticleRadiusBorder(world, pos, 10, 75);
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, CarvedWoodEntity be) {
@@ -157,7 +154,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         }
     }
 
-    private void checkForRunes() {
+    private Rune checkForRunes() {
         // Create array of face arrays to iterate through
         int[][] directions = new int[][] { getFaceArray(Direction.NORTH), getFaceArray(Direction.EAST), getFaceArray(Direction.SOUTH), getFaceArray(Direction.WEST) };
 
@@ -187,6 +184,8 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         }
 
         updateListeners();
+
+        return null;
     }
 
     private boolean arrayContainsRune(int[] faceArray, String runeName) {
@@ -215,4 +214,22 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         }
     }
 
+    private static void createParticleRadiusBorder(World world, BlockPos pos, float radius, int numberOfPoints) {
+        Vec2f[] points = new Vec2f[numberOfPoints];
+        Random random = world.random;
+
+        for (int i = 0; i < numberOfPoints; ++i)
+        {
+            double angle = Math.toRadians(((double) i / numberOfPoints) * 360d);
+
+            points[i] = new Vec2f(
+                    (float)Math.cos(angle) * radius,
+                    (float)Math.sin(angle) * radius
+            );
+        }
+
+        for (Vec2f point : points) {
+            world.addParticle(ParticleTypes.ENCHANT, pos.getX() + point.x, pos.down().getY(), pos.getZ() + point.y, -0.5 + random.nextFloat(), random.nextFloat() / 3, -0.5 + random.nextFloat());
+        }
+    }
 }
