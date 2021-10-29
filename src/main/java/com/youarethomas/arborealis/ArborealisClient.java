@@ -25,12 +25,12 @@ public class ArborealisClient implements ClientModInitializer {
         // Render Layers
         BlockRenderLayerMap.INSTANCE.putBlock(Arborealis.HOLLOWED_LOG, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(Arborealis.WOODEN_BUCKET, RenderLayer.getTranslucent());
-        //BlockRenderLayerMap.INSTANCE.putBlock(Arborealis.TREE_CORE_BLOCK, RenderLayer.getCutout());
 
         // Register pumpkin texture - super important for mod functionality x
         ClientSpriteRegistryCallback.event(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).register((atlasTexture, registry) -> {
             registry.register(new Identifier("arborealis:block/pumpkin_side_carved"));
             registry.register(new Identifier("arborealis:block/pumpkin_side_lit"));
+            registry.register(new Identifier("arborealis:rune/rune"));
         });
     }
 }

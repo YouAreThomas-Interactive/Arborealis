@@ -30,24 +30,24 @@ public class TreeStructure {
         return logs.isEmpty();
     }
 
-    public void replaceLogStructure(World world, Block replacementBlock) {
+    public void replaceLogStructure(World world) {
         for (BlockPos pos : logs) {
             //world.setBlockState(pos, replacementBlock.getDefaultState());
             world.breakBlock(pos, true);
         }
     }
 
-    public void replaceLeafStructure(World world, Block replacementBlock) {
+    public void replaceLeafStructure(World world) {
         for (BlockPos pos : leaves) {
             //world.setBlockState(pos, replacementBlock.getDefaultState());
             world.breakBlock(pos, true);
         }
     }
 
-    public void replaceTreeStructure(World world, Block replacementBlock) {
+    public void chopTreeStructure(World world) {
         if(isNatural()) {
-            replaceLogStructure(world, replacementBlock);
-            replaceLeafStructure(world, replacementBlock);
+            replaceLogStructure(world);
+            replaceLeafStructure(world);
         }
     }
 }

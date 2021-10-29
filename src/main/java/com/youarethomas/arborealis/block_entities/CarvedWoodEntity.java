@@ -5,7 +5,10 @@ import com.youarethomas.arborealis.blocks.CarvedWood;
 import com.youarethomas.arborealis.util.Rune;
 import com.youarethomas.arborealis.util.RuneManager;
 import com.youarethomas.arborealis.util.TreeManager;
+import com.youarethomas.arborealis.util.TreeStructure;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.rendering.data.v1.RenderAttachmentBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -17,10 +20,11 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSerializable {
+public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSerializable, RenderAttachmentBlockEntity {
 
     private String logID = "";
 
@@ -33,7 +37,10 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
     // Radius logic
     private int radius = 12;
-    private boolean showRadius = true;
+    private boolean showRadius = false;
+
+    // Timers
+    private Timer chopTimer;
 
     public CarvedWoodEntity(BlockPos pos, BlockState state) {
         super(Arborealis.CARVED_WOOD_ENTITY, pos, state);
@@ -162,15 +169,21 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
         for (int[] faceArray : directions) {
             Rune rune = RuneManager.getRuneFromArray(faceArray);
+            TreeStructure tree = TreeManager.getTreeStructureFromBlock(pos, world);
 
-            if (rune != null && TreeManager.getTreeStructureFromBlock(pos, world).isNatural())
+            if (rune != null && tree.isNatural())
             {
                 if (arrayContainsRune(faceArray, "light") && !foundRunes.contains("light")) {
                     world.setBlockState(pos, world.getBlockState(pos).with(CarvedWood.LIT, true));
                     foundRunes.add("light");
                 } else if (arrayContainsRune(faceArray, "test") && !foundRunes.contains("test")) {
                     applyStatus = true;
+                    showRadius = true;
                     foundRunes.add("test");
+                } else if (arrayContainsRune(faceArray, "chop") && !foundRunes.contains("chop")) {
+                    chopTimer = new Timer();
+
+                    foundRunes.add("chop");
                 }
             }
         }
@@ -181,6 +194,9 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         }
         if (!foundRunes.contains("test")) {
             applyStatus = false;
+        }
+        if (!foundRunes.contains("chop")) {
+            // Stop chop timer
         }
 
         updateListeners();
@@ -206,10 +222,6 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         return entities;
     }
 
-    /*public boolean isWithinDistance(Vec3i vec, double distance) {
-        return this.getSquaredDistance((double)vec.getX(), (double)vec.getY(), (double)vec.getZ(), false) < distance * distance;
-    }*/
-
     public static boolean isWithinEffectRadius(Vec3i vec, CarvedWoodEntity entity) {
         double x = (double)vec.getX() + 0.05 - entity.pos.getX();
         double z = (double)vec.getZ() + 0.05 - entity.pos.getZ();
@@ -218,14 +230,6 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
         return distance < entity.radius * entity.radius;
     }
-
-    /*public double getSquaredDistance(double x, double y, double z, boolean treatAsBlockPos) {
-        double d = treatAsBlockPos ? 0.5D : 0.0D;
-        double e = (double)this.getX() + d - x;
-        double f = (double)this.getY() + d - y;
-        double g = (double)this.getZ() + d - z;
-        return e * e + f * f + g * g;
-    }*/
 
     private static void applyStatusEffectsToEntities(List<LivingEntity> entityList, BlockPos pos, StatusEffect effect) {
         if (!entityList.isEmpty()) {
@@ -256,5 +260,10 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
                 world.addParticle(ParticleTypes.COMPOSTER, pos.getX() + point.x, pos.down().getY(), pos.getZ() + point.y, -0.5 + random.nextFloat(), random.nextFloat() / 3, -0.5 + random.nextFloat());
             }
         }
+    }
+
+    @Override
+    public @Nullable Object getRenderAttachmentData() {
+        return null;
     }
 }

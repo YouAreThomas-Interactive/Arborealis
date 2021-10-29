@@ -31,6 +31,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockRenderView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.system.CallbackI;
 
 import java.util.*;
 import java.util.function.Function;
@@ -126,6 +127,7 @@ public class CarvedWoodModel implements UnbakedModel {
                     // Core
                     DynamicCuboid core = new DynamicCuboid(1, 1, 1, 14, 14, 14);
                     core.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(strippedLog)));
+                    //core.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
 
                     // If the face has a rune, make it glow
                     Direction[] runeDirections = new Direction[]{Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};
@@ -137,6 +139,8 @@ public class CarvedWoodModel implements UnbakedModel {
                             Rune rune = RuneManager.getRuneFromArray(faceArray);
                             if (rune != null) {
                                 core.setSideOverlay(direction, rune.getColour());
+                                core.applyTexture(direction, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
+                                core.setEmissive(direction, true);
                             } else {
                                 core.setSideOverlay(direction, -1);
                             }

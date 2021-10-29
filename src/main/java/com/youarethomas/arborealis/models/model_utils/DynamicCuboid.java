@@ -2,9 +2,15 @@ package com.youarethomas.arborealis.models.model_utils;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.renderer.v1.Renderer;
+import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
+import net.fabricmc.fabric.api.renderer.v1.material.MaterialFinder;
+import net.fabricmc.fabric.api.renderer.v1.material.RenderMaterial;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
+import net.minecraft.block.Material;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.RenderLayers;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.math.Direction;
@@ -25,7 +31,8 @@ public class DynamicCuboid {
     private final float ySize;
     private final float zSize;
 
-    private HashMap<Direction, Integer> overlays = new HashMap<Direction, Integer>();
+    private HashMap<Direction, Integer> overlays = new HashMap<>();
+    private HashMap<Direction, Boolean> emissives = new HashMap<>();
 
     public DynamicCuboid(float x, float y, float z, float xSize, float ySize, float zSize) {
         this.x = x;
@@ -34,7 +41,6 @@ public class DynamicCuboid {
         this.xSize = xSize;
         this.ySize = ySize;
         this.zSize = zSize;
-
         for (Direction direction : Direction.values()) {
             spriteIds.put(direction, null);
         }
@@ -45,6 +51,14 @@ public class DynamicCuboid {
             overlays.replace(direction, colour);
         } else {
             overlays.put(direction, colour);
+        }
+    }
+
+    public void setEmissive(Direction direction, boolean isEmissive) {
+        if (emissives.containsKey(direction)) {
+            emissives.replace(direction, isEmissive);
+        } else {
+            emissives.put(direction, isEmissive);
         }
     }
 
@@ -82,9 +96,15 @@ public class DynamicCuboid {
 
         if (MinecraftClient.getInstance().world.isClient()) {
             for (Direction direction : Direction.values()) {
+                // Overlay things
                 int overlayColour = -1;
                 if (overlays.containsKey(direction)) {
                     overlayColour = overlays.get(direction);
+                }
+                // Emissive things
+                boolean isEmissive = false;
+                if (emissives.containsKey(direction)) {
+                    isEmissive = emissives.get(direction);
                 }
 
                 switch (direction) {
@@ -92,36 +112,48 @@ public class DynamicCuboid {
                         emitter.square(direction, 1f - ((x + xSize) * PIXEL_SIZE), y * PIXEL_SIZE, 1f - (x * PIXEL_SIZE), (y + ySize) * PIXEL_SIZE, z * PIXEL_SIZE);
                         emitter.spriteBake(0, textureGetter.apply(spriteIds.get(Direction.NORTH)), MutableQuadView.BAKE_LOCK_UV);
                         emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
+                        if (isEmissive)
+                            emitter.material(RendererAccess.INSTANCE.getRenderer().materialFinder().emissive(0, true).find());
                         emitter.emit();
                     }
                     case SOUTH -> {
                         emitter.square(direction, x * PIXEL_SIZE, y * PIXEL_SIZE, (x + xSize) * PIXEL_SIZE, (y + ySize) * PIXEL_SIZE, 1f - ((z + zSize) * PIXEL_SIZE));
                         emitter.spriteBake(0, textureGetter.apply(spriteIds.get(Direction.SOUTH)), MutableQuadView.BAKE_LOCK_UV);
                         emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
+                        if (isEmissive)
+                            emitter.material(RendererAccess.INSTANCE.getRenderer().materialFinder().emissive(0, true).find());
                         emitter.emit();
                     }
                     case EAST -> {
                         emitter.square(direction, 1f - ((z + zSize) * PIXEL_SIZE), y * PIXEL_SIZE, 1f - (z * PIXEL_SIZE), (y + ySize) * PIXEL_SIZE, 1f - ((x + xSize) * PIXEL_SIZE));
                         emitter.spriteBake(0, textureGetter.apply(spriteIds.get(Direction.EAST)), MutableQuadView.BAKE_LOCK_UV);
                         emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
+                        if (isEmissive)
+                            emitter.material(RendererAccess.INSTANCE.getRenderer().materialFinder().emissive(0, true).find());
                         emitter.emit();
                     }
                     case WEST -> {
                         emitter.square(direction, z * PIXEL_SIZE, y * PIXEL_SIZE, (z + zSize) * PIXEL_SIZE, (y + ySize) * PIXEL_SIZE, x * PIXEL_SIZE);
                         emitter.spriteBake(0, textureGetter.apply(spriteIds.get(Direction.WEST)), MutableQuadView.BAKE_LOCK_UV);
                         emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
+                        if (isEmissive)
+                            emitter.material(RendererAccess.INSTANCE.getRenderer().materialFinder().emissive(0, true).find());
                         emitter.emit();
                     }
                     case UP -> {
                         emitter.square(direction, x * PIXEL_SIZE, 1f - ((z + zSize) * PIXEL_SIZE), (x + xSize) * PIXEL_SIZE, 1f - (z * PIXEL_SIZE), 1f - ((y + ySize) * PIXEL_SIZE));
                         emitter.spriteBake(0, textureGetter.apply(spriteIds.get(Direction.UP)), MutableQuadView.BAKE_LOCK_UV);
                         emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
+                        if (isEmissive)
+                            emitter.material(RendererAccess.INSTANCE.getRenderer().materialFinder().emissive(0, true).find());
                         emitter.emit();
                     }
                     case DOWN -> {
                         emitter.square(direction, x * PIXEL_SIZE, z * PIXEL_SIZE, (x + xSize) * PIXEL_SIZE, (z + zSize) * PIXEL_SIZE, y * PIXEL_SIZE);
                         emitter.spriteBake(0, textureGetter.apply(spriteIds.get(Direction.DOWN)), MutableQuadView.BAKE_LOCK_UV);
                         emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
+                        if (isEmissive)
+                            emitter.material(RendererAccess.INSTANCE.getRenderer().materialFinder().emissive(0, true).find());
                         emitter.emit();
                     }
                 }

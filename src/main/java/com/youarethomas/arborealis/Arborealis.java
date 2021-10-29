@@ -98,6 +98,7 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(CONDUCTIVE_SAP));
 
 				stacks.add(new ItemStack(WOODEN_BUCKET));
+				stacks.add(new ItemStack(TEST_BLOCK));
 			})
 			.build();
 
