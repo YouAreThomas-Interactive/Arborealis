@@ -71,4 +71,8 @@ public class RuneManager {
         }
         return null;
     }
+
+    public static boolean faceContainsRune(int[] faceArray, String runeName) {
+        return Objects.equals(Objects.requireNonNull(getRuneFromArray(faceArray)).name, runeName);
+    }
 }

@@ -10,7 +10,7 @@ import java.util.HashSet;
  * A tree object
  */
 public class TreeStructure {
-    public static final int NAT_LEAVES_MIN = 20;
+    public static final int NAT_LEAVES_MIN = 16;
     public static final int LOGS_MIN = 3;
 
     public HashSet<BlockPos> leaves = new HashSet<>();
@@ -30,24 +30,24 @@ public class TreeStructure {
         return logs.isEmpty();
     }
 
-    public void replaceLogStructure(World world, Block replacementBlock) {
+    public void replaceLogStructure(World world) {
         for (BlockPos pos : logs) {
             //world.setBlockState(pos, replacementBlock.getDefaultState());
             world.breakBlock(pos, true);
         }
     }
 
-    public void replaceLeafStructure(World world, Block replacementBlock) {
+    public void replaceLeafStructure(World world) {
         for (BlockPos pos : leaves) {
             //world.setBlockState(pos, replacementBlock.getDefaultState());
             world.breakBlock(pos, true);
         }
     }
 
-    public void replaceTreeStructure(World world, Block replacementBlock) {
+    public void chopTreeStructure(World world) {
         if(isNatural()) {
-            replaceLogStructure(world, replacementBlock);
-            replaceLeafStructure(world, replacementBlock);
+            replaceLogStructure(world);
+            replaceLeafStructure(world);
         }
     }
 }

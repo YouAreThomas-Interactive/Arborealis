@@ -2,16 +2,11 @@ package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.blocks.CarvedWood;
-import com.youarethomas.arborealis.util.Rune;
-import com.youarethomas.arborealis.util.RuneManager;
-import com.youarethomas.arborealis.util.TreeManager;
+import com.youarethomas.arborealis.util.*;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
@@ -19,6 +14,9 @@ import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 
 import java.util.*;
+
+import static com.youarethomas.arborealis.util.ArborealisUtil.applyStatusEffectsToEntities;
+import static com.youarethomas.arborealis.util.ArborealisUtil.getPlayersInRadius;
 
 public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSerializable {
 
@@ -31,32 +29,33 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
     private boolean applyStatus = false;
 
-    // Tick Counter
-    private static int ticks = 0;
-    private static final int TICKS_FOR_RUNE_CHECK = 100;
+    // Radius
+    private final int BASE_RADIUS = 10;
+    public int radius = 12;
+    private boolean showRadius;
 
     public CarvedWoodEntity(BlockPos pos, BlockState state) {
         super(Arborealis.CARVED_WOOD_ENTITY, pos, state);
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState state, CarvedWoodEntity be) {
-        createParticleRadiusBorder(world, pos, 10, 75);
+        if (be.getShowRadius()) {
+            createParticleRadiusBorder(world, pos, be.radius, 150);
+        }
+
+        // TODO: Rune particles?
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, CarvedWoodEntity be) {
+        Random random = new Random();
 
         if (be.applyStatus) {
-            //System.out.println("Success!");
-            applyStatusEffectsToEntities(getPlayersInRadius(world, pos, 10), pos, StatusEffects.SPEED);
+            applyStatusEffectsToEntities(getPlayersInRadius(world, pos, be.radius), StatusEffects.SPEED);
         }
 
-        // Rune checking
-        ticks++;
-
-        if (ticks > TICKS_FOR_RUNE_CHECK) {
-            System.out.println("Performed valid rune check");
+        int randomCheck = random.nextInt(40);
+        if (randomCheck == 1) {
             be.checkForRunes();
-            ticks = 0;
         }
     }
 
@@ -69,6 +68,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         checkForRunes();
     }
 
+    //region NBT Shenanagins
     public void setLogID(String logID) {
         this.logID = logID;
         updateListeners();
@@ -76,6 +76,15 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
     public String getLogID() {
         return logID;
+    }
+
+    public void setShowRadius(boolean showRadius) {
+        this.showRadius = showRadius;
+        markDirty();
+    }
+
+    public boolean getShowRadius() {
+        return showRadius;
     }
 
     public void setFaceArray(Direction direction, int[] array) {
@@ -108,6 +117,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
             }
         }
     }
+    //endregion
 
     // Serialize the BlockEntity - storing data
     @Override
@@ -115,6 +125,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         super.writeNbt(tag);
 
         tag.putString("log_id", logID);
+        tag.putBoolean("show_radius", showRadius);
         tag.putIntArray("face_north", faceNorth);
         tag.putIntArray("face_east", faceEast);
         tag.putIntArray("face_south", faceSouth);
@@ -129,6 +140,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         super.readNbt(tag);
 
         logID = tag.getString("log_id");
+        showRadius = tag.getBoolean("show_radius");
         faceNorth = tag.getIntArray("face_north");
         faceEast = tag.getIntArray("face_east");
         faceSouth = tag.getIntArray("face_south");
@@ -154,7 +166,10 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         }
     }
 
-    private Rune checkForRunes() {
+    /**
+     * All the logic for each rune if detected. Called randomly every 2 seconds or so.
+     */
+    private void checkForRunes() {
         // Create array of face arrays to iterate through
         int[][] directions = new int[][] { getFaceArray(Direction.NORTH), getFaceArray(Direction.EAST), getFaceArray(Direction.SOUTH), getFaceArray(Direction.WEST) };
 
@@ -162,15 +177,20 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
         for (int[] faceArray : directions) {
             Rune rune = RuneManager.getRuneFromArray(faceArray);
+            TreeStructure tree = TreeManager.getTreeStructureFromBlock(pos, world);
 
-            if (rune != null && TreeManager.getTreeStructureFromBlock(pos, world).isNatural())
+            if (rune != null && tree.isNatural())
             {
-                if (arrayContainsRune(faceArray, "light")) {
+                if (RuneManager.faceContainsRune(faceArray, "light") && !foundRunes.contains("light")) {
                     world.setBlockState(pos, world.getBlockState(pos).with(CarvedWood.LIT, true));
                     foundRunes.add("light");
-                } else if (arrayContainsRune(faceArray, "test")) {
+                } else if (RuneManager.faceContainsRune(faceArray, "test") && !foundRunes.contains("test")) {
                     applyStatus = true;
+                    setShowRadius(true);
                     foundRunes.add("test");
+                } else if (RuneManager.faceContainsRune(faceArray, "chop") && !foundRunes.contains("chop")) {
+                    // TODO: Start chop timer
+                    foundRunes.add("chop");
                 }
             }
         }
@@ -181,38 +201,16 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         }
         if (!foundRunes.contains("test")) {
             applyStatus = false;
+            setShowRadius(false);
+        }
+        if (!foundRunes.contains("chop")) {
+            // TODO: Stop chop timer
         }
 
         updateListeners();
-
-        return null;
     }
 
-    private boolean arrayContainsRune(int[] faceArray, String runeName) {
-        return Objects.equals(Objects.requireNonNull(RuneManager.getRuneFromArray(faceArray)).name, runeName);
-    }
 
-    private static List<LivingEntity> getPlayersInRadius(World world, BlockPos pos, int radius) {
-        Box box = Box.from(new Vec3d(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D)).expand(radius + 1);
-
-        List<LivingEntity> entities = new ArrayList<>();
-
-        for (LivingEntity entity : world.getNonSpectatingEntities(LivingEntity.class, box)) {
-            if (pos.isWithinDistance(entity.getBlockPos(), radius + 1)) {
-                entities.add(entity);
-            }
-        }
-
-        return entities;
-    }
-
-    private static void applyStatusEffectsToEntities(List<LivingEntity> entityList, BlockPos pos, StatusEffect effect) {
-        if (!entityList.isEmpty()) {
-            for (LivingEntity playerEntity : entityList) {
-                playerEntity.addStatusEffect(new StatusEffectInstance(effect, 5, 0, true, false, true));
-            }
-        }
-    }
 
     private static void createParticleRadiusBorder(World world, BlockPos pos, float radius, int numberOfPoints) {
         Vec2f[] points = new Vec2f[numberOfPoints];
@@ -229,7 +227,11 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         }
 
         for (Vec2f point : points) {
-            world.addParticle(ParticleTypes.ENCHANT, pos.getX() + point.x, pos.down().getY(), pos.getZ() + point.y, -0.5 + random.nextFloat(), random.nextFloat() / 3, -0.5 + random.nextFloat());
+            int randomParticle = random.nextInt(100);
+            // TODO: Add in a nice way to find the ground and great the particles above that
+            if (randomParticle == 1) {
+                world.addParticle(ParticleTypes.COMPOSTER, pos.getX() + point.x + 0.5f, pos.down().getY(), pos.getZ() + point.y + 0.5f, -0.5 + random.nextFloat(), random.nextFloat() / 3, -0.5 + random.nextFloat());
+            }
         }
     }
 }
