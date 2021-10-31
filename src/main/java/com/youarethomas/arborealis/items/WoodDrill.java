@@ -47,7 +47,12 @@ public class WoodDrill extends ToolItem {
 
                 Arborealis.LogIDs.forEach((key, value) -> {
                     if (Objects.equals(value.toString(), idString)) {
-                        world.setBlockState(blockPos, Arborealis.HOLLOWED_LOG.getDefaultState().with(HollowedLog.LOG_ID, key));
+                        if (blockState.isIn(BlockTags.LOGS_THAT_BURN)) {
+                            world.setBlockState(blockPos, Arborealis.HOLLOWED_LOG.getDefaultState().with(HollowedLog.LOG_ID, key));
+                        } else {
+                            world.setBlockState(blockPos, Arborealis.HOLLOWED_NETHER_LOG.getDefaultState().with(HollowedLog.LOG_ID, key));
+                        }
+
                         itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand()));
                     }
                 });
@@ -65,7 +70,12 @@ public class WoodDrill extends ToolItem {
 
                         Arborealis.LogIDs.forEach((key, value) -> {
                             if (Objects.equals(value.toString(), idString)) {
-                                world.setBlockState(blockPos, Arborealis.HOLLOWED_LOG.getDefaultState().with(HollowedLog.LOG_ID, key));
+                                if (blockState.isIn(BlockTags.LOGS_THAT_BURN)) {
+                                    world.setBlockState(blockPos, Arborealis.HOLLOWED_LOG.getDefaultState().with(HollowedLog.LOG_ID, key));
+                                } else {
+                                    world.setBlockState(blockPos, Arborealis.HOLLOWED_NETHER_LOG.getDefaultState().with(HollowedLog.LOG_ID, key));
+                                }
+
                                 itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand()));
                             }
                         });

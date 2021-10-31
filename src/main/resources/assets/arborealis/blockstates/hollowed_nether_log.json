@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "logid=6": { "model": "arborealis:block/hollowed_logs/hollowed_log_crimson" },
+    "logid=7": { "model": "arborealis:block/hollowed_logs/hollowed_log_warped" }
+  }
+}

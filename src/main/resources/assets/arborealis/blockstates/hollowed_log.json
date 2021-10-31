@@ -5,8 +5,6 @@
     "logid=2": { "model": "arborealis:block/hollowed_logs/hollowed_log_birch" },
     "logid=3": { "model": "arborealis:block/hollowed_logs/hollowed_log_jungle" },
     "logid=4": { "model": "arborealis:block/hollowed_logs/hollowed_log_dark_oak" },
-    "logid=5": { "model": "arborealis:block/hollowed_logs/hollowed_log_acacia" },
-    "logid=6": { "model": "arborealis:block/hollowed_logs/hollowed_log_crimson" },
-    "logid=7": { "model": "arborealis:block/hollowed_logs/hollowed_log_warped" }
+    "logid=5": { "model": "arborealis:block/hollowed_logs/hollowed_log_acacia" }
   }
 }
