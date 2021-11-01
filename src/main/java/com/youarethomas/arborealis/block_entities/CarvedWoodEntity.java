@@ -117,7 +117,6 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
             }
         }
     }
-    //endregion
 
     // Serialize the BlockEntity - storing data
     @Override
@@ -165,6 +164,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
             this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.NOTIFY_ALL);
         }
     }
+    //endregion
 
     /**
      * All the logic for each rune if detected. Called randomly every 2 seconds or so.
@@ -209,8 +209,6 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
         updateListeners();
     }
-
-
 
     private static void createParticleRadiusBorder(World world, BlockPos pos, float radius, int numberOfPoints) {
         Vec2f[] points = new Vec2f[numberOfPoints];
