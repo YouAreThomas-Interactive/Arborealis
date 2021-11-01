@@ -2,6 +2,7 @@ package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
+import com.youarethomas.arborealis.blocks.CarvedWood;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
@@ -113,8 +114,9 @@ public class CarvingKnife extends ToolItem {
             int segmentZ = (int)Math.ceil((z - pixelSize) * 8);
 
             // Stop clicking on the left or right of the valid area from registering
-            if ((segmentX == 0 || segmentX == 8) && segmentZ == 0)  return ActionResult.FAIL;
+            if ((segmentX == 0 || segmentX == 8) && segmentZ == 0) return ActionResult.FAIL;
             if ((segmentZ == 0 || segmentZ == 8) && segmentX == 0) return ActionResult.FAIL;
+            if ((segmentZ == 0 || segmentZ == 8) && segmentY == 0) return ActionResult.FAIL;
 
             int segmentID = -1;
 
@@ -122,8 +124,9 @@ public class CarvingKnife extends ToolItem {
             switch (side) {
                 case NORTH -> segmentID = ((7 - segmentY) * 7) + (7 - segmentX);
                 case SOUTH -> segmentID = ((7 - segmentY) * 7) + (segmentX - 1);
-                case EAST -> segmentID = ((7 - segmentY) * 7) + (7 - segmentZ);
-                case WEST -> segmentID = ((7 - segmentY) * 7) + (segmentZ - 1);
+                case EAST  -> segmentID = ((7 - segmentY) * 7) + (7 - segmentZ);
+                case WEST  -> segmentID = ((7 - segmentY) * 7) + (segmentZ - 1);
+                case UP, DOWN -> segmentID = ((7 - segmentX) * 7) + (segmentZ - 1);
             }
 
             // Stop click on the top or bottom of the valid area from registering
@@ -139,7 +142,7 @@ public class CarvingKnife extends ToolItem {
                 return ActionResult.FAIL;
             }
 
-            //player.sendMessage(new LiteralText("%s, %s, %s -> %s".formatted(segmentX, segmentY, segmentZ, segmentID)), false);
+            player.sendMessage(new LiteralText("%s, %s, %s -> %s".formatted(segmentX, segmentY, segmentZ, segmentID)), false);
 
             carvedWoodEntity.setFaceArray(side, faceArray);
 

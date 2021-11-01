@@ -12,6 +12,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -26,6 +27,8 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     private int[] faceEast = new int[49];
     private int[] faceSouth = new int[49];
     private int[] faceWest = new int[49];
+    private int[] faceTop = new int[49];
+    private int[] faceBottom = new int[49];
 
     private boolean applyStatus = false;
 
@@ -60,10 +63,9 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     }
 
     public void performCarve() {
-        setFaceArray(Direction.NORTH, Arrays.stream(getFaceArray(Direction.NORTH)).map(i -> i == 2 ? 1 : i).toArray());
-        setFaceArray(Direction.EAST, Arrays.stream(getFaceArray(Direction.EAST)).map(i -> i == 2 ? 1 : i).toArray());
-        setFaceArray(Direction.SOUTH, Arrays.stream(getFaceArray(Direction.SOUTH)).map(i -> i == 2 ? 1 : i).toArray());
-        setFaceArray(Direction.WEST, Arrays.stream(getFaceArray(Direction.WEST)).map(i -> i == 2 ? 1 : i).toArray());
+        for (Direction dir : Direction.values()) {
+            setFaceArray(dir, Arrays.stream(getFaceArray(dir)).map(i -> i == 2 ? 1 : i).toArray());
+        }
 
         checkForRunes();
     }
@@ -93,6 +95,8 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
             case EAST -> this.faceEast = array;
             case SOUTH -> this.faceSouth = array;
             case WEST -> this.faceWest = array;
+            case UP -> this.faceTop = array;
+            case DOWN -> this.faceBottom = array;
         }
 
         updateListeners();
@@ -112,6 +116,12 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
             case WEST -> {
                 return faceWest;
             }
+            case UP -> {
+                return faceTop;
+            }
+            case DOWN -> {
+                return faceBottom;
+            }
             default -> {
                 return null;
             }
@@ -129,6 +139,8 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         tag.putIntArray("face_east", faceEast);
         tag.putIntArray("face_south", faceSouth);
         tag.putIntArray("face_west", faceWest);
+        tag.putIntArray("face_top", faceTop);
+        tag.putIntArray("face_bottom", faceBottom);
 
         return tag;
     }
@@ -144,6 +156,8 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         faceEast = tag.getIntArray("face_east");
         faceSouth = tag.getIntArray("face_south");
         faceWest = tag.getIntArray("face_west");
+        faceTop = tag.getIntArray("face_top");
+        faceBottom = tag.getIntArray("face_bottom");
     }
 
     @Override
@@ -170,12 +184,13 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
      * All the logic for each rune if detected. Called randomly every 2 seconds or so.
      */
     private void checkForRunes() {
-        // Create array of face arrays to iterate through
-        int[][] directions = new int[][] { getFaceArray(Direction.NORTH), getFaceArray(Direction.EAST), getFaceArray(Direction.SOUTH), getFaceArray(Direction.WEST) };
-
         List<String> foundRunes = new ArrayList<>();
 
-        for (int[] faceArray : directions) {
+        for (Direction dir : Direction.values()) {
+            int[] faceArray = getFaceArray(dir);
+
+            System.out.println(dir + ": " + StringUtils.join(faceArray, ','));
+
             Rune rune = RuneManager.getRuneFromArray(faceArray);
             TreeStructure tree = TreeManager.getTreeStructureFromBlock(pos, world);
 
