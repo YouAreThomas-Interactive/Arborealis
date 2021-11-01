@@ -16,6 +16,8 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class RuneManager {
 
@@ -50,29 +52,54 @@ public class RuneManager {
         });
     }
 
-    public static boolean isValidRune(int[] faceArray) {
-        faceArray = Arrays.stream(faceArray).map(i -> i == 2 ? 0 : i).toArray();
-
-        for (Rune rune : Runes) {
-            int[] faceCarved = Arrays.stream(faceArray).map(i -> i == 2 ? 0 : i).toArray();
-            if (Arrays.deepEquals(ArrayUtils.toObject(faceCarved), ArrayUtils.toObject(rune.shape))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static Rune getRuneFromArray(int[] faceArray) {
         for (Rune rune : Runes) {
-            int[] faceCarved = Arrays.stream(faceArray).map(i -> i == 2 ? 0 : i).toArray();
-            if (Arrays.deepEquals(ArrayUtils.toObject(faceCarved), ArrayUtils.toObject(rune.shape))) {
+            if (faceHasRune(faceArray, rune.name)) {
                 return rune;
             }
         }
+
         return null;
     }
 
-    public static boolean faceContainsRune(int[] faceArray, String runeName) {
-        return Objects.equals(Objects.requireNonNull(getRuneFromArray(faceArray)).name, runeName);
+    public static boolean isValidRune(int[] faceArray) {
+        return getRuneFromArray(faceArray) != null;
+    }
+
+    public static boolean faceHasRune(int[] faceArray, String runeName) {
+        faceArray = Arrays.stream(faceArray).map(i -> i == 2 ? 0 : i).toArray();
+        boolean runeFound = false;
+        int runeSize = 7;
+        int[][] faceMatrix = new int[runeSize][runeSize];
+
+        // Convert 1D rune array into a 2D rune array
+        for (int y = 0; y < runeSize; y++) {
+            for (int x = 0; x < runeSize; x++) {
+                faceMatrix[y][x] = faceArray[(y * runeSize) + x];
+            }
+        }
+
+        // Test and rotate the rune in each of the 4 possible rotations
+        for (int rotation = 0; rotation < 4; rotation++) {
+            // Turn the 2D array back into a 1D array and test the rune. End loop if found.
+            faceArray = Stream.of(faceMatrix).flatMapToInt(IntStream::of).toArray();
+            for (Rune rune : Runes) {
+                if (Objects.equals(rune.name, runeName) && Arrays.deepEquals(ArrayUtils.toObject(faceArray), ArrayUtils.toObject(rune.shape))) {
+                    runeFound = true;
+                    break;
+                }
+            }
+
+            // Rotate the rune
+            int[][] rotatedArray = new int[runeSize][runeSize];
+            for (int i = 0; i < runeSize; ++i) {
+                for (int j = 0; j < runeSize; ++j) {
+                    rotatedArray[i][j] = faceMatrix[runeSize - j - 1][i];
+                }
+            }
+            faceMatrix = rotatedArray.clone();
+        }
+
+        return runeFound;
     }
 }

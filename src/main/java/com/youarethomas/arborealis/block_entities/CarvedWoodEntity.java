@@ -181,14 +181,14 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
             if (rune != null && tree.isNatural())
             {
-                if (RuneManager.faceContainsRune(faceArray, "light") && !foundRunes.contains("light")) {
+                if (RuneManager.faceHasRune(faceArray, "light") && !foundRunes.contains("light")) {
                     world.setBlockState(pos, world.getBlockState(pos).with(CarvedWood.LIT, true));
                     foundRunes.add("light");
-                } else if (RuneManager.faceContainsRune(faceArray, "test") && !foundRunes.contains("test")) {
+                } else if (RuneManager.faceHasRune(faceArray, "test") && !foundRunes.contains("test")) {
                     applyStatus = true;
                     setShowRadius(true);
                     foundRunes.add("test");
-                } else if (RuneManager.faceContainsRune(faceArray, "chop") && !foundRunes.contains("chop")) {
+                } else if (RuneManager.faceHasRune(faceArray, "chop") && !foundRunes.contains("chop")) {
                     // TODO: Start chop timer
                     foundRunes.add("chop");
                 }

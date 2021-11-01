@@ -149,7 +149,6 @@ public class CarvedWoodModel implements UnbakedModel {
                             } else {
                                 core.setSideOverlay(direction, -1);
                             }
-
                         }
                     }
 
