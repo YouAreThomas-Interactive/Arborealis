@@ -43,7 +43,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
             rune.onClientTick(world, pos, be);
         }
 
-        if (be.getShowRadius()) {
+        if (be.showRadius) {
             createParticleRadiusBorder(world, pos, be.radius, 150);
         }
 
@@ -53,20 +53,21 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     public static void serverTick(World world, BlockPos pos, BlockState state, CarvedWoodEntity be) {
         Random random = new Random();
 
-
-
         int randomCheck = random.nextInt(40);
         if (randomCheck == 1) {
             be.checkForRunes();
         }
 
+        boolean showRuneRadius = false;
         for (AbstractRune rune : be.runesPresentLastCheck) {
             rune.onServerTick(world, pos, be);
 
             if (rune.showRadiusEffect()) {
-                be.setShowRadius(true);
+                showRuneRadius = true;
             }
         }
+
+        be.showRadius = showRuneRadius;
     }
 
     public void performCarve() {
@@ -181,9 +182,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     private void updateListeners() {
         // This method is the magic that makes the whole carving system work. No touchy
         this.markDirty();
-        if (this.world != null) {
-            this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.NOTIFY_ALL);
-        }
+        this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.NOTIFY_NEIGHBORS);
     }
     //endregion
 
