@@ -1,24 +1,18 @@
 package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.blocks.CarvedWood;
 import com.youarethomas.arborealis.runes.AbstractRune;
 import com.youarethomas.arborealis.util.*;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
-
-import static com.youarethomas.arborealis.util.ArborealisUtil.applyStatusEffectsToEntities;
-import static com.youarethomas.arborealis.util.ArborealisUtil.getPlayersInRadius;
 
 public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSerializable {
 
@@ -38,6 +32,8 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
     private List<AbstractRune> runesPresentLastCheck = new ArrayList<>();
 
+    public Timer chopTimer = new Timer();
+
     public CarvedWoodEntity(BlockPos pos, BlockState state) {
         super(Arborealis.CARVED_WOOD_ENTITY, pos, state);
     }
@@ -56,6 +52,8 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
     public static void serverTick(World world, BlockPos pos, BlockState state, CarvedWoodEntity be) {
         Random random = new Random();
+
+
 
         int randomCheck = random.nextInt(40);
         if (randomCheck == 1) {
@@ -197,8 +195,6 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
         for (Direction dir : Direction.values()) {
             int[] faceArray = getFaceArray(dir);
-
-            //System.out.println(dir + ": " + StringUtils.join(faceArray, ','));
 
             AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
             TreeStructure tree = TreeManager.getTreeStructureFromBlock(pos, world);

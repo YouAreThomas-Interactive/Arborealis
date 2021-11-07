@@ -9,6 +9,7 @@ import com.youarethomas.arborealis.models.CarvedWoodModel;
 import com.youarethomas.arborealis.models.model_utils.DynamicModelRegistry;
 import com.youarethomas.arborealis.runes.AbstractRune;
 import com.youarethomas.arborealis.runes.AreaTest;
+import com.youarethomas.arborealis.runes.Chop;
 import com.youarethomas.arborealis.runes.Light;
 import com.youarethomas.arborealis.tool_materials.CopperKnifeMaterial;
 import com.youarethomas.arborealis.tool_materials.RegrowthSpoonMaterial;
@@ -34,6 +35,7 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.system.CallbackI;
 
 import java.util.HashMap;
 
@@ -57,6 +59,7 @@ public class Arborealis implements ModInitializer {
 	// Runes
 	public static final Light LIGHT = new Light();
 	public static final AreaTest AREA_TEST = new AreaTest();
+	public static final Chop CHOP = new Chop();
 
 	// Tool Items
 	public static final CarvingKnife CARVING_KNIFE = new CarvingKnife(CopperKnifeMaterial.INSTANCE, new FabricItemSettings().maxCount(1));
@@ -116,6 +119,7 @@ public class Arborealis implements ModInitializer {
 		// Rune registration
 		RuneManager.register(new Identifier(MOD_ID, "light"), LIGHT);
 		RuneManager.register(new Identifier(MOD_ID, "test"), AREA_TEST);
+		RuneManager.register(new Identifier(MOD_ID, "chop"), CHOP);
 
 		RuneManager.initializeRunes();
 
