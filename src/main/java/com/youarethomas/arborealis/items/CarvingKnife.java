@@ -142,7 +142,7 @@ public class CarvingKnife extends ToolItem {
                 return ActionResult.FAIL;
             }
 
-            player.sendMessage(new LiteralText("%s, %s, %s -> %s".formatted(segmentX, segmentY, segmentZ, segmentID)), false);
+            //player.sendMessage(new LiteralText("%s, %s, %s -> %s".formatted(segmentX, segmentY, segmentZ, segmentID)), false);
 
             carvedWoodEntity.setFaceArray(side, faceArray);
 

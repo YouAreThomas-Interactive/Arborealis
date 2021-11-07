@@ -2,26 +2,29 @@ package com.youarethomas.arborealis.util;
 
 import com.google.gson.Gson;
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.runes.AbstractRune;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.block.Block;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Direction;
+import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class RuneManager {
 
-    private static List<Rune> Runes = new ArrayList<>();
+    private static HashMap<Identifier, AbstractRune> RuneRegistry = new HashMap<>();
+    private static List<AbstractRune> Runes = new ArrayList<>();
     private static final Gson GSON = new Gson();
 
     public static void initializeRunes() {
@@ -33,17 +36,17 @@ public class RuneManager {
 
             @Override
             public void reload(ResourceManager manager) {
-                Runes.clear(); // Clear out and re-load runes
+                Runes.clear(); // Clear out and reload runes
 
                 int runesRegistered = 0;
                 for (Identifier id : manager.findResources("runes", path -> path.endsWith(".json"))) {
                     try (InputStream stream = manager.getResource(id).getInputStream()) {
                         Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
-                        Rune rune = GSON.fromJson(reader, Rune.class);
-                        Runes.add(rune);
+                        AbstractRune.RuneSettings runeSettings = GSON.fromJson(reader, AbstractRune.RuneSettings.class);
+                        Runes.add(RuneRegistry.get(id).withSettings(runeSettings));
                         runesRegistered++;
                     } catch (Exception e) {
-                        System.out.printf("Error occurred while loading resource json %s: %s%n", id.toString(), e);
+                        Arborealis.LOGGER.error(String.format("Error occurred while loading resource json %s: %s%n", id.toString(), e));
                     }
                 }
 
@@ -52,8 +55,16 @@ public class RuneManager {
         });
     }
 
-    public static Rune getRuneFromArray(int[] faceArray) {
-        for (Rune rune : Runes) {
+    public static void register(Identifier path, AbstractRune rune) {
+        RuneRegistry.put(getRuneJsonPath(path), rune);
+    }
+
+    private static Identifier getRuneJsonPath(Identifier identifier) {
+        return new Identifier(identifier.getNamespace(), "runes/" + identifier.getPath() + ".json");
+    }
+
+    public static AbstractRune getRuneFromArray(int[] faceArray) {
+        for (AbstractRune rune : Runes) {
             if (faceHasRune(faceArray, rune.name)) {
                 return rune;
             }
@@ -83,7 +94,7 @@ public class RuneManager {
         for (int rotation = 0; rotation < 4; rotation++) {
             // Turn the 2D array back into a 1D array and test the rune. End loop if found.
             faceArray = Stream.of(faceMatrix).flatMapToInt(IntStream::of).toArray();
-            for (Rune rune : Runes) {
+            for (AbstractRune rune : Runes) {
                 if (Objects.equals(rune.name, runeName) && Arrays.deepEquals(ArrayUtils.toObject(faceArray), ArrayUtils.toObject(rune.shape))) {
                     runeFound = true;
                     break;

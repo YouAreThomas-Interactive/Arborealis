@@ -2,6 +2,7 @@ package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.blocks.CarvedWood;
+import com.youarethomas.arborealis.runes.AbstractRune;
 import com.youarethomas.arborealis.util.*;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.Block;
@@ -30,18 +31,22 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     private int[] faceTop = new int[49];
     private int[] faceBottom = new int[49];
 
-    private boolean applyStatus = false;
-
     // Radius
     private final int BASE_RADIUS = 10;
     public int radius = 12;
     private boolean showRadius;
+
+    private List<AbstractRune> runesPresentLastCheck = new ArrayList<>();
 
     public CarvedWoodEntity(BlockPos pos, BlockState state) {
         super(Arborealis.CARVED_WOOD_ENTITY, pos, state);
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState state, CarvedWoodEntity be) {
+        for (AbstractRune rune : be.runesPresentLastCheck) {
+            rune.onClientTick(world, pos, be);
+        }
+
         if (be.getShowRadius()) {
             createParticleRadiusBorder(world, pos, be.radius, 150);
         }
@@ -52,13 +57,17 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     public static void serverTick(World world, BlockPos pos, BlockState state, CarvedWoodEntity be) {
         Random random = new Random();
 
-        if (be.applyStatus) {
-            applyStatusEffectsToEntities(getPlayersInRadius(world, pos, be.radius), StatusEffects.SPEED);
-        }
-
         int randomCheck = random.nextInt(40);
         if (randomCheck == 1) {
             be.checkForRunes();
+        }
+
+        for (AbstractRune rune : be.runesPresentLastCheck) {
+            rune.onServerTick(world, pos, be);
+
+            if (rune.showRadiusEffect()) {
+                be.setShowRadius(true);
+            }
         }
     }
 
@@ -82,7 +91,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
     public void setShowRadius(boolean showRadius) {
         this.showRadius = showRadius;
-        markDirty();
+        updateListeners();
     }
 
     public boolean getShowRadius() {
@@ -184,43 +193,31 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
      * All the logic for each rune if detected. Called randomly every 2 seconds or so.
      */
     private void checkForRunes() {
-        List<String> foundRunes = new ArrayList<>();
+        List<AbstractRune> foundRunes = new ArrayList<>();
 
         for (Direction dir : Direction.values()) {
             int[] faceArray = getFaceArray(dir);
 
-            System.out.println(dir + ": " + StringUtils.join(faceArray, ','));
+            //System.out.println(dir + ": " + StringUtils.join(faceArray, ','));
 
-            Rune rune = RuneManager.getRuneFromArray(faceArray);
+            AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
             TreeStructure tree = TreeManager.getTreeStructureFromBlock(pos, world);
 
-            if (rune != null && tree.isNatural())
-            {
-                if (RuneManager.faceHasRune(faceArray, "light") && !foundRunes.contains("light")) {
-                    world.setBlockState(pos, world.getBlockState(pos).with(CarvedWood.LIT, true));
-                    foundRunes.add("light");
-                } else if (RuneManager.faceHasRune(faceArray, "test") && !foundRunes.contains("test")) {
-                    applyStatus = true;
-                    setShowRadius(true);
-                    foundRunes.add("test");
-                } else if (RuneManager.faceHasRune(faceArray, "chop") && !foundRunes.contains("chop")) {
-                    // TODO: Start chop timer
-                    foundRunes.add("chop");
+            if (rune != null && tree.isNatural()) {
+                if (!runesPresentLastCheck.contains(rune)) {
+                    rune.onRuneFound(world, pos, this);
                 }
+                foundRunes.add(rune);
             }
         }
 
-        // Reset effects when runes aren't found
-        if (!foundRunes.contains("light")) {
-            world.setBlockState(pos, world.getBlockState(pos).with(CarvedWood.LIT, false));
+        for (AbstractRune rune : runesPresentLastCheck) {
+            if (!foundRunes.contains(rune)) {
+                rune.onRuneLost(world, pos, this);
+            }
         }
-        if (!foundRunes.contains("test")) {
-            applyStatus = false;
-            setShowRadius(false);
-        }
-        if (!foundRunes.contains("chop")) {
-            // TODO: Stop chop timer
-        }
+
+        runesPresentLastCheck = foundRunes;
 
         updateListeners();
     }

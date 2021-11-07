@@ -1,10 +1,7 @@
 {
   "name": "chop",
-  "type": "standard",
   "colour": "0xa6341e",
-  "catalysts": [
-
-  ],
+  "catalyst": "",
   "life_force": 0,
   "shape": [
     0, 0, 0, 1, 0, 0, 0,

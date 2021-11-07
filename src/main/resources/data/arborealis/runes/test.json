@@ -1,10 +1,7 @@
 {
   "name": "test",
-  "type": "standard",
   "colour": "0x000000",
-  "catalysts": [
-
-  ],
+  "catalysts": "",
   "life_force": 0,
   "shape": [
     0, 0, 0, 0, 0, 0, 0,

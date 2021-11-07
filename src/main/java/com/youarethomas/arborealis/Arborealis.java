@@ -7,6 +7,9 @@ import com.youarethomas.arborealis.blocks.*;
 import com.youarethomas.arborealis.items.*;
 import com.youarethomas.arborealis.models.CarvedWoodModel;
 import com.youarethomas.arborealis.models.model_utils.DynamicModelRegistry;
+import com.youarethomas.arborealis.runes.AbstractRune;
+import com.youarethomas.arborealis.runes.AreaTest;
+import com.youarethomas.arborealis.runes.Light;
 import com.youarethomas.arborealis.tool_materials.CopperKnifeMaterial;
 import com.youarethomas.arborealis.tool_materials.RegrowthSpoonMaterial;
 import com.youarethomas.arborealis.tool_materials.WoodDrillMaterial;
@@ -21,6 +24,7 @@ import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.*;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagManager;
@@ -49,6 +53,10 @@ public class Arborealis implements ModInitializer {
 		put(6, new Identifier("minecraft:crimson_stem"));
 		put(7, new Identifier("minecraft:warped_stem"));
 	}};
+
+	// Runes
+	public static final Light LIGHT = new Light();
+	public static final AreaTest AREA_TEST = new AreaTest();
 
 	// Tool Items
 	public static final CarvingKnife CARVING_KNIFE = new CarvingKnife(CopperKnifeMaterial.INSTANCE, new FabricItemSettings().maxCount(1));
@@ -105,6 +113,10 @@ public class Arborealis implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		// Rune registration
+		RuneManager.register(new Identifier(MOD_ID, "light"), LIGHT);
+		RuneManager.register(new Identifier(MOD_ID, "test"), AREA_TEST);
+
 		RuneManager.initializeRunes();
 
 		// Block registration
