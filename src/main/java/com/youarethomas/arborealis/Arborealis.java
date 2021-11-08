@@ -7,10 +7,7 @@ import com.youarethomas.arborealis.blocks.*;
 import com.youarethomas.arborealis.items.*;
 import com.youarethomas.arborealis.models.CarvedWoodModel;
 import com.youarethomas.arborealis.models.model_utils.DynamicModelRegistry;
-import com.youarethomas.arborealis.runes.AbstractRune;
-import com.youarethomas.arborealis.runes.AreaTest;
-import com.youarethomas.arborealis.runes.Chop;
-import com.youarethomas.arborealis.runes.Light;
+import com.youarethomas.arborealis.runes.*;
 import com.youarethomas.arborealis.tool_materials.CopperKnifeMaterial;
 import com.youarethomas.arborealis.tool_materials.RegrowthSpoonMaterial;
 import com.youarethomas.arborealis.tool_materials.WoodDrillMaterial;
@@ -60,6 +57,7 @@ public class Arborealis implements ModInitializer {
 	public static final Light LIGHT = new Light();
 	public static final AreaTest AREA_TEST = new AreaTest();
 	public static final Chop CHOP = new Chop();
+	public static final Push PUSH = new Push();
 
 	// Tool Items
 	public static final CarvingKnife CARVING_KNIFE = new CarvingKnife(CopperKnifeMaterial.INSTANCE, new FabricItemSettings().maxCount(1));
@@ -118,8 +116,8 @@ public class Arborealis implements ModInitializer {
 	public void onInitialize() {
 		// Rune registration
 		RuneManager.register(new Identifier(MOD_ID, "light"), LIGHT);
-		RuneManager.register(new Identifier(MOD_ID, "test"), AREA_TEST);
 		RuneManager.register(new Identifier(MOD_ID, "chop"), CHOP);
+		RuneManager.register(new Identifier(MOD_ID, "push"), PUSH);
 
 		RuneManager.initializeRunes();
 

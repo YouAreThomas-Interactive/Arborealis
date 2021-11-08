@@ -43,6 +43,7 @@ public class RegrowthSpoon extends ToolItem {
             if (be != null) {
                 be.setFaceArray(context.getSide(), new int[49]); // reset side of face
                 be.setFaceActive(context.getSide(), false);
+                be.setFaceGlow(context.getSide(), false);
 
                 // Check to see if any sides are carved
                 boolean blockReset = true;

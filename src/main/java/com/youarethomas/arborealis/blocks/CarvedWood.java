@@ -11,6 +11,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ConduitBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -66,6 +67,9 @@ public class CarvedWood extends BlockWithEntity implements BlockEntityProvider {
                 }
                 return ActionResult.SUCCESS;
             }
+        }
+        if (player.isHolding(Items.GLOW_INK_SAC)) {
+            be.setFaceGlow(hitSide, true);
         }
 
         return ActionResult.PASS;

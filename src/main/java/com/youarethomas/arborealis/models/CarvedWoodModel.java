@@ -140,10 +140,13 @@ public class CarvedWoodModel implements UnbakedModel {
                             if (rune != null) {
                                 core.setSideOverlay(dir, rune.getColour());
                                 core.applyTexture(dir, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
-                                core.setEmissive(dir, true);
                             } else {
                                 core.setSideOverlay(dir, -1);
                             }
+                        }
+
+                        if (be.getFaceGlow(dir)) {
+                            core.setEmissive(dir, true);
                         }
                     }
 
