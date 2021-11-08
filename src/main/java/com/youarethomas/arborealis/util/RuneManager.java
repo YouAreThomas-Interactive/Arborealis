@@ -6,6 +6,7 @@ import com.youarethomas.arborealis.runes.AbstractRune;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
@@ -75,6 +76,18 @@ public class RuneManager {
 
     public static boolean isValidRune(int[] faceArray) {
         return getRuneFromArray(faceArray) != null;
+    }
+
+    public static Item getRuneCatalyst(int[] faceArray) {
+        if (isValidRune(faceArray)) {
+            AbstractRune rune = getRuneFromArray(faceArray);
+
+            Item catalyst = Registry.ITEM.get(rune.catalyst);
+
+            return catalyst;
+        }
+
+        return null;
     }
 
     public static boolean faceHasRune(int[] faceArray, String runeName) {

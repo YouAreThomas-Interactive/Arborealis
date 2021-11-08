@@ -131,10 +131,11 @@ public class CarvedWoodModel implements UnbakedModel {
 
                     // If the face has a rune, make it glow
                     for (Direction dir : Direction.values()) {
-                        int[] faceArray = ((CarvedWoodEntity) entity).getFaceArray(dir);
+                        CarvedWoodEntity be = ((CarvedWoodEntity) entity);
+                        int[] faceArray = be.getFaceArray(dir);
 
                         // Check if rune is valid and tree is natural
-                        if (RuneManager.isValidRune(faceArray) && TreeManager.getTreeStructureFromBlock(pos, world).isNatural()) {
+                        if (be.getFaceActive(dir) && RuneManager.isValidRune(faceArray) && TreeManager.getTreeStructureFromBlock(pos, world).isNatural()) {
                             AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
                             if (rune != null) {
                                 core.setSideOverlay(dir, rune.getColour());

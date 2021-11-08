@@ -1,7 +1,7 @@
 {
   "name": "light",
-  "colour": "0xffce2b",
-  "catalyst": "",
+  "colour": "0xffbc00",
+  "catalyst": "arborealis:bottled_sap",
   "life_force": 1,
   "shape": [
     0, 0, 0, 1, 0, 0, 0,

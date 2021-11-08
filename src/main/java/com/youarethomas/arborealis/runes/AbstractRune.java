@@ -2,6 +2,7 @@ package com.youarethomas.arborealis.runes;
 
 import com.google.gson.annotations.SerializedName;
 import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -10,7 +11,7 @@ import net.minecraft.world.World;
 public abstract class AbstractRune {
     public String name;
     private String colour;
-    public String catalyst;
+    public Identifier catalyst;
     @SerializedName("life_force")
     public int lifeForce;
     public int[] shape;
@@ -35,7 +36,7 @@ public abstract class AbstractRune {
     public AbstractRune withSettings(RuneSettings settings) {
         this.name = settings.name;
         this.colour = settings.colour;
-        this.catalyst = settings.catalyst;
+        this.catalyst = new Identifier(settings.catalyst);
         this.lifeForce = settings.lifeForce;
         this.shape = settings.shape;
         this.settings = settings;

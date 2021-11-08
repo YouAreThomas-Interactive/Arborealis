@@ -37,25 +37,26 @@ public class RegrowthSpoon extends ToolItem {
         BlockState blockState = world.getBlockState(blockPos);
         ItemStack itemStack = context.getStack();
 
-        Direction[] directions = { Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST };
-
         if (blockState.isOf(Arborealis.CARVED_WOOD) || blockState.isOf(Arborealis.CARVED_NETHER_WOOD)) {
-            CarvedWoodEntity carvedEntity = (CarvedWoodEntity) world.getBlockEntity(blockPos);
+            CarvedWoodEntity be = (CarvedWoodEntity) world.getBlockEntity(blockPos);
 
-            if (carvedEntity != null) {
-                carvedEntity.setFaceArray(context.getSide(), new int[49]); // reset side of face
+            if (be != null) {
+                be.setFaceArray(context.getSide(), new int[49]); // reset side of face
+                be.setFaceActive(context.getSide(), false);
 
                 // Check to see if any sides are carved
                 boolean blockReset = true;
-                for (Direction dir : directions) {
-                    if (!Arrays.deepEquals(ArrayUtils.toObject(carvedEntity.getFaceArray(dir)), ArrayUtils.toObject(new int[49]))) {
+                for (Direction dir : Direction.values()) {
+                    if (!Arrays.deepEquals(ArrayUtils.toObject(be.getFaceArray(dir)), ArrayUtils.toObject(new int[49]))) {
                         blockReset = false;
                     }
                 }
 
-                // If no sides are carved, reset to respective log block
+                // If no sides are carved, reset to respective log block. Otherwise, update runes
                 if (blockReset) {
-                    world.setBlockState(blockPos, Registry.BLOCK.get(new Identifier(carvedEntity.getLogID())).getDefaultState());
+                    world.setBlockState(blockPos, Registry.BLOCK.get(new Identifier(be.getLogID())).getDefaultState());
+                } else {
+                    be.checkForRunes();
                 }
 
                 if (playerEntity != null) {

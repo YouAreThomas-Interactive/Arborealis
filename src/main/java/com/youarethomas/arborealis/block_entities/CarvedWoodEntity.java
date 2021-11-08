@@ -25,6 +25,20 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     private int[] faceTop = new int[49];
     private int[] faceBottom = new int[49];
 
+    private boolean northActive = false;
+    private boolean eastActive = false;
+    private boolean southActive = false;
+    private boolean westActive = false;
+    private boolean topActive = false;
+    private boolean bottomActive = false;
+
+    private boolean northGlow = false;
+    private boolean eastGlow = false;
+    private boolean southGlow = false;
+    private boolean westGlow = false;
+    private boolean topGlow = false;
+    private boolean bottomGlow = false;
+
     // Radius
     private final int BASE_RADIUS = 10;
     public int radius = 12;
@@ -55,7 +69,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
         int randomCheck = random.nextInt(40);
         if (randomCheck == 1) {
-            be.checkForRunes();
+            //be.checkForRunes();
         }
 
         boolean showRuneRadius = false;
@@ -136,6 +150,84 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         }
     }
 
+    public void setFaceActive(Direction direction, boolean active) {
+        switch (direction) {
+            case NORTH -> this.northActive = active;
+            case EAST -> this.eastActive = active;
+            case SOUTH -> this.southActive = active;
+            case WEST -> this.westActive = active;
+            case UP -> this.topActive = active;
+            case DOWN -> this.bottomActive = active;
+        }
+
+        updateListeners();
+    }
+
+    public boolean getFaceActive(Direction direction) {
+        switch (direction) {
+            case NORTH -> {
+                return northActive;
+            }
+            case EAST -> {
+                return eastActive;
+            }
+            case SOUTH -> {
+                return southActive;
+            }
+            case WEST -> {
+                return westActive;
+            }
+            case UP -> {
+                return topActive;
+            }
+            case DOWN -> {
+                return bottomActive;
+            }
+            default -> {
+                return false;
+            }
+        }
+    }
+
+    public void setFaceGlow(Direction direction, boolean active) {
+        switch (direction) {
+            case NORTH -> this.northGlow = active;
+            case EAST -> this.eastGlow = active;
+            case SOUTH -> this.southGlow = active;
+            case WEST -> this.westGlow = active;
+            case UP -> this.topGlow = active;
+            case DOWN -> this.bottomGlow = active;
+        }
+
+        updateListeners();
+    }
+
+    public boolean getFaceGlow(Direction direction) {
+        switch (direction) {
+            case NORTH -> {
+                return northGlow;
+            }
+            case EAST -> {
+                return eastGlow;
+            }
+            case SOUTH -> {
+                return southGlow;
+            }
+            case WEST -> {
+                return westGlow;
+            }
+            case UP -> {
+                return topGlow;
+            }
+            case DOWN -> {
+                return bottomGlow;
+            }
+            default -> {
+                return false;
+            }
+        }
+    }
+
     // Serialize the BlockEntity - storing data
     @Override
     public NbtCompound writeNbt(NbtCompound tag) {
@@ -143,12 +235,27 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
         tag.putString("log_id", logID);
         tag.putBoolean("show_radius", showRadius);
+
         tag.putIntArray("face_north", faceNorth);
         tag.putIntArray("face_east", faceEast);
         tag.putIntArray("face_south", faceSouth);
         tag.putIntArray("face_west", faceWest);
         tag.putIntArray("face_top", faceTop);
         tag.putIntArray("face_bottom", faceBottom);
+
+        tag.putBoolean("north_active", northActive);
+        tag.putBoolean("east_active", eastActive);
+        tag.putBoolean("south_active", southActive);
+        tag.putBoolean("west_active", westActive);
+        tag.putBoolean("top_active", topActive);
+        tag.putBoolean("bottom_active", bottomActive);
+
+        tag.putBoolean("north_glow", northGlow);
+        tag.putBoolean("east_glow", eastGlow);
+        tag.putBoolean("south_glow", southGlow);
+        tag.putBoolean("west_glow", westGlow);
+        tag.putBoolean("top_glow", topGlow);
+        tag.putBoolean("bottom_glow", bottomGlow);
 
         return tag;
     }
@@ -160,12 +267,27 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
         logID = tag.getString("log_id");
         showRadius = tag.getBoolean("show_radius");
+
         faceNorth = tag.getIntArray("face_north");
         faceEast = tag.getIntArray("face_east");
         faceSouth = tag.getIntArray("face_south");
         faceWest = tag.getIntArray("face_west");
         faceTop = tag.getIntArray("face_top");
         faceBottom = tag.getIntArray("face_bottom");
+
+        northActive = tag.getBoolean("north_active");
+        eastActive = tag.getBoolean("east_active");
+        southActive = tag.getBoolean("south_active");
+        westActive = tag.getBoolean("west_active");
+        topActive = tag.getBoolean("top_active");
+        bottomActive = tag.getBoolean("bottom_active");
+
+        northGlow = tag.getBoolean("north_glow");
+        eastGlow = tag.getBoolean("east_glow");
+        southGlow = tag.getBoolean("south_glow");
+        westGlow = tag.getBoolean("west_glow");
+        topGlow = tag.getBoolean("top_glow");
+        bottomGlow = tag.getBoolean("bottom_glow");
     }
 
     @Override
@@ -182,14 +304,14 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     private void updateListeners() {
         // This method is the magic that makes the whole carving system work. No touchy
         this.markDirty();
-        this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.NOTIFY_NEIGHBORS);
+        this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.REDRAW_ON_MAIN_THREAD);
     }
     //endregion
 
     /**
      * All the logic for each rune if detected. Called randomly every 2 seconds or so.
      */
-    private void checkForRunes() {
+    public void checkForRunes() {
         List<AbstractRune> foundRunes = new ArrayList<>();
 
         for (Direction dir : Direction.values()) {
@@ -198,7 +320,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
             AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
             TreeStructure tree = TreeManager.getTreeStructureFromBlock(pos, world);
 
-            if (rune != null && tree.isNatural()) {
+            if (rune != null && tree.isNatural() && getFaceActive(dir)) {
                 if (!runesPresentLastCheck.contains(rune)) {
                     rune.onRuneFound(world, pos, this);
                 }

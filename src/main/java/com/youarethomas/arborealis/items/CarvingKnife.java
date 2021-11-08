@@ -75,10 +75,10 @@ public class CarvingKnife extends ToolItem {
         if (blockState.isOf(Arborealis.CARVED_WOOD) || blockState.isOf(Arborealis.CARVED_NETHER_WOOD)) {
             if (playerEntity.isSneaking()) {
                 if (!world.isClient()) {
-
-                    ((CarvedWoodEntity) world.getBlockEntity(blockPos)).performCarve();
+                    CarvedWoodEntity be = (CarvedWoodEntity) world.getBlockEntity(blockPos);
+                    be.performCarve();
+                    be.setFaceActive(context.getSide(), false);
                     itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand())); // Damage carving knife when carving is applied
-
                 } else {
                     world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
                 }

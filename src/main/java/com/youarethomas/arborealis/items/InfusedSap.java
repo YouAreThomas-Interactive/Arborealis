@@ -23,8 +23,6 @@ public class InfusedSap extends Item {
         if (!context.getWorld().isClient) {
             TreeStructure structure = TreeManager.getTreeStructureFromBlock(context.getBlockPos(), context.getWorld());
             structure.chopTreeStructure(context.getWorld());
-            /*structure.replaceLogStructure(context.getWorld(), Blocks.BONE_BLOCK);
-            structure.replaceLeafStructure(context.getWorld(), Blocks.GLASS);*/
         }
 
         return ActionResult.PASS;
