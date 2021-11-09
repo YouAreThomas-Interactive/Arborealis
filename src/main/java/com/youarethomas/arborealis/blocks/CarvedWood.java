@@ -8,10 +8,11 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.ConduitBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -24,6 +25,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.system.CallbackI;
 
 import java.util.function.ToIntFunction;
 
@@ -60,10 +62,15 @@ public class CarvedWood extends BlockWithEntity implements BlockEntityProvider {
         int[] faceArray = be.getFaceArray(hitSide);
 
         if (RuneManager.isValidRune(faceArray) && TreeManager.getTreeStructureFromBlock(pos, world).isNatural()) {
-            if (player.isHolding(RuneManager.getRuneCatalyst(faceArray))) {
-                if (!world.isClient) {
-                    be.setFaceActive(hitSide, true);
-                    be.checkForRunes();
+            if (player.isHolding(RuneManager.getRuneCatalyst(faceArray)) && !be.getFaceCatalysed(hitSide)) {
+                if (world.isClient) {
+                    if (!player.isCreative()) {
+                        player.getStackInHand(hand).decrement(1);
+                    }
+                    world.playSound(player, pos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, 0.5F);
+                } else {
+                    be.setFaceCatalysed(hitSide, true);
+                    be.checkLifeForce();
                 }
                 return ActionResult.SUCCESS;
             }

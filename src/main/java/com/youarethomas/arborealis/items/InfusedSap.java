@@ -1,10 +1,13 @@
 package com.youarethomas.arborealis.items;
 
+import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
 import com.youarethomas.arborealis.util.TreeManager;
 import com.youarethomas.arborealis.util.TreeStructure;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.*;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.BlockPos;
 
 public class InfusedSap extends Item {
 
@@ -21,8 +24,10 @@ public class InfusedSap extends Item {
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
         if (!context.getWorld().isClient) {
-            TreeStructure structure = TreeManager.getTreeStructureFromBlock(context.getBlockPos(), context.getWorld());
-            structure.chopTreeStructure(context.getWorld());
+            BlockEntity be = context.getWorld().getBlockEntity(context.getBlockPos());
+            if (be instanceof CarvedWoodEntity) {
+                System.out.println(((CarvedWoodEntity) be).getRunesActive());
+            }
         }
 
         return ActionResult.PASS;

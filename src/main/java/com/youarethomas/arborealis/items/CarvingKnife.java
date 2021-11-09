@@ -2,7 +2,6 @@ package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
-import com.youarethomas.arborealis.blocks.CarvedWood;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
@@ -14,7 +13,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -25,7 +23,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.*;
 import java.util.*;
 
 public class CarvingKnife extends ToolItem {
@@ -77,7 +74,7 @@ public class CarvingKnife extends ToolItem {
                 if (!world.isClient()) {
                     CarvedWoodEntity be = (CarvedWoodEntity) world.getBlockEntity(blockPos);
                     be.performCarve();
-                    be.setFaceActive(context.getSide(), false);
+                    be.setFaceCatalysed(context.getSide(), false);
                     itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand())); // Damage carving knife when carving is applied
                 } else {
                     world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);

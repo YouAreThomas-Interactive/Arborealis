@@ -7,6 +7,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -18,7 +20,6 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class RegrowthSpoon extends ToolItem {
 
             if (be != null) {
                 be.setFaceArray(context.getSide(), new int[49]); // reset side of face
-                be.setFaceActive(context.getSide(), false);
+                be.setFaceCatalysed(context.getSide(), false);
                 be.setFaceGlow(context.getSide(), false);
 
                 // Check to see if any sides are carved
@@ -53,16 +54,21 @@ public class RegrowthSpoon extends ToolItem {
                     }
                 }
 
+                be.checkLifeForce();
+
                 // If no sides are carved, reset to respective log block. Otherwise, update runes
                 if (blockReset) {
-                    world.setBlockState(blockPos, Registry.BLOCK.get(new Identifier(be.getLogID())).getDefaultState());
+                    if (world.isClient) {
+                        world.playSound(playerEntity, blockPos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1.0F, 0.5F);
+                    } else {
+                        world.setBlockState(blockPos, Registry.BLOCK.get(new Identifier(be.getLogID())).getDefaultState());
+                        itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand())); // Damage carving knife when carving is applied
+                    }
                 } else {
                     be.checkForRunes();
                 }
 
-                if (playerEntity != null) {
-                    itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand())); // Damage carving knife when carving is applied
-                }
+
 
                 return ActionResult.SUCCESS;
             }

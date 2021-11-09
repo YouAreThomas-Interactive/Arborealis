@@ -135,10 +135,14 @@ public class CarvedWoodModel implements UnbakedModel {
                         int[] faceArray = be.getFaceArray(dir);
 
                         // Check if rune is valid and tree is natural
-                        if (be.getFaceActive(dir) && RuneManager.isValidRune(faceArray) && TreeManager.getTreeStructureFromBlock(pos, world).isNatural()) {
+                        if (be.getFaceCatalysed(dir) && RuneManager.isValidRune(faceArray) && TreeManager.getTreeStructureFromBlock(pos, world).isNatural()) {
                             AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
                             if (rune != null) {
-                                core.setSideOverlay(dir, rune.getColour());
+                                if (be.getRunesActive()) {
+                                    core.setSideOverlay(dir, rune.getColour());
+                                } else {
+                                    core.setSideOverlay(dir, 0x545454);
+                                }
                                 core.applyTexture(dir, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
                             } else {
                                 core.setSideOverlay(dir, -1);

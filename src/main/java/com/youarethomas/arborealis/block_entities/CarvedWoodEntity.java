@@ -9,6 +9,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 
@@ -25,12 +27,14 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     private int[] faceTop = new int[49];
     private int[] faceBottom = new int[49];
 
-    private boolean northActive = false;
-    private boolean eastActive = false;
-    private boolean southActive = false;
-    private boolean westActive = false;
-    private boolean topActive = false;
-    private boolean bottomActive = false;
+    private boolean runesActive = false;
+
+    private boolean northCatalysed = false;
+    private boolean eastCatalysed = false;
+    private boolean southCatalysed = false;
+    private boolean westCatalysed = false;
+    private boolean topCatalysed = false;
+    private boolean bottomCatalysed = false;
 
     private boolean northGlow = false;
     private boolean eastGlow = false;
@@ -47,6 +51,8 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     private List<AbstractRune> runesPresentLastCheck = new ArrayList<>();
 
     public Timer chopTimer = new Timer();
+
+    private final int LIFE_FORCE_MAX = 3;
 
     public CarvedWoodEntity(BlockPos pos, BlockState state) {
         super(Arborealis.CARVED_WOOD_ENTITY, pos, state);
@@ -67,9 +73,10 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     public static void serverTick(World world, BlockPos pos, BlockState state, CarvedWoodEntity be) {
         Random random = new Random();
 
-        int randomCheck = random.nextInt(40);
+        int randomCheck = random.nextInt(80);
         if (randomCheck == 1) {
-            //be.checkForRunes();
+            be.checkLifeForce();
+            be.checkForRunes();
         }
 
         boolean showRuneRadius = false;
@@ -100,15 +107,6 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
     public String getLogID() {
         return logID;
-    }
-
-    public void setShowRadius(boolean showRadius) {
-        this.showRadius = showRadius;
-        updateListeners();
-    }
-
-    public boolean getShowRadius() {
-        return showRadius;
     }
 
     public void setFaceArray(Direction direction, int[] array) {
@@ -150,38 +148,47 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         }
     }
 
-    public void setFaceActive(Direction direction, boolean active) {
+    public void setRunesActive(boolean active) {
+        runesActive = active;
+        updateListeners();
+    }
+
+    public boolean getRunesActive() {
+        return runesActive;
+    }
+
+    public void setFaceCatalysed(Direction direction, boolean active) {
         switch (direction) {
-            case NORTH -> this.northActive = active;
-            case EAST -> this.eastActive = active;
-            case SOUTH -> this.southActive = active;
-            case WEST -> this.westActive = active;
-            case UP -> this.topActive = active;
-            case DOWN -> this.bottomActive = active;
+            case NORTH -> this.northCatalysed = active;
+            case EAST -> this.eastCatalysed = active;
+            case SOUTH -> this.southCatalysed = active;
+            case WEST -> this.westCatalysed = active;
+            case UP -> this.topCatalysed = active;
+            case DOWN -> this.bottomCatalysed = active;
         }
 
         updateListeners();
     }
 
-    public boolean getFaceActive(Direction direction) {
+    public boolean getFaceCatalysed(Direction direction) {
         switch (direction) {
             case NORTH -> {
-                return northActive;
+                return northCatalysed;
             }
             case EAST -> {
-                return eastActive;
+                return eastCatalysed;
             }
             case SOUTH -> {
-                return southActive;
+                return southCatalysed;
             }
             case WEST -> {
-                return westActive;
+                return westCatalysed;
             }
             case UP -> {
-                return topActive;
+                return topCatalysed;
             }
             case DOWN -> {
-                return bottomActive;
+                return bottomCatalysed;
             }
             default -> {
                 return false;
@@ -234,7 +241,6 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         super.writeNbt(tag);
 
         tag.putString("log_id", logID);
-        tag.putBoolean("show_radius", showRadius);
 
         tag.putIntArray("face_north", faceNorth);
         tag.putIntArray("face_east", faceEast);
@@ -243,12 +249,14 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         tag.putIntArray("face_top", faceTop);
         tag.putIntArray("face_bottom", faceBottom);
 
-        tag.putBoolean("north_active", northActive);
-        tag.putBoolean("east_active", eastActive);
-        tag.putBoolean("south_active", southActive);
-        tag.putBoolean("west_active", westActive);
-        tag.putBoolean("top_active", topActive);
-        tag.putBoolean("bottom_active", bottomActive);
+        tag.putBoolean("north_catalysed", northCatalysed);
+        tag.putBoolean("east_catalysed", eastCatalysed);
+        tag.putBoolean("south_catalysed", southCatalysed);
+        tag.putBoolean("west_catalysed", westCatalysed);
+        tag.putBoolean("top_catalysed", topCatalysed);
+        tag.putBoolean("bottom_catalysed", bottomCatalysed);
+
+        tag.putBoolean("runes_active", runesActive);
 
         tag.putBoolean("north_glow", northGlow);
         tag.putBoolean("east_glow", eastGlow);
@@ -266,7 +274,6 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         super.readNbt(tag);
 
         logID = tag.getString("log_id");
-        showRadius = tag.getBoolean("show_radius");
 
         faceNorth = tag.getIntArray("face_north");
         faceEast = tag.getIntArray("face_east");
@@ -275,12 +282,14 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         faceTop = tag.getIntArray("face_top");
         faceBottom = tag.getIntArray("face_bottom");
 
-        northActive = tag.getBoolean("north_active");
-        eastActive = tag.getBoolean("east_active");
-        southActive = tag.getBoolean("south_active");
-        westActive = tag.getBoolean("west_active");
-        topActive = tag.getBoolean("top_active");
-        bottomActive = tag.getBoolean("bottom_active");
+        northCatalysed = tag.getBoolean("north_catalysed");
+        eastCatalysed = tag.getBoolean("east_catalysed");
+        southCatalysed = tag.getBoolean("south_catalysed");
+        westCatalysed = tag.getBoolean("west_catalysed");
+        topCatalysed = tag.getBoolean("top_catalysed");
+        bottomCatalysed = tag.getBoolean("bottom_catalysed");
+
+        runesActive = tag.getBoolean("runes_active");
 
         northGlow = tag.getBoolean("north_glow");
         eastGlow = tag.getBoolean("east_glow");
@@ -312,31 +321,67 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
      * All the logic for each rune if detected. Called randomly every 2 seconds or so.
      */
     public void checkForRunes() {
-        List<AbstractRune> foundRunes = new ArrayList<>();
-
-        for (Direction dir : Direction.values()) {
-            int[] faceArray = getFaceArray(dir);
-
-            AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
+        if (getRunesActive()) {
+            List<AbstractRune> foundRunes = new ArrayList<>();
             TreeStructure tree = TreeManager.getTreeStructureFromBlock(pos, world);
 
-            if (rune != null && tree.isNatural() && getFaceActive(dir)) {
-                if (!runesPresentLastCheck.contains(rune)) {
-                    rune.onRuneFound(world, pos, this);
-                }
-                foundRunes.add(rune);
-            }
-        }
+            for (Direction dir : Direction.values()) {
+                if (getFaceCatalysed(dir)) {
+                    int[] faceArray = getFaceArray(dir);
 
-        for (AbstractRune rune : runesPresentLastCheck) {
-            if (!foundRunes.contains(rune)) {
+                    AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
+
+                    if (rune != null && tree.isNatural()) {
+                        if (!runesPresentLastCheck.contains(rune)) {
+                            rune.onRuneFound(world, pos, this); // If rune appears for the first time, execute onRuneFound(...)
+                        }
+
+                        foundRunes.add(rune);
+                    }
+                }
+            }
+
+            runesPresentLastCheck = foundRunes;
+        } else {
+            // Otherwise, call rune lost on all runes and clear the list ready to be reactivated
+            for (AbstractRune rune : runesPresentLastCheck) {
                 rune.onRuneLost(world, pos, this);
             }
+            runesPresentLastCheck.clear();
         }
 
-        runesPresentLastCheck = foundRunes;
-
         updateListeners();
+    }
+
+    public void checkLifeForce() {
+        TreeStructure tree = TreeManager.getTreeStructureFromBlock(pos, world);
+
+        // Check life force of entire tree
+        // TODO: Optimise
+        int lifeForceTotal = 0;
+        for (BlockPos pos : tree.logs) {
+            BlockEntity be = world.getBlockEntity(pos);
+            if (be instanceof CarvedWoodEntity) {
+                for (Direction dir : Direction.values()) {
+                    int[] faceArray = ((CarvedWoodEntity) be).getFaceArray(dir);
+
+                    AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
+
+                    if (rune != null && tree.isNatural() && ((CarvedWoodEntity) be).getFaceCatalysed(dir)) {
+                        lifeForceTotal += rune.lifeForce;
+                    }
+                }
+            }
+        }
+
+        // Deactivate every rune in tree if over life force limit
+        for (BlockPos pos : tree.logs) {
+            BlockEntity be = world.getBlockEntity(pos);
+            if (be instanceof CarvedWoodEntity) {
+                ((CarvedWoodEntity) be).setRunesActive(lifeForceTotal <= LIFE_FORCE_MAX);
+                ((CarvedWoodEntity) be).checkForRunes();
+            }
+        }
     }
 
     private static void createParticleRadiusBorder(World world, BlockPos pos, float radius, int numberOfPoints) {

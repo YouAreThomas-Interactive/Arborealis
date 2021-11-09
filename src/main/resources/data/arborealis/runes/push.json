@@ -2,7 +2,7 @@
   "name": "push",
   "colour": "0x3be0b5",
   "catalyst": "arborealis:bottled_sap",
-  "life_force": 2,
+  "life_force": 3,
   "shape": [
     0, 0, 0, 0, 0, 0, 0,
     0, 1, 1, 0, 0, 1, 0,
