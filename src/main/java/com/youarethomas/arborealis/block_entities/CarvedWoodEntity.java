@@ -371,6 +371,8 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
                         lifeForceTotal += rune.lifeForce;
                     }
                 }
+            } else if (world.getBlockState(pos).isOf(Arborealis.TREE_CORE_BLOCK)) {
+                lifeForceTotal -= 4;
             }
         }
 
