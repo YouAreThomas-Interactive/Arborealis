@@ -72,6 +72,8 @@ public class Arborealis implements ModInitializer {
 	public static final Item GLOWING_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE));
 	public static final Item CONDUCTIVE_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE));
 
+	public static final Item STENCIL = new Stencil(new FabricItemSettings());
+
 	// Blocks
 	public static final TestBlock TEST_BLOCK = new TestBlock(FabricBlockSettings.of(Material.STONE));
 
@@ -108,6 +110,8 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(CONDUCTIVE_SAP));
 
 				stacks.add(new ItemStack(WOODEN_BUCKET));
+				stacks.add(new ItemStack(STENCIL));
+
 				stacks.add(new ItemStack(TEST_BLOCK));
 			})
 			.build();
@@ -156,6 +160,8 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "infused_sap"), INFUSED_SAP);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "glowing_sap"), GLOWING_SAP);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "conductive_sap"), CONDUCTIVE_SAP);
+
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stencil"), STENCIL);
 
 		// Model registration
 		DynamicModelRegistry.register(new CarvedWoodModel(), new Identifier("arborealis:block/carved_wood_model"));

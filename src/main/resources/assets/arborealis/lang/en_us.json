@@ -29,6 +29,9 @@
   "item.arborealis.infused_sap": "Infused Sap",
   "item.arborealis.conductive_sap": "Conductive Sap",
 
+  "item.arborealis.stencil": "Rune Stencil",
+  "item.arborealis.stencil.blank": "§7Blank",
+
   "block.arborealis.tree_tap": "Tree Tap",
   "block.arborealis.tree_tap.tooltip1": "§7Allows sap to be drained from trees.",
   "block.arborealis.tree_tap.tooltip2": "§8Place on a tree, and then §2right click",
