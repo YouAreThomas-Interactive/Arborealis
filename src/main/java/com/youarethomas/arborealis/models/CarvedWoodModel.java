@@ -82,11 +82,11 @@ public class CarvedWoodModel implements UnbakedModel {
         emitter = builder.getEmitter();
         this.textureGetter = textureGetter;
 
-        return new ModelBaseBaked();
+        return new Baked();
     }
 
     @Environment(EnvType.CLIENT)
-    public class ModelBaseBaked implements BakedModel, FabricBakedModel {
+    public class Baked implements BakedModel, FabricBakedModel {
 
         @Override
         public void emitBlockQuads(BlockRenderView blockView, BlockState state, BlockPos pos, Supplier<Random> randomSupplier, RenderContext context) {

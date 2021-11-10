@@ -5,6 +5,7 @@ import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
 import com.youarethomas.arborealis.block_entities.WoodenBucketEntity;
 import com.youarethomas.arborealis.blocks.*;
 import com.youarethomas.arborealis.items.*;
+import com.youarethomas.arborealis.models.CarvedStencilModel;
 import com.youarethomas.arborealis.models.CarvedWoodModel;
 import com.youarethomas.arborealis.models.model_utils.DynamicModelRegistry;
 import com.youarethomas.arborealis.runes.*;
@@ -22,17 +23,13 @@ import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.*;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagManager;
-import net.minecraft.tag.TagManagerLoader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.system.CallbackI;
 
 import java.util.HashMap;
 
@@ -72,7 +69,8 @@ public class Arborealis implements ModInitializer {
 	public static final Item GLOWING_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE));
 	public static final Item CONDUCTIVE_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE));
 
-	public static final Item STENCIL = new Stencil(new FabricItemSettings());
+	public static final Item BLANK_STENCIL = new BlankStencil(new FabricItemSettings());
+	public static final Item CARVED_STENCIL = new CarvedStencil(new FabricItemSettings().maxCount(1));
 
 	// Blocks
 	public static final TestBlock TEST_BLOCK = new TestBlock(FabricBlockSettings.of(Material.STONE));
@@ -110,7 +108,7 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(CONDUCTIVE_SAP));
 
 				stacks.add(new ItemStack(WOODEN_BUCKET));
-				stacks.add(new ItemStack(STENCIL));
+				stacks.add(new ItemStack(BLANK_STENCIL));
 
 				stacks.add(new ItemStack(TEST_BLOCK));
 			})
@@ -161,10 +159,12 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "glowing_sap"), GLOWING_SAP);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "conductive_sap"), CONDUCTIVE_SAP);
 
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stencil"), STENCIL);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stencil_blank"), BLANK_STENCIL);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stencil_carved"), CARVED_STENCIL);
 
 		// Model registration
-		DynamicModelRegistry.register(new CarvedWoodModel(), new Identifier("arborealis:block/carved_wood_model"));
+		//DynamicModelRegistry.register(new CarvedWoodModel(), new Identifier("arborealis:block/carved_wood_model"));
+		DynamicModelRegistry.register(new CarvedStencilModel(), new Identifier("aborealis:item/stencil_carved"));
 
 		// SET IT ON FIRE!
 		FlammableBlockRegistry.getDefaultInstance().add(CARVED_WOOD, 5, 5);

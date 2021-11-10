@@ -6,11 +6,16 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.model.ExtraModelProvider;
+import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
+
+import java.util.function.Consumer;
 
 @Environment(EnvType.CLIENT)
 public class ArborealisClient implements ClientModInitializer {
@@ -18,6 +23,7 @@ public class ArborealisClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         DynamicModelRegistry.registerModels();
+        ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "item/stencil_blank")));
 
         // Block Entity Renderers
         BlockEntityRendererRegistry.INSTANCE.register(Arborealis.HOLLOWED_LOG_ENTITY, HollowedLogEntityRenderer::new);
@@ -31,6 +37,7 @@ public class ArborealisClient implements ClientModInitializer {
             registry.register(new Identifier("arborealis:block/pumpkin_side_carved"));
             registry.register(new Identifier("arborealis:block/pumpkin_side_lit"));
             registry.register(new Identifier("arborealis:rune/rune"));
+            registry.register(new Identifier("arborealis:item/stencil_blank"));
         });
     }
 }

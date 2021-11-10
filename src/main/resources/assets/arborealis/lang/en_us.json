@@ -3,6 +3,11 @@
 
   "item.arborealis.hidden_tooltip": "§8Hold Shift...",
 
+  "rune.arborealis.unknown": "§7Unknown",
+  "rune.arborealis.light": "§eLight",
+  "rune.arborealis.chop": "§eChop",
+  "rune.arborealis.push": "§ePush",
+
   "item.arborealis.carving_knife": "Carving Knife",
   "item.arborealis.carving_knife.tooltip1": "§7Used for carving runes on trees.",
   "item.arborealis.carving_knife.tooltip2": "§2Right click §8to create a carving plan,",
@@ -29,8 +34,10 @@
   "item.arborealis.infused_sap": "Infused Sap",
   "item.arborealis.conductive_sap": "Conductive Sap",
 
-  "item.arborealis.stencil": "Rune Stencil",
-  "item.arborealis.stencil.blank": "§7Blank",
+  "item.arborealis.stencil_blank": "Rune Stencil",
+  "item.arborealis.stencil_blank.blank": "§7Blank",
+
+  "item.arborealis.stencil_carved": "Rune Stencil",
 
   "block.arborealis.tree_tap": "Tree Tap",
   "block.arborealis.tree_tap.tooltip1": "§7Allows sap to be drained from trees.",
