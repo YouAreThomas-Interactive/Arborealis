@@ -42,9 +42,9 @@ public class CarvingKnife extends ToolItem {
 
         // If the block clicked on is wood, create a new carved wood block
         if (blockState.isIn(BlockTags.LOGS) || blockState.isOf(Blocks.PUMPKIN)) {
-            if (playerEntity instanceof ServerPlayerEntity) {
+            /*if (playerEntity instanceof ServerPlayerEntity) {
                 Criteria.ITEM_USED_ON_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos, itemStack);
-            }
+            }*/
 
             // Swap the block out with a carved wood block...
             // TODO: Add in support for horizontal logs
@@ -138,8 +138,6 @@ public class CarvingKnife extends ToolItem {
             } else {
                 return ActionResult.FAIL;
             }
-
-            //player.sendMessage(new LiteralText("%s, %s, %s -> %s".formatted(segmentX, segmentY, segmentZ, segmentID)), false);
 
             carvedWoodEntity.setFaceArray(side, faceArray);
 

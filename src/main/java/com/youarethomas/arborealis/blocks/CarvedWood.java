@@ -55,7 +55,6 @@ public class CarvedWood extends BlockWithEntity implements BlockEntityProvider {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-
         CarvedWoodEntity be = (CarvedWoodEntity) world.getBlockEntity(pos);
 
         Direction hitSide = hit.getSide();

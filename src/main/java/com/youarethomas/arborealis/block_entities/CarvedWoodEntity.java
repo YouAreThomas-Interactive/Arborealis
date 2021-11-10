@@ -99,6 +99,21 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         checkForRunes();
     }
 
+    public void markRune(Direction dir, int[] pattern) {
+        int[] currentPattern = getFaceArray(dir);
+        int[] combinedPattern = new int[49];
+
+        for (int i = 0; i < pattern.length; i++) {
+            if (currentPattern[i] == 1) {
+                combinedPattern[i] = 1;
+            } else if (pattern[i] == 2) {
+                combinedPattern[i] = 2;
+            }
+        }
+
+        setFaceArray(dir, combinedPattern);
+    }
+
     //region NBT Shenanagins
     public void setLogID(String logID) {
         this.logID = logID;
@@ -310,7 +325,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         return writeNbt(tag);
     }
 
-    private void updateListeners() {
+    public void updateListeners() {
         // This method is the magic that makes the whole carving system work. No touchy
         this.markDirty();
         this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.REDRAW_ON_MAIN_THREAD);

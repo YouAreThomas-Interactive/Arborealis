@@ -20,9 +20,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
-public class BlankStencil extends Item {
+public class StencilBlank extends Item {
 
-    public BlankStencil(Settings settings) {
+    public StencilBlank(Settings settings) {
         super(settings);
     }
 

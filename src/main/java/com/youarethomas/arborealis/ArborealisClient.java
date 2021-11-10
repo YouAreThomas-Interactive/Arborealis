@@ -23,7 +23,7 @@ public class ArborealisClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         DynamicModelRegistry.registerModels();
-        ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "item/stencil_blank")));
+        //ModelLoadingRegistry.INSTANCE.registerModelProvider((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "item/stencil_blank")));
 
         // Block Entity Renderers
         BlockEntityRendererRegistry.INSTANCE.register(Arborealis.HOLLOWED_LOG_ENTITY, HollowedLogEntityRenderer::new);
@@ -37,7 +37,7 @@ public class ArborealisClient implements ClientModInitializer {
             registry.register(new Identifier("arborealis:block/pumpkin_side_carved"));
             registry.register(new Identifier("arborealis:block/pumpkin_side_lit"));
             registry.register(new Identifier("arborealis:rune/rune"));
-            registry.register(new Identifier("arborealis:item/stencil_blank"));
+            registry.register(new Identifier("arborealis:item/stencil_carved"));
         });
     }
 }

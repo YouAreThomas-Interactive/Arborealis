@@ -23,6 +23,7 @@ import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.*;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
@@ -69,8 +70,8 @@ public class Arborealis implements ModInitializer {
 	public static final Item GLOWING_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE));
 	public static final Item CONDUCTIVE_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE));
 
-	public static final Item BLANK_STENCIL = new BlankStencil(new FabricItemSettings());
-	public static final Item CARVED_STENCIL = new CarvedStencil(new FabricItemSettings().maxCount(1));
+	public static final Item BLANK_STENCIL = new StencilBlank(new FabricItemSettings());
+	public static final Item CARVED_STENCIL = new StencilCarved(new FabricItemSettings().maxCount(1));
 
 	// Blocks
 	public static final TestBlock TEST_BLOCK = new TestBlock(FabricBlockSettings.of(Material.STONE));
@@ -163,8 +164,8 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stencil_carved"), CARVED_STENCIL);
 
 		// Model registration
-		//DynamicModelRegistry.register(new CarvedWoodModel(), new Identifier("arborealis:block/carved_wood_model"));
-		DynamicModelRegistry.register(new CarvedStencilModel(), new Identifier("aborealis:item/stencil_carved"));
+		DynamicModelRegistry.register(new CarvedWoodModel(), new Identifier("arborealis:block/carved_wood_model"));
+		DynamicModelRegistry.register(new CarvedStencilModel(), new ModelIdentifier("arborealis:item/stencil_carved#inventory"));
 
 		// SET IT ON FIRE!
 		FlammableBlockRegistry.getDefaultInstance().add(CARVED_WOOD, 5, 5);
