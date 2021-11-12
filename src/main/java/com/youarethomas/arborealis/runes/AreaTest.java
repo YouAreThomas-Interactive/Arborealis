@@ -6,7 +6,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import static com.youarethomas.arborealis.util.ArborealisUtil.applyStatusEffectsToEntities;
-import static com.youarethomas.arborealis.util.ArborealisUtil.getPlayersInRadius;
+import static com.youarethomas.arborealis.util.ArborealisUtil.getEntitiesInRadius;
 
 public class AreaTest extends AbstractRune {
 
@@ -24,7 +24,7 @@ public class AreaTest extends AbstractRune {
 
     @Override
     public void onServerTick(World world, BlockPos pos, CarvedWoodEntity be) {
-        applyStatusEffectsToEntities(getPlayersInRadius(world, pos, be.radius), StatusEffects.SPEED);
+        applyStatusEffectsToEntities(getEntitiesInRadius(world, pos, be.radius, true), StatusEffects.SPEED);
     }
 
     @Override

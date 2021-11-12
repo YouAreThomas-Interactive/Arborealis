@@ -5,13 +5,15 @@ import com.youarethomas.arborealis.util.ArborealisUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.text.LiteralText;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import java.util.List;
 
-public class Push extends AbstractRune{
+public class Pull extends AbstractRune{
 
     boolean applyEffect = false;
     final double MULTIPLIER = 0.1D;
@@ -36,8 +38,8 @@ public class Push extends AbstractRune{
             for (Entity entity : entities) {
                 Vec3d target = new Vec3d(pos.getX(), pos.getY(), pos.getZ());
 
-                Vec3d pushVelocity = entity.getPos().subtract(target).normalize().multiply(MULTIPLIER);
-                entity.addVelocity(pushVelocity.x, 0, pushVelocity.z);
+                Vec3d pullVelocity = target.subtract(entity.getPos()).normalize().multiply(MULTIPLIER);
+                entity.addVelocity(pullVelocity.x, 0, pullVelocity.z);
             }
         }
     }

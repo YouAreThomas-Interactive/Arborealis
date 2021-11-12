@@ -7,13 +7,18 @@ import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.nbt.*;
+import net.minecraft.nbt.visitor.NbtElementVisitor;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 
+import java.io.DataOutput;
+import java.io.IOException;
 import java.util.*;
 
 public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSerializable {
@@ -45,7 +50,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
     // Radius
     private final int BASE_RADIUS = 10;
-    public int radius = 12;
+    public int radius = 10;
     private boolean showRadius;
 
     private List<AbstractRune> runesPresentLastCheck = new ArrayList<>();
@@ -272,6 +277,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         tag.putBoolean("bottom_catalysed", bottomCatalysed);
 
         tag.putBoolean("runes_active", runesActive);
+        tag.putBoolean("show_radius", showRadius);
 
         tag.putBoolean("north_glow", northGlow);
         tag.putBoolean("east_glow", eastGlow);
@@ -305,6 +311,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         bottomCatalysed = tag.getBoolean("bottom_catalysed");
 
         runesActive = tag.getBoolean("runes_active");
+        showRadius = tag.getBoolean("show_radius");
 
         northGlow = tag.getBoolean("north_glow");
         eastGlow = tag.getBoolean("east_glow");

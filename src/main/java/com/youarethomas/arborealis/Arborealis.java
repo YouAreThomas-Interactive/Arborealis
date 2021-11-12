@@ -55,6 +55,7 @@ public class Arborealis implements ModInitializer {
 	public static final Light LIGHT = new Light();
 	public static final AreaTest AREA_TEST = new AreaTest();
 	public static final Chop CHOP = new Chop();
+	public static final Pull PULL = new Pull();
 	public static final Push PUSH = new Push();
 
 	// Tool Items
@@ -120,7 +121,9 @@ public class Arborealis implements ModInitializer {
 		// Rune registration
 		RuneManager.register(new Identifier(MOD_ID, "light"), LIGHT);
 		RuneManager.register(new Identifier(MOD_ID, "chop"), CHOP);
+		RuneManager.register(new Identifier(MOD_ID, "pull"), PULL);
 		RuneManager.register(new Identifier(MOD_ID, "push"), PUSH);
+		RuneManager.register(new Identifier(MOD_ID, "test"), AREA_TEST);
 
 		RuneManager.initializeRunes();
 

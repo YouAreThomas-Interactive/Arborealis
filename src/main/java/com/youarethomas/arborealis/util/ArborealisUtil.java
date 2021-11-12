@@ -1,8 +1,10 @@
 package com.youarethomas.arborealis.util;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -31,24 +33,32 @@ public class ArborealisUtil {
         return distance < radius * radius;
     }
 
-    public static List<LivingEntity> getPlayersInRadius(World world, Vec3i pos, int radius) {
+    public static List<Entity> getEntitiesInRadius(World world, Vec3i pos, int radius, boolean onlyPlayers) {
         Box box = Box.from(new Vec3d(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D)).expand(radius + 1);
 
-        List<LivingEntity> entities = new ArrayList<>();
+        List<Entity> entities = new ArrayList<>();
 
-        for (LivingEntity livingEntity : world.getNonSpectatingEntities(LivingEntity.class, box)) {
-            if (ArborealisUtil.isWithinEffectRadius(livingEntity.getBlockPos(), pos, radius)) {
-                entities.add(livingEntity);
+        for (Entity entity : world.getNonSpectatingEntities(Entity.class, box)) {
+            if (ArborealisUtil.isWithinEffectRadius(entity.getBlockPos(), pos, radius)) {
+                if (onlyPlayers) {
+                    if (entity instanceof PlayerEntity) {
+                        entities.add(entity);
+                    }
+                } else {
+                    entities.add(entity);
+                }
             }
         }
 
         return entities;
     }
 
-    public static void applyStatusEffectsToEntities(List<LivingEntity> entityList, StatusEffect effect) {
+    public static void applyStatusEffectsToEntities(List<Entity> entityList, StatusEffect effect) {
         if (!entityList.isEmpty()) {
-            for (LivingEntity playerEntity : entityList) {
-                playerEntity.addStatusEffect(new StatusEffectInstance(effect, 5, 0, true, false, true));
+            for (Entity entity : entityList) {
+                if (entity instanceof PlayerEntity playerEntity) {
+                    playerEntity.addStatusEffect(new StatusEffectInstance(effect, 5, 0, true, false, true));
+                }
             }
         }
     }
