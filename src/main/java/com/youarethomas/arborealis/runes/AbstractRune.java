@@ -10,14 +10,13 @@ import net.minecraft.world.World;
  */
 public abstract class AbstractRune {
     public String name;
-    private String colour;
+    public String colour;
     public Identifier catalyst;
-    @SerializedName("life_force")
     public int lifeForce;
     public int[] shape;
     public RuneSettings settings;
 
-    public int getColour() {
+    public int getIntColour() {
         return Integer.decode(colour);
     }
 

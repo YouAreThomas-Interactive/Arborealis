@@ -44,6 +44,7 @@ public class RuneManager {
                     try (InputStream stream = manager.getResource(id).getInputStream()) {
                         Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
                         AbstractRune.RuneSettings runeSettings = GSON.fromJson(reader, AbstractRune.RuneSettings.class);
+                        runeSettings.id = id.toString();
                         Runes.add(RuneRegistry.get(id).withSettings(runeSettings));
                         runesRegistered++;
                     } catch (Exception e) {
@@ -58,6 +59,16 @@ public class RuneManager {
 
     public static void register(Identifier path, AbstractRune rune) {
         RuneRegistry.put(getRuneJsonPath(path), rune);
+    }
+
+    public static AbstractRune getRuneFromID(String id) {
+        for (AbstractRune rune : Runes) {
+            if (rune.settings.id.equals(id)) {
+                return rune; // If a rune is found with a matching path id
+            }
+        }
+
+        return null;
     }
 
     private static Identifier getRuneJsonPath(Identifier identifier) {

@@ -3,6 +3,7 @@ package com.youarethomas.arborealis.block_entities;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.runes.AbstractRune;
 import com.youarethomas.arborealis.util.*;
+import com.youarethomas.arborealis.util.NbtHelper;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -78,7 +79,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     public static void serverTick(World world, BlockPos pos, BlockState state, CarvedWoodEntity be) {
         Random random = new Random();
 
-        int randomCheck = random.nextInt(80);
+        int randomCheck = random.nextInt(40);
         if (randomCheck == 1) {
             be.checkLifeForce();
             be.checkForRunes();
@@ -175,6 +176,10 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
     public boolean getRunesActive() {
         return runesActive;
+    }
+
+    public List<AbstractRune> getRunesPresentLastCheck() {
+        return runesPresentLastCheck;
     }
 
     public void setFaceCatalysed(Direction direction, boolean active) {
@@ -286,6 +291,8 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         tag.putBoolean("top_glow", topGlow);
         tag.putBoolean("bottom_glow", bottomGlow);
 
+        tag.put("runes_list", NbtHelper.serializeRuneList(runesPresentLastCheck));
+
         return tag;
     }
 
@@ -319,6 +326,8 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         westGlow = tag.getBoolean("west_glow");
         topGlow = tag.getBoolean("top_glow");
         bottomGlow = tag.getBoolean("bottom_glow");
+
+        runesPresentLastCheck = NbtHelper.deserializeRuneList(tag.getList("runes_list", NbtElement.COMPOUND_TYPE));
     }
 
     @Override

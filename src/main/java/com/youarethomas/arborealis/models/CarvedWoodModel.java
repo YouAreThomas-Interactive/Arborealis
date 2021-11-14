@@ -139,7 +139,7 @@ public class CarvedWoodModel implements UnbakedModel {
                             AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
                             if (rune != null) {
                                 if (be.getRunesActive()) {
-                                    core.setSideOverlay(dir, rune.getColour());
+                                    core.setSideOverlay(dir, rune.getIntColour());
                                 } else {
                                     core.setSideOverlay(dir, 0x545454);
                                 }
