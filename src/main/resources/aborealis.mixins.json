@@ -1,12 +1,14 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "com.youarethomas.arborealis.mixin",
+  "package": "com.youarethomas.arborealis.mixins",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "RecipeMixin",
+    "ItemAccessor"
   ],
-  "client": [
-  ],
+  "client": [],
+  "server": [],
   "injectors": {
     "defaultRequire": 1
   }

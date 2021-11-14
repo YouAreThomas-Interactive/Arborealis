@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "item": "minecraft:flint"
+      "item": "arborealis:carving_knife"
     },
     {
       "tag": "minecraft:logs"
