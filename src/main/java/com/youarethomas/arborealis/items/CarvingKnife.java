@@ -2,8 +2,6 @@ package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
-import com.youarethomas.arborealis.mixins.ItemAccessor;
-import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
@@ -30,7 +28,6 @@ public class CarvingKnife extends ToolItem {
 
     public CarvingKnife(ToolMaterial material, Settings settings) {
         super(material, settings.maxCount(1));
-        ((ItemAccessor)this).setRecipeRemainder(this);
     }
 
     @Override

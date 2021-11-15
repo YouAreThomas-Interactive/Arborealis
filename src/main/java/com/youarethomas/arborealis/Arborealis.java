@@ -33,10 +33,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
+import java.util.Random;
 
 public class Arborealis implements ModInitializer {
 
 	public static final String MOD_ID = "arborealis";
+	public static final Random RANDOM = new Random();
 
 	public static final Logger LOGGER = LogManager.getLogger();
 
