@@ -27,4 +27,14 @@ public class Chop extends AbstractRune{
     public void onRuneLost(World world, BlockPos pos, CarvedWoodEntity be) {
         be.chopTimer.cancel();
     }
+
+    @Override
+    public void onServerTick(World world, BlockPos pos, CarvedWoodEntity be) {
+
+    }
+
+    @Override
+    public void onClientTick(World world, BlockPos pos, CarvedWoodEntity be) {
+
+    }
 }

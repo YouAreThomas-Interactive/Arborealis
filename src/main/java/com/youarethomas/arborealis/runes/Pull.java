@@ -4,6 +4,7 @@ import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
 import com.youarethomas.arborealis.util.ArborealisUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.LiteralText;
@@ -38,7 +39,15 @@ public class Pull extends AbstractRune{
 
             for (Entity entity : entities) {
                 Vec3d target = new Vec3d(pos.getX(), pos.getY(), pos.getZ());
-                Vec3d pullVelocity = target.subtract(entity.getPos()).normalize().multiply(MULTIPLIER);
+
+                double multiplier = MULTIPLIER;
+                if (entity.getVelocity().normalize().y > 0.2D || entity.getVelocity().normalize().y < -0.2D) {
+                    multiplier *= 0.1;
+                }
+                if (entity instanceof LivingEntity) {
+                    multiplier *= 5;
+                }
+                Vec3d pullVelocity = target.subtract(entity.getPos()).normalize().multiply(multiplier);
 
                 entity.addVelocity(pullVelocity.x, 0, pullVelocity.z);
             }
@@ -47,18 +56,7 @@ public class Pull extends AbstractRune{
 
     @Override
     public void onClientTick(World world, BlockPos pos, CarvedWoodEntity be) {
-        /*if (applyEffect) {
-            for (Entity entity : ArborealisUtil.getEntitiesInRadius(world, pos, be.radius, true)) {
-                if (entity instanceof PlayerEntity player) {
-                    if (!player.isSneaking()) {
-                        Vec3d target = new Vec3d(pos.getX(), pos.getY(), pos.getZ());
-                        Vec3d pullVelocity = target.subtract(entity.getPos()).normalize().multiply(MULTIPLIER);
 
-                        entity.addVelocity(pullVelocity.x, 0, pullVelocity.z);
-                    }
-                }
-            }
-        }*/
     }
 
     @Override

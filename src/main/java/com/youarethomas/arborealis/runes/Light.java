@@ -16,4 +16,14 @@ public class Light extends AbstractRune {
     public void onRuneLost(World world, BlockPos pos, CarvedWoodEntity be) {
         world.setBlockState(pos, world.getBlockState(pos).with(CarvedWood.LIT, false));
     }
+
+    @Override
+    public void onServerTick(World world, BlockPos pos, CarvedWoodEntity be) {
+
+    }
+
+    @Override
+    public void onClientTick(World world, BlockPos pos, CarvedWoodEntity be) {
+
+    }
 }

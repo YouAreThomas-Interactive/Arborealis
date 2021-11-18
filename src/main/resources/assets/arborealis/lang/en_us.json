@@ -8,6 +8,7 @@
   "rune.arborealis.chop": "§eChop",
   "rune.arborealis.pull": "§ePull",
   "rune.arborealis.push": "§ePush",
+  "rune.arborealis.area_chop": "§eArea Chop",
 
   "item.arborealis.carving_knife": "Carving Knife",
   "item.arborealis.carving_knife.tooltip1": "§7Used for carving runes on trees.",

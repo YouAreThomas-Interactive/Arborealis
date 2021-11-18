@@ -17,6 +17,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.DataOutput;
 import java.io.IOException;
@@ -60,6 +61,8 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
     private final int LIFE_FORCE_MAX = 3;
 
+    private boolean reload = true;
+
     public CarvedWoodEntity(BlockPos pos, BlockState state) {
         super(Arborealis.CARVED_WOOD_ENTITY, pos, state);
     }
@@ -77,12 +80,17 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, CarvedWoodEntity be) {
-        Random random = new Random();
+        if (be.reload) {
+            be.runesPresentLastCheck.clear();
+            be.reload = false;
+        }
 
-        int randomCheck = random.nextInt(40);
+        int randomCheck = Arborealis.RANDOM.nextInt(40);
         if (randomCheck == 1) {
-            be.checkLifeForce();
-            be.checkForRunes();
+            if (be.hasWorld()) {
+                be.checkLifeForce();
+                be.checkForRunes();
+            }
         }
 
         boolean showRuneRadius = false;

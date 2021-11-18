@@ -50,4 +50,13 @@ public class TreeStructure {
             replaceLeafStructure(world);
         }
     }
+
+    public boolean isPosInTree(BlockPos blockPos) {
+        for (BlockPos pos : logs) {
+            if (pos.equals(blockPos)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -55,10 +55,10 @@ public class Arborealis implements ModInitializer {
 
 	// Runes
 	public static final Light LIGHT = new Light();
-	public static final AreaTest AREA_TEST = new AreaTest();
 	public static final Chop CHOP = new Chop();
 	public static final Pull PULL = new Pull();
 	public static final Push PUSH = new Push();
+	public static final AreaChop AREA_CHOP = new AreaChop();
 
 	// Tool Items
 	public static final CarvingKnife CARVING_KNIFE = new CarvingKnife(CopperKnifeMaterial.INSTANCE, new FabricItemSettings());
@@ -125,7 +125,7 @@ public class Arborealis implements ModInitializer {
 		RuneManager.register(new Identifier(MOD_ID, "chop"), CHOP);
 		RuneManager.register(new Identifier(MOD_ID, "pull"), PULL);
 		RuneManager.register(new Identifier(MOD_ID, "push"), PUSH);
-		RuneManager.register(new Identifier(MOD_ID, "test"), AREA_TEST);
+		RuneManager.register(new Identifier(MOD_ID, "area_chop"), AREA_CHOP);
 
 		RuneManager.initializeRunes();
 

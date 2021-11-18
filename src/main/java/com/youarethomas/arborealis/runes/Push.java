@@ -45,18 +45,7 @@ public class Push extends AbstractRune{
 
     @Override
     public void onClientTick(World world, BlockPos pos, CarvedWoodEntity be) {
-        /*if (applyEffect) {
-            for (Entity entity : ArborealisUtil.getEntitiesInRadius(world, pos, be.radius, true)) {
-                if (entity instanceof PlayerEntity player) {
-                    if (!player.isSneaking()) {
-                        Vec3d target = new Vec3d(pos.getX(), pos.getY(), pos.getZ());
-                        Vec3d pushVelocity = player.getPos().subtract(target).normalize().multiply(MULTIPLIER);
 
-                        player.addVelocity(pushVelocity.x, 0, pushVelocity.z);
-                    }
-                }
-            }
-        }*/
     }
 
     @Override

@@ -24,9 +24,9 @@ public abstract class AbstractRune {
 
     public abstract void onRuneLost(World world, BlockPos pos, CarvedWoodEntity be);
 
-    public void onServerTick(World world, BlockPos pos, CarvedWoodEntity be) {}
+    public abstract void onServerTick(World world, BlockPos pos, CarvedWoodEntity be);
 
-    public void onClientTick(World world, BlockPos pos, CarvedWoodEntity be) {}
+    public abstract void onClientTick(World world, BlockPos pos, CarvedWoodEntity be);
 
     public boolean showRadiusEffect() {
         return false;
