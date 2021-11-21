@@ -69,13 +69,17 @@ public class CarvedWood extends BlockWithEntity implements BlockEntityProvider {
                     world.playSound(player, pos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, 0.5F);
                 } else {
                     be.setFaceCatalysed(hitSide, true);
-                    be.checkLifeForce();
+                    TreeManager.checkLifeForce(world, pos);
                 }
                 return ActionResult.SUCCESS;
             }
         }
         if (player.isHolding(Items.GLOW_INK_SAC)) {
             be.setFaceGlow(hitSide, true);
+            if (!player.isCreative()) {
+                player.getStackInHand(hand).decrement(1);
+            }
+            return ActionResult.SUCCESS;
         }
 
         return ActionResult.PASS;

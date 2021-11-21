@@ -60,7 +60,7 @@ public class HollowedLogEntity extends BlockEntity implements BlockEntityClientS
         // This method is the magic that makes the whole carving system work. No touchy
         this.markDirty();
         if (this.world != null) {
-            this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.NOTIFY_ALL);
+            this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.REDRAW_ON_MAIN_THREAD);
         }
     }
 }

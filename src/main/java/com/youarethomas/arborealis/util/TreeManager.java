@@ -1,8 +1,11 @@
 package com.youarethomas.arborealis.util;
 
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
+import com.youarethomas.arborealis.runes.AbstractRune;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -18,6 +21,8 @@ import java.util.TreeSet;
  * <br> May eventually contain a stored list of TreeStructures to iterate through to determine if trees stop being valid natural trees
  */
 public class TreeManager {
+
+    private static final int LIFE_FORCE_MAX = 3;
 
     /**If valid, returns a tree definition with structure and leaves from a given log block.
      */
@@ -132,4 +137,36 @@ public class TreeManager {
         return world.getBlockState(pos).isIn(BlockTags.LEAVES) && !world.getBlockState(pos).get(LeavesBlock.PERSISTENT);
     }
 
+    public static void checkLifeForce(World world, BlockPos startingPos) {
+        TreeStructure tree = TreeManager.getTreeStructureFromBlock(startingPos, world);
+
+        // Check life force of entire tree
+        // TODO: Optimise
+        int lifeForceTotal = 0;
+        for (BlockPos pos : tree.logs) {
+            BlockEntity be = world.getBlockEntity(pos);
+            if (be instanceof CarvedWoodEntity) {
+                for (Direction dir : Direction.values()) {
+                    int[] faceArray = ((CarvedWoodEntity) be).getFaceArray(dir);
+
+                    AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
+
+                    if (rune != null && tree.isNatural() && ((CarvedWoodEntity) be).getFaceCatalysed(dir)) {
+                        lifeForceTotal += rune.lifeForce;
+                    }
+                }
+            } else if (world.getBlockState(pos).isOf(Arborealis.TREE_CORE_BLOCK)) {
+                lifeForceTotal -= 4;
+            }
+        }
+
+        // Deactivate every rune in tree if over life force limit
+        for (BlockPos pos : tree.logs) {
+            BlockEntity be = world.getBlockEntity(pos);
+            if (be instanceof CarvedWoodEntity) {
+                ((CarvedWoodEntity) be).setRunesActive(lifeForceTotal <= LIFE_FORCE_MAX);
+                ((CarvedWoodEntity) be).checkForRunes();
+            }
+        }
+    }
 }

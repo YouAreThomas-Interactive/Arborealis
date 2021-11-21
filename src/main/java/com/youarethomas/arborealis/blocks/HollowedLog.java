@@ -1,7 +1,9 @@
 package com.youarethomas.arborealis.blocks;
 
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
+import com.youarethomas.arborealis.util.TreeManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -38,13 +40,22 @@ public class HollowedLog extends Block implements BlockEntityProvider {
         if (Objects.equals(entity.getItemID(), "")) {
             if (player.getStackInHand(hand).isOf(Arborealis.TREE_CORE)) {
                 world.setBlockState(pos, Arborealis.TREE_CORE_BLOCK.getDefaultState().with(TreeCoreBlock.LOG_ID, state.get(HollowedLog.LOG_ID)));
-                player.getStackInHand(hand).decrement(1);
+
+                // Update all runes in the tree
+                TreeManager.checkLifeForce(world, pos);
+
+                if (!player.isCreative()) {
+                    player.getStackInHand(hand).decrement(1);
+                }
                 return ActionResult.SUCCESS;
             } else if (!player.getStackInHand(hand).isEmpty()) {
                 ItemStack itemInHand = player.getStackInHand(hand);
                 entity.setItemID(Registry.ITEM.getId(itemInHand.getItem()).toString());
                 System.out.println(Registry.ITEM.getId(itemInHand.getItem()));
-                itemInHand.decrement(1);
+
+                if (!player.isCreative()) {
+                    itemInHand.decrement(1);
+                }
 
                 return ActionResult.SUCCESS;
             }

@@ -59,7 +59,6 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
     public Timer chopTimer = new Timer();
 
-    private final int LIFE_FORCE_MAX = 3;
 
     private boolean reload = true;
 
@@ -88,8 +87,8 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         int randomCheck = Arborealis.RANDOM.nextInt(40);
         if (randomCheck == 1) {
             if (be.hasWorld()) {
-                be.checkLifeForce();
-                be.checkForRunes();
+                //be.checkLifeForce();
+                //be.checkForRunes();
             }
         }
 
@@ -184,10 +183,6 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
     public boolean getRunesActive() {
         return runesActive;
-    }
-
-    public List<AbstractRune> getRunesPresentLastCheck() {
-        return runesPresentLastCheck;
     }
 
     public void setFaceCatalysed(Direction direction, boolean active) {
@@ -360,69 +355,33 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
      * All the logic for each rune if detected. Called randomly every 2 seconds or so.
      */
     public void checkForRunes() {
-        if (getRunesActive()) {
-            List<AbstractRune> foundRunes = new ArrayList<>();
-            TreeStructure tree = TreeManager.getTreeStructureFromBlock(pos, world);
-
-            for (Direction dir : Direction.values()) {
-                if (getFaceCatalysed(dir)) {
-                    int[] faceArray = getFaceArray(dir);
-
-                    AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
-
-                    if (rune != null && tree.isNatural()) {
-                        if (!runesPresentLastCheck.contains(rune)) {
-                            rune.onRuneFound(world, pos, this); // If rune appears for the first time, execute onRuneFound(...)
-                        }
-
-                        foundRunes.add(rune);
-                    }
-                }
-            }
-
-            runesPresentLastCheck = foundRunes;
-        } else {
-            // Otherwise, call rune lost on all runes and clear the list ready to be reactivated
-            for (AbstractRune rune : runesPresentLastCheck) {
-                rune.onRuneLost(world, pos, this);
-            }
-            runesPresentLastCheck.clear();
-        }
-
-        updateListeners();
-    }
-
-    public void checkLifeForce() {
+        List<AbstractRune> foundRunes = new ArrayList<>();
         TreeStructure tree = TreeManager.getTreeStructureFromBlock(pos, world);
 
-        // Check life force of entire tree
-        // TODO: Optimise
-        int lifeForceTotal = 0;
-        for (BlockPos pos : tree.logs) {
-            BlockEntity be = world.getBlockEntity(pos);
-            if (be instanceof CarvedWoodEntity) {
-                for (Direction dir : Direction.values()) {
-                    int[] faceArray = ((CarvedWoodEntity) be).getFaceArray(dir);
+        for (Direction dir : Direction.values()) {
+            if (getFaceCatalysed(dir) && getRunesActive()) {
+                int[] faceArray = getFaceArray(dir);
 
-                    AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
+                AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
 
-                    if (rune != null && tree.isNatural() && ((CarvedWoodEntity) be).getFaceCatalysed(dir)) {
-                        lifeForceTotal += rune.lifeForce;
+                if (rune != null && tree.isNatural()) {
+                    if (runesPresentLastCheck.contains(rune)) {
+                        rune.onRuneFound(world, pos, this); // If rune appears for the first time, execute onRuneFound(...)
                     }
+
+                    foundRunes.add(rune);
                 }
-            } else if (world.getBlockState(pos).isOf(Arborealis.TREE_CORE_BLOCK)) {
-                lifeForceTotal -= 4;
             }
         }
 
-        // Deactivate every rune in tree if over life force limit
-        for (BlockPos pos : tree.logs) {
-            BlockEntity be = world.getBlockEntity(pos);
-            if (be instanceof CarvedWoodEntity) {
-                ((CarvedWoodEntity) be).setRunesActive(lifeForceTotal <= LIFE_FORCE_MAX);
-                ((CarvedWoodEntity) be).checkForRunes();
+        for (AbstractRune rune : runesPresentLastCheck) {
+            if (!foundRunes.contains(rune)) {
+                rune.onRuneLost(world, pos, this);
             }
         }
+
+        runesPresentLastCheck = foundRunes;
+        updateListeners();
     }
 
     private static void createParticleRadiusBorder(World world, BlockPos pos, float radius, int numberOfPoints) {

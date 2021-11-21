@@ -2,6 +2,7 @@ package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
+import com.youarethomas.arborealis.util.TreeManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
@@ -54,13 +55,11 @@ public class RegrowthSpoon extends ToolItem {
                     }
                 }
 
-                be.checkLifeForce();
+                TreeManager.checkLifeForce(world, blockPos);
 
                 // If no sides are carved, reset to respective log block. Otherwise, update runes
                 if (blockReset) {
-                    if (world.isClient) {
-                        world.playSound(playerEntity, blockPos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1.0F, 0.5F);
-                    } else {
+                    if (!world.isClient) {
                         world.setBlockState(blockPos, Registry.BLOCK.get(new Identifier(be.getLogID())).getDefaultState());
                         itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand())); // Damage carving knife when carving is applied
                     }
@@ -68,7 +67,9 @@ public class RegrowthSpoon extends ToolItem {
                     be.checkForRunes();
                 }
 
-
+                if (world.isClient) {
+                    world.playSound(playerEntity, blockPos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1.0F, 0.5F);
+                }
 
                 return ActionResult.SUCCESS;
             }
