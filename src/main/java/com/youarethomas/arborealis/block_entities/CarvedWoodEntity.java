@@ -87,8 +87,8 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         int randomCheck = Arborealis.RANDOM.nextInt(40);
         if (randomCheck == 1) {
             if (be.hasWorld()) {
-                //be.checkLifeForce();
-                //be.checkForRunes();
+                TreeManager.checkLifeForce(world, pos);
+                be.checkForRunes();
             }
         }
 

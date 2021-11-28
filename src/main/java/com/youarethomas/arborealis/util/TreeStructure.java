@@ -10,8 +10,8 @@ import java.util.HashSet;
  * A tree object
  */
 public class TreeStructure {
-    public static final int NAT_LEAVES_MIN = 16;
-    public static final int LOGS_MIN = 3;
+    public static final int NAT_LEAVES_MIN = 12;
+    public static final int LOGS_MIN = 2;
 
     public HashSet<BlockPos> leaves = new HashSet<>();
     public HashSet<BlockPos> logs = new HashSet<>();

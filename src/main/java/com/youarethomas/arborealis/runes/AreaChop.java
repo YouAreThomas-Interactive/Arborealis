@@ -35,7 +35,7 @@ public class AreaChop extends AbstractRune{
                 if (!homeTree.isPosInTree(blockPos)) {
                     TreeStructure foundTree = TreeManager.getTreeStructureFromBlock(blockPos, world);
 
-                    // if the tree is natural, kill it >:)
+                    // if the tree is mini natural, kill it >:)
                     if (foundTree.isNatural()) {
                         foundTree.chopTreeStructure(world);
                     }
