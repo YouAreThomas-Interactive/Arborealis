@@ -2,7 +2,7 @@
   "name": "pull",
   "colour": "0x1f8066",
   "catalyst": "arborealis:bottled_sap",
-  "life_force": 3,
+  "life_force": 2,
   "shape": [
     0, 0, 0, 0, 0, 0, 0,
     0, 0, 1, 0, 0, 0, 0,

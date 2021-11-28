@@ -14,7 +14,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
-public class AreaTree extends AbstractRune{
+public class PlantTrees extends AbstractRune{
 
     boolean runeActive = false;
     final int SPEED = 10;

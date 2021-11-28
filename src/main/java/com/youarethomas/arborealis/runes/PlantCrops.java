@@ -2,16 +2,21 @@ package com.youarethomas.arborealis.runes;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
-import com.youarethomas.arborealis.util.TreeManager;
-import com.youarethomas.arborealis.util.TreeStructure;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CropBlock;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.lwjgl.opengl.ARBRobustness;
 
-public class AreaChop extends AbstractRune{
+import java.util.HashMap;
+
+public class PlantCrops extends AbstractRune{
 
     boolean runeActive = false;
-    final int SPEED = 2;
+    final int SPEED = 20;
 
     @Override
     public void onRuneFound(World world, BlockPos pos, CarvedWoodEntity be) {
@@ -27,20 +32,10 @@ public class AreaChop extends AbstractRune{
     public void onServerTick(World world, BlockPos pos, CarvedWoodEntity be) {
         // Iterate randomly through logs
         BlockPos.iterateRandomly(Arborealis.RANDOM, SPEED, pos, be.radius).forEach(blockPos -> {
-            // If the block found is a log
-            if (world.getBlockState(blockPos).isIn(BlockTags.LOGS) || world.getBlockState(blockPos).isIn(Arborealis.MODIFIED_LOGS)) {
-                TreeStructure homeTree = TreeManager.getTreeStructureFromBlock(pos, world);
+            BlockState foundState = world.getBlockState(blockPos);
 
-                // if the found block is in the home tree
-                if (!homeTree.isPosInTree(blockPos)) {
-                    TreeStructure foundTree = TreeManager.getTreeStructureFromBlock(blockPos, world);
-
-                    // if the tree is mini natural, kill it >:)
-                    if (foundTree.isNatural()) {
-                        foundTree.chopTreeStructure(world);
-                    }
-                }
-
+            if (foundState.isOf(Blocks.FARMLAND) && world.getBlockState(blockPos.up()).isOf(Blocks.AIR)) {
+                world.setBlockState(blockPos.up(), getCrop().getDefaultState());
             }
         });
     }
@@ -53,5 +48,16 @@ public class AreaChop extends AbstractRune{
     @Override
     public boolean showRadiusEffect() {
         return true;
+    }
+
+    private Block getCrop()
+    {
+        int chance = Arborealis.RANDOM.nextInt(100);
+
+        if ((chance -= 80) < 0) return Blocks.WHEAT;
+        if ((chance -= 10) < 0) return Blocks.POTATOES;
+        if ((chance -= 5) < 0) return Blocks.BEETROOTS;
+        return Blocks.CARROTS;
+
     }
 }

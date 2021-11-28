@@ -2,25 +2,22 @@ package com.youarethomas.arborealis.runes;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
-import com.youarethomas.arborealis.util.TreeManager;
-import com.youarethomas.arborealis.util.TreeStructure;
-import net.minecraft.block.Block;
+import net.minecraft.block.BeetrootsBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CropBlock;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.ItemTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class AreaHarvest extends AbstractRune{
+public class Harvest extends AbstractRune{
 
-    boolean harvestSearch = false;
-    final int SPEED = 2;
+    boolean runeActive = false;
+    final int SPEED = 10;
 
     @Override
     public void onRuneFound(World world, BlockPos pos, CarvedWoodEntity be) {
-        harvestSearch = true;
+        runeActive = true;
 
         BlockPos.iterateOutwards(pos, be.radius, be.radius, be.radius).forEach(blockPos -> {
             BlockState foundState = world.getBlockState(blockPos);
@@ -34,7 +31,7 @@ public class AreaHarvest extends AbstractRune{
 
     @Override
     public void onRuneLost(World world, BlockPos pos, CarvedWoodEntity be) {
-        harvestSearch = false;
+        runeActive = false;
     }
 
     @Override
@@ -44,9 +41,16 @@ public class AreaHarvest extends AbstractRune{
             BlockState foundState = world.getBlockState(blockPos);
 
             if (foundState.isIn(BlockTags.CROPS)) {
-                if (foundState.get(CropBlock.AGE) == CropBlock.MAX_AGE) {
-                    world.breakBlock(blockPos, true);
+                if (foundState.isOf(Blocks.BEETROOTS)) {
+                    if (foundState.get(BeetrootsBlock.AGE) == BeetrootsBlock.field_31013) {
+                        world.breakBlock(blockPos, true);
+                    }
+                } else {
+                    if (foundState.get(CropBlock.AGE) == CropBlock.MAX_AGE) {
+                        world.breakBlock(blockPos, true);
+                    }
                 }
+
             } else if (foundState.isIn(BlockTags.FLOWERS) || foundState.isOf(Blocks.GRASS) || foundState.isOf(Blocks.TALL_GRASS)) {
                 world.breakBlock(blockPos, true);
             }
