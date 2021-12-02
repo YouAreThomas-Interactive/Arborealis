@@ -1,15 +1,13 @@
 package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.blocks.WoodenBucket;
-import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 
-public class WoodenBucketEntity extends BlockEntity implements BlockEntityClientSerializable {
+public class WoodenBucketEntity extends BlockEntity {
 
     private int sapAmount = 0;
 
@@ -36,12 +34,10 @@ public class WoodenBucketEntity extends BlockEntity implements BlockEntityClient
     }
 
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
+    public void writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
 
         tag.putInt("sap_amount", sapAmount);
-
-        return tag;
     }
 
     @Override
@@ -49,16 +45,5 @@ public class WoodenBucketEntity extends BlockEntity implements BlockEntityClient
         super.readNbt(tag);
 
         sapAmount = tag.getInt("sap_amount");
-    }
-
-    @Override
-    public void fromClientTag(NbtCompound tag) {
-        readNbt(tag);
-        updateListeners();
-    }
-
-    @Override
-    public NbtCompound toClientTag(NbtCompound tag) {
-        return writeNbt(tag);
     }
 }

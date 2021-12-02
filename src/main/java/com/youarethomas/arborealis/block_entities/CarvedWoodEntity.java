@@ -3,27 +3,20 @@ package com.youarethomas.arborealis.block_entities;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.runes.AbstractRune;
 import com.youarethomas.arborealis.util.*;
-import com.youarethomas.arborealis.util.NbtHelper;
-import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.nbt.*;
-import net.minecraft.nbt.visitor.NbtElementVisitor;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.DataOutput;
-import java.io.IOException;
 import java.util.*;
 
-public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSerializable {
+public class CarvedWoodEntity extends BlockEntity {
 
     private String logID = "";
 
@@ -130,7 +123,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
     //region NBT Shenanagins
     public void setLogID(String logID) {
         this.logID = logID;
-        updateListeners();
+        this.markDirty();
     }
 
     public String getLogID() {
@@ -147,7 +140,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
             case DOWN -> this.faceBottom = array;
         }
 
-        updateListeners();
+        this.markDirty();
     }
 
     public int[] getFaceArray(Direction direction) {
@@ -178,7 +171,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
     public void setRunesActive(boolean active) {
         runesActive = active;
-        updateListeners();
+        this.markDirty();
     }
 
     public boolean getRunesActive() {
@@ -195,7 +188,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
             case DOWN -> this.bottomCatalysed = active;
         }
 
-        updateListeners();
+        this.markDirty();
     }
 
     public boolean getFaceCatalysed(Direction direction) {
@@ -234,7 +227,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
             case DOWN -> this.bottomGlow = active;
         }
 
-        updateListeners();
+        this.markDirty();
     }
 
     public boolean getFaceGlow(Direction direction) {
@@ -265,7 +258,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
 
     // Serialize the BlockEntity - storing data
     @Override
-    public NbtCompound writeNbt(NbtCompound tag) {
+    public void writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
 
         tag.putString("log_id", logID);
@@ -294,9 +287,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         tag.putBoolean("top_glow", topGlow);
         tag.putBoolean("bottom_glow", bottomGlow);
 
-        tag.put("runes_list", NbtHelper.serializeRuneList(runesPresentLastCheck));
-
-        return tag;
+        tag.put("runes_list", ArborealisNbt.serializeRuneList(runesPresentLastCheck));
     }
 
     // Deserialize the BlockEntity - retrieving data
@@ -330,24 +321,31 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         topGlow = tag.getBoolean("top_glow");
         bottomGlow = tag.getBoolean("bottom_glow");
 
-        runesPresentLastCheck = NbtHelper.deserializeRuneList(tag.getList("runes_list", NbtElement.COMPOUND_TYPE));
-    }
+        runesPresentLastCheck = ArborealisNbt.deserializeRuneList(tag.getList("runes_list", NbtElement.COMPOUND_TYPE));
 
-    @Override
-    public void fromClientTag(NbtCompound tag) {
-        readNbt(tag);
-        updateListeners();
-    }
-
-    @Override
-    public NbtCompound toClientTag(NbtCompound tag) {
-        return writeNbt(tag);
-    }
-
-    public void updateListeners() {
-        // This method is the magic that makes the whole carving system work. No touchy
         this.markDirty();
-        this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.REDRAW_ON_MAIN_THREAD);
+    }
+
+    @Override
+    public void markDirty() {
+        super.markDirty();
+
+        if (this.getWorld() != null) {
+            if (!this.getWorld().isClient())
+                ((ServerWorld) world).getChunkManager().markForUpdate(getPos());
+            else
+                world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.REDRAW_ON_MAIN_THREAD);
+        }
+    }
+
+    @Override
+    public BlockEntityUpdateS2CPacket toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
+    }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt() {
+        return this.createNbt();
     }
     //endregion
 
@@ -381,7 +379,7 @@ public class CarvedWoodEntity extends BlockEntity implements BlockEntityClientSe
         }
 
         runesPresentLastCheck = foundRunes;
-        updateListeners();
+        this.markDirty();
     }
 
     private static void createParticleRadiusBorder(World world, BlockPos pos, float radius, int numberOfPoints) {

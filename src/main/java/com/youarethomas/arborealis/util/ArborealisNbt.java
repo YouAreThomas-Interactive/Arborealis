@@ -8,7 +8,7 @@ import net.minecraft.nbt.NbtList;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NbtHelper {
+public class ArborealisNbt {
     public static NbtCompound serializeRune(AbstractRune rune) {
         NbtCompound nbt = new NbtCompound();
 

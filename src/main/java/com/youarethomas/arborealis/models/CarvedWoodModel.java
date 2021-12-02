@@ -11,7 +11,6 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.renderer.v1.Renderer;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
-import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
 import net.minecraft.block.BlockState;
@@ -29,7 +28,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockRenderView;
-import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -37,25 +35,23 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+@Environment(EnvType.CLIENT)
 public class CarvedWoodModel implements UnbakedModel {
 
-    private final Collection<DynamicCuboid> fixedCuboids = new ArrayList<>();
-
-    private MeshBuilder builder;
-    private QuadEmitter emitter;
+    private static final ThreadLocal<Collection<DynamicCuboid>> CUBOIDS = ThreadLocal.withInitial(ArrayList::new);
+    private static final ThreadLocal<MeshBuilder> MESH_BUILDER = ThreadLocal.withInitial(() -> RendererAccess.INSTANCE.getRenderer().meshBuilder());
     private Function<SpriteIdentifier, Sprite> textureGetter;
 
     private Sprite breakTextureSprite;
 
     public void addFixedCuboid(DynamicCuboid cuboid) {
-        fixedCuboids.add(cuboid);
+        CUBOIDS.get().add(cuboid);
     }
 
     public Collection<SpriteIdentifier> getTextures() {
-
         Stream<SpriteIdentifier> spriteIDs = Stream.<SpriteIdentifier>builder().build();
 
-        for (DynamicCuboid cuboid : fixedCuboids) {
+        for (DynamicCuboid cuboid : CUBOIDS.get()) {
             spriteIDs = Stream.concat(spriteIDs, cuboid.spriteIds.values().stream());
         }
 
@@ -72,229 +68,222 @@ public class CarvedWoodModel implements UnbakedModel {
         return getTextures();
     }
 
+    @Environment(EnvType.CLIENT)
     @Nullable
     @Override
     public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
-        //breakTextureSprite = textureGetter.apply(breakTextureIdentifier);
-
         Renderer renderer = RendererAccess.INSTANCE.getRenderer();
-        builder = renderer.meshBuilder();
-        emitter = builder.getEmitter();
         this.textureGetter = textureGetter;
 
         return new Baked();
     }
 
-    @Environment(EnvType.CLIENT)
     public class Baked implements BakedModel, FabricBakedModel {
 
+        @Environment(EnvType.CLIENT)
         @Override
         public void emitBlockQuads(BlockRenderView blockView, BlockState state, BlockPos pos, Supplier<Random> randomSupplier, RenderContext context) {
             BlockEntity entity = blockView.getBlockEntity(pos);
-            World world = MinecraftClient.getInstance().world;
 
-            if (Objects.requireNonNull(world).isClient()) {
-                if (entity instanceof CarvedWoodEntity) {
-                    CarvedWoodEntity carvedEntity = (CarvedWoodEntity)entity;
-                    // Bunch of ID stuff...
-                    String logID = carvedEntity.getLogID();
-                    String[] idParts = logID.split(":");
-                    String log = "minecraft:block/oak_log";
-                    String strippedLog = "minecraft:block/stripped_oak_log";
-                    String logEnd = "minecraft:block/oak_log_top";
+            if (entity instanceof CarvedWoodEntity carvedEntity) {
+                // Bunch of ID stuff...
+                String logID = carvedEntity.getLogID();
+                String[] idParts = logID.split(":");
+                String log = "minecraft:block/oak_log";
+                String strippedLog = "minecraft:block/stripped_oak_log";
+                String logEnd = "minecraft:block/oak_log_top";
 
-                    // ... made needlessly complicated due to pumpkins
-                    if (Objects.equals(carvedEntity.getLogID(), "pumpkin")) {
-                        log = "minecraft:block/pumpkin_side";
-                        if (state.get(Properties.LIT)) {
-                            strippedLog = "arborealis:block/pumpkin_side_lit";
-                        } else {
-                            strippedLog = "arborealis:block/pumpkin_side_carved";
-                        }
-                        logEnd = "minecraft:block/pumpkin_top";
-
-                        loadFixedCuboids(log, strippedLog, logEnd);
-                    } else if (idParts.length > 1) {
-                        log = idParts[0] + ":block/" + idParts[1];
-                        strippedLog = idParts[0] + ":block/stripped_" + idParts[1];
-                        logEnd = idParts[0] + ":block/" + idParts[1] + "_top";
-
-                        loadFixedCuboids(log, strippedLog, logEnd);
+                // ... made needlessly complicated due to pumpkins
+                if (Objects.equals(carvedEntity.getLogID(), "pumpkin")) {
+                    log = "minecraft:block/pumpkin_side";
+                    if (state.get(Properties.LIT)) {
+                        strippedLog = "arborealis:block/pumpkin_side_lit";
+                    } else {
+                        strippedLog = "arborealis:block/pumpkin_side_carved";
                     }
+                    logEnd = "minecraft:block/pumpkin_top";
 
-                    breakTextureSprite = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)).getSprite();
+                    loadFixedCuboids(log, strippedLog, logEnd);
+                } else if (idParts.length > 1) {
+                    log = idParts[0] + ":block/" + idParts[1];
+                    strippedLog = idParts[0] + ":block/stripped_" + idParts[1];
+                    logEnd = idParts[0] + ":block/" + idParts[1] + "_top";
 
-                    // Core
-                    DynamicCuboid core = new DynamicCuboid(1, 1, 1, 14, 14, 14);
-                    core.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(strippedLog)));
-                    core.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logEnd)));
-
-                    // If the face has a rune, make it glow
-                    for (Direction dir : Direction.values()) {
-                        CarvedWoodEntity be = ((CarvedWoodEntity) entity);
-                        int[] faceArray = be.getFaceArray(dir);
-
-                        // Check if rune is valid and tree is natural
-                        if (be.getFaceCatalysed(dir) && RuneManager.isValidRune(faceArray) && TreeManager.getTreeStructureFromBlock(pos, world).isNatural()) {
-                            AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
-                            if (rune != null) {
-                                if (be.getRunesActive()) {
-                                    core.setSideOverlay(dir, rune.getIntColour());
-                                } else {
-                                    core.setSideOverlay(dir, 0x545454);
-                                }
-                                core.applyTexture(dir, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
-                            } else {
-                                core.setSideOverlay(dir, -1);
-                            }
-                        }
-
-                        if (be.getFaceGlow(dir)) {
-                            core.setEmissive(dir, true);
-                        }
-                    }
-
-                    fixedCuboids.add(core);
-
-                    //region Carved Face Rendering
-
-                    // Carved side north
-                    int northSideCount = 0;
-                    for (int y = 13; y >= 1; y -= 2) {
-                        for (int x = 13; x >= 1; x -= 2) {
-                            int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.NORTH)[northSideCount];
-
-                            // Where a state of 1 means carved - do not render anything
-                            if (carveState != 1) {
-                                DynamicCuboid cuboid;
-
-                                cuboid = new DynamicCuboid(x, y, 0, 2, 2, 1);
-                                // 2 means highlighted
-                                if (carveState == 2) {
-                                    cuboid.setSideOverlay(Direction.NORTH, 0x2bff95);
-                                }
-
-                                cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
-                                cuboid.create(emitter, textureGetter);
-                            }
-                            northSideCount++;
-                        }
-                    }
-
-                    // Carved side east
-                    int eastSideCount = 0;
-                    for (int y = 13; y >= 1; y -= 2) {
-                        for (int z = 13; z >= 1; z -= 2) {
-                            int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.EAST)[eastSideCount];
-
-                            if (carveState != 1) {
-                                DynamicCuboid cuboid;
-
-                                cuboid = new DynamicCuboid(15, y, z, 1, 2, 2);
-                                if (carveState == 2) {
-                                    cuboid.setSideOverlay(Direction.EAST, 0x2bff95);
-                                }
-
-                                cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
-                                cuboid.create(emitter, textureGetter);
-                            }
-                            eastSideCount++;
-                        }
-                    }
-
-                    // Carved side south
-                    int southSideCount = 0;
-                    for (int y = 13; y >= 1; y -= 2) {
-                        for (int x = 1; x <= 13; x += 2) {
-                            int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.SOUTH)[southSideCount];
-
-                            if (carveState != 1) {
-                                DynamicCuboid cuboid;
-
-                                cuboid = new DynamicCuboid(x, y, 15, 2, 2, 1);
-                                if (carveState == 2) {
-                                    cuboid.setSideOverlay(Direction.SOUTH, 0x2bff95);
-                                }
-
-                                cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
-                                cuboid.create(emitter, textureGetter);
-                            }
-                            southSideCount++;
-                        }
-                    }
-
-                    // Carved side west
-                    int westSideCount = 0;
-                    for (int y = 13; y >= 1; y -= 2) {
-                        for (int z = 1; z <= 13; z += 2) {
-                            int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.WEST)[westSideCount];
-
-                            if (carveState != 1) {
-                                DynamicCuboid cuboid;
-
-                                cuboid = new DynamicCuboid(0, y, z, 1, 2, 2);
-                                if (carveState == 2) {
-                                    cuboid.setSideOverlay(Direction.WEST, 0x2bff95);
-                                }
-
-                                cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
-                                cuboid.create(emitter, textureGetter);
-                            }
-                            westSideCount++;
-                        }
-                    }
-
-                    // Carved side top
-                    int topSideCount = 0;
-                    for (int x = 13; x >= 1; x -= 2) {
-                        for (int z = 1; z <= 13; z += 2) {
-                            int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.UP)[topSideCount];
-
-                            if (carveState != 1) {
-                                DynamicCuboid cuboid;
-
-                                cuboid = new DynamicCuboid(x, 15, z, 2, 1, 2);
-                                if (carveState == 2) {
-                                    cuboid.setSideOverlay(Direction.UP, 0x2bff95);
-                                }
-
-                                cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logEnd)));
-                                cuboid.create(emitter, textureGetter);
-                            }
-                            topSideCount++;
-                        }
-                    }
-
-                    // Carved side top
-                    int bottomSideCount = 0;
-                    for (int x = 13; x >= 1; x -= 2) {
-                        for (int z = 1; z <= 13; z += 2) {
-                            int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.DOWN)[bottomSideCount];
-
-                            if (carveState != 1) {
-                                DynamicCuboid cuboid;
-
-                                cuboid = new DynamicCuboid(x, 0, z, 2, 1, 2);
-                                if (carveState == 2) {
-                                    cuboid.setSideOverlay(Direction.DOWN, 0x2bff95);
-                                }
-
-                                cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logEnd)));
-                                cuboid.create(emitter, textureGetter);
-                            }
-                            bottomSideCount++;
-                        }
-                    }
-
-                    //endregion
-
-                    for (DynamicCuboid cuboid : fixedCuboids) {
-                        cuboid.create(emitter, textureGetter);
-                    }
-
-                    // And send her off!
-                    context.meshConsumer().accept(builder.build());
+                    loadFixedCuboids(log, strippedLog, logEnd);
                 }
+
+                breakTextureSprite = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)).getSprite();
+
+                // Core
+                DynamicCuboid core = new DynamicCuboid(1, 1, 1, 14, 14, 14);
+                core.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(strippedLog)));
+                core.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logEnd)));
+
+                // If the face has a rune, make it glow
+                for (Direction dir : Direction.values()) {
+                    CarvedWoodEntity be = ((CarvedWoodEntity) entity);
+                    int[] faceArray = be.getFaceArray(dir);
+
+                    // Check if rune is valid and tree is natural
+                    if (be.getFaceCatalysed(dir) && RuneManager.isValidRune(faceArray) && TreeManager.getTreeStructureFromBlock(pos, MinecraftClient.getInstance().world).isNatural()) {
+                        AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
+                        if (rune != null) {
+                            if (be.getRunesActive()) {
+                                core.setSideOverlay(dir, rune.getIntColour());
+                            } else {
+                                core.setSideOverlay(dir, 0x545454);
+                            }
+                            core.applyTexture(dir, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
+                        } else {
+                            core.setSideOverlay(dir, -1);
+                        }
+                    }
+
+                    if (be.getFaceGlow(dir)) {
+                        core.setEmissive(dir, true);
+                    }
+                }
+
+                CUBOIDS.get().add(core);
+
+                //region Carved Face Rendering
+
+                // Carved side north
+                int northSideCount = 0;
+                for (int y = 13; y >= 1; y -= 2) {
+                    for (int x = 13; x >= 1; x -= 2) {
+                        int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.NORTH)[northSideCount];
+
+                        // Where a state of 1 means carved - do not render anything
+                        if (carveState != 1) {
+                            DynamicCuboid cuboid;
+
+                            cuboid = new DynamicCuboid(x, y, 0, 2, 2, 1);
+                            // 2 means highlighted
+                            if (carveState == 2) {
+                                cuboid.setSideOverlay(Direction.NORTH, 0x2bff95);
+                            }
+
+                            cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+                            cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
+                        }
+                        northSideCount++;
+                    }
+                }
+
+                // Carved side east
+                int eastSideCount = 0;
+                for (int y = 13; y >= 1; y -= 2) {
+                    for (int z = 13; z >= 1; z -= 2) {
+                        int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.EAST)[eastSideCount];
+
+                        if (carveState != 1) {
+                            DynamicCuboid cuboid;
+
+                            cuboid = new DynamicCuboid(15, y, z, 1, 2, 2);
+                            if (carveState == 2) {
+                                cuboid.setSideOverlay(Direction.EAST, 0x2bff95);
+                            }
+
+                            cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+                            cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
+                        }
+                        eastSideCount++;
+                    }
+                }
+
+                // Carved side south
+                int southSideCount = 0;
+                for (int y = 13; y >= 1; y -= 2) {
+                    for (int x = 1; x <= 13; x += 2) {
+                        int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.SOUTH)[southSideCount];
+
+                        if (carveState != 1) {
+                            DynamicCuboid cuboid;
+
+                            cuboid = new DynamicCuboid(x, y, 15, 2, 2, 1);
+                            if (carveState == 2) {
+                                cuboid.setSideOverlay(Direction.SOUTH, 0x2bff95);
+                            }
+
+                            cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+                            cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
+                        }
+                        southSideCount++;
+                    }
+                }
+
+                // Carved side west
+                int westSideCount = 0;
+                for (int y = 13; y >= 1; y -= 2) {
+                    for (int z = 1; z <= 13; z += 2) {
+                        int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.WEST)[westSideCount];
+
+                        if (carveState != 1) {
+                            DynamicCuboid cuboid;
+
+                            cuboid = new DynamicCuboid(0, y, z, 1, 2, 2);
+                            if (carveState == 2) {
+                                cuboid.setSideOverlay(Direction.WEST, 0x2bff95);
+                            }
+
+                            cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+                            cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
+                        }
+                        westSideCount++;
+                    }
+                }
+
+                // Carved side top
+                int topSideCount = 0;
+                for (int x = 13; x >= 1; x -= 2) {
+                    for (int z = 1; z <= 13; z += 2) {
+                        int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.UP)[topSideCount];
+
+                        if (carveState != 1) {
+                            DynamicCuboid cuboid;
+
+                            cuboid = new DynamicCuboid(x, 15, z, 2, 1, 2);
+                            if (carveState == 2) {
+                                cuboid.setSideOverlay(Direction.UP, 0x2bff95);
+                            }
+
+                            cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logEnd)));
+                            cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
+                        }
+                        topSideCount++;
+                    }
+                }
+
+                // Carved side top
+                int bottomSideCount = 0;
+                for (int x = 13; x >= 1; x -= 2) {
+                    for (int z = 1; z <= 13; z += 2) {
+                        int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.DOWN)[bottomSideCount];
+
+                        if (carveState != 1) {
+                            DynamicCuboid cuboid;
+
+                            cuboid = new DynamicCuboid(x, 0, z, 2, 1, 2);
+                            if (carveState == 2) {
+                                cuboid.setSideOverlay(Direction.DOWN, 0x2bff95);
+                            }
+
+                            cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logEnd)));
+                            cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
+                        }
+                        bottomSideCount++;
+                    }
+                }
+
+                //endregion
+
+                for (DynamicCuboid cuboid : CUBOIDS.get()) {
+                    cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
+                }
+
+                // And send her off!
+                context.meshConsumer().accept(MESH_BUILDER.get().build());
             }
         }
 
