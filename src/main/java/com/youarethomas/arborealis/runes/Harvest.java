@@ -23,7 +23,7 @@ public class Harvest extends AbstractRune{
             BlockState foundState = world.getBlockState(blockPos);
 
             // TODO: Replace with REPLACEABLE_PLANTS in 1.18
-            if (foundState.isIn(BlockTags.FLOWERS) || foundState.isOf(Blocks.GRASS) || foundState.isOf(Blocks.TALL_GRASS)) {
+            if (foundState.isIn(BlockTags.REPLACEABLE_PLANTS) ||  foundState.isIn(BlockTags.FLOWERS)) {
                 world.breakBlock(blockPos, true);
             }
         });
