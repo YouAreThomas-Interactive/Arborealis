@@ -5,14 +5,16 @@ import com.youarethomas.arborealis.runes.AbstractRune;
 import com.youarethomas.arborealis.util.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.*;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
+import org.lwjgl.system.CallbackI;
 
 import java.util.*;
 
@@ -120,7 +122,7 @@ public class CarvedWoodEntity extends BlockEntity {
         setFaceArray(dir, combinedPattern);
     }
 
-    //region NBT Shenanagins
+    //region NBT Shenanigans
     public void setLogID(String logID) {
         this.logID = logID;
         this.markDirty();
@@ -386,21 +388,37 @@ public class CarvedWoodEntity extends BlockEntity {
         Vec2f[] points = new Vec2f[numberOfPoints];
         Random random = world.random;
 
+        // Create the circle of points to display particles at
         for (int i = 0; i < numberOfPoints; ++i)
         {
             double angle = Math.toRadians(((double) i / numberOfPoints) * 360d);
 
             points[i] = new Vec2f(
-                    (float)Math.cos(angle) * radius,
-                    (float)Math.sin(angle) * radius
+                    (float)Math.cos(angle) * (radius + 1) + 0.5f,
+                    (float)Math.sin(angle) * (radius + 1) + 0.5f
             );
         }
 
         for (Vec2f point : points) {
             int randomParticle = random.nextInt(100);
-            // TODO: Add in a nice way to find the ground and great the particles above that
+
+            // With a 1% chance to display a particle...
             if (randomParticle == 1) {
-                world.addParticle(ParticleTypes.COMPOSTER, pos.getX() + point.x + 0.5f, pos.down().getY(), pos.getZ() + point.y + 0.5f, -0.5 + random.nextFloat(), random.nextFloat() / 3, -0.5 + random.nextFloat());
+                BlockPos particlePos = new BlockPos(pos.getX() + point.x + 0.5f, pos.getY(), pos.getZ() + point.y + 0.5f);
+
+                // Check from 10 blocks above rune to 10 below
+                for (int y = 10; y > -10; y--) {
+                    BlockPos testPos = particlePos.withY(pos.getY() + y);
+
+                    // If the block is air or a plant, keep going
+                    if (world.getBlockState(testPos).isOf(Blocks.AIR) || world.getBlockState(testPos).isIn(BlockTags.REPLACEABLE_PLANTS)) {
+                        particlePos = testPos;
+                    } else {
+                        break;
+                    }
+                }
+
+                world.addParticle(ParticleTypes.COMPOSTER, particlePos.getX(), particlePos.getY(), particlePos.getZ(), -0.5 + random.nextFloat(), random.nextFloat() / 3, -0.5 + random.nextFloat());
             }
         }
     }
