@@ -32,8 +32,6 @@ public class Pull extends AbstractRune{
 
     @Override
     public void onServerTick(World world, BlockPos pos, CarvedWoodEntity be) {
-        // TODO: Change speed based on entity type
-
         if (applyEffect) {
             List<Entity> entities = ArborealisUtil.getEntitiesInRadius(world, pos, be.radius, false);
 
@@ -47,6 +45,7 @@ public class Pull extends AbstractRune{
                 if (entity instanceof LivingEntity) {
                     multiplier *= 5;
                 }
+
                 Vec3d pullVelocity = target.subtract(entity.getPos()).normalize().multiply(multiplier);
 
                 entity.addVelocity(pullVelocity.x, 0, pullVelocity.z);

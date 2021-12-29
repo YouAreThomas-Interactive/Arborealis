@@ -365,7 +365,7 @@ public class CarvedWoodEntity extends BlockEntity {
                 AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
 
                 if (rune != null && tree.isNatural()) {
-                    if (runesPresentLastCheck.contains(rune)) {
+                    if (!runesPresentLastCheck.contains(rune)) {
                         rune.onRuneFound(world, pos, this); // If rune appears for the first time, execute onRuneFound(...)
                     }
 

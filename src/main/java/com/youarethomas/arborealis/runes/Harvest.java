@@ -19,14 +19,8 @@ public class Harvest extends AbstractRune{
     public void onRuneFound(World world, BlockPos pos, CarvedWoodEntity be) {
         runeActive = true;
 
-        BlockPos.iterateOutwards(pos, be.radius, be.radius, be.radius).forEach(blockPos -> {
-            BlockState foundState = world.getBlockState(blockPos);
-
-            // TODO: Replace with REPLACEABLE_PLANTS in 1.18
-            if (foundState.isIn(BlockTags.REPLACEABLE_PLANTS) ||  foundState.isIn(BlockTags.FLOWERS)) {
-                world.breakBlock(blockPos, true);
-            }
-        });
+        // Call a tick immediately when the rune is carved
+        onServerTick(world, pos, be);
     }
 
     @Override
@@ -51,7 +45,7 @@ public class Harvest extends AbstractRune{
                     }
                 }
 
-            } else if (foundState.isIn(BlockTags.FLOWERS) || foundState.isOf(Blocks.GRASS) || foundState.isOf(Blocks.TALL_GRASS)) {
+            } else if (foundState.isIn(BlockTags.REPLACEABLE_PLANTS) ||  foundState.isIn(BlockTags.FLOWERS)) {
                 world.breakBlock(blockPos, true);
             }
         });

@@ -4,6 +4,7 @@ import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
 import com.youarethomas.arborealis.util.ArborealisUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -29,14 +30,21 @@ public class Push extends AbstractRune{
 
     @Override
     public void onServerTick(World world, BlockPos pos, CarvedWoodEntity be) {
-        // TODO: Change speed based on entity type
-
         if (applyEffect) {
             List<Entity> entities = ArborealisUtil.getEntitiesInRadius(world, pos, be.radius, false);
 
             for (Entity entity : entities) {
                 Vec3d target = new Vec3d(pos.getX(), pos.getY(), pos.getZ());
-                Vec3d pushVelocity = entity.getPos().subtract(target).normalize().multiply(MULTIPLIER);
+
+                double multiplier = MULTIPLIER;
+                if (entity.getVelocity().normalize().y > 0.2D || entity.getVelocity().normalize().y < -0.2D) {
+                    multiplier *= 0.1;
+                }
+                if (entity instanceof LivingEntity) {
+                    multiplier *= 5;
+                }
+
+                Vec3d pushVelocity = entity.getPos().subtract(target).normalize().multiply(multiplier);
 
                 entity.addVelocity(pushVelocity.x, 0, pushVelocity.z);
             }
