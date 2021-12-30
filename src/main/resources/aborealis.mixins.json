@@ -4,7 +4,8 @@
   "package": "com.youarethomas.arborealis.mixins",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "RecipeMixin"
+    "RecipeMixin",
+    "CreateLeavesBlockInvoker"
   ],
   "client": [],
   "server": [],

@@ -5,6 +5,7 @@ import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
 import com.youarethomas.arborealis.block_entities.WoodenBucketEntity;
 import com.youarethomas.arborealis.blocks.*;
 import com.youarethomas.arborealis.items.*;
+import com.youarethomas.arborealis.mixins.CreateLeavesBlockInvoker;
 import com.youarethomas.arborealis.models.CarvedStencilModel;
 import com.youarethomas.arborealis.models.CarvedWoodModel;
 import com.youarethomas.arborealis.models.model_utils.DynamicModelRegistry;
@@ -20,11 +21,11 @@ import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.fabricmc.fabric.api.tag.TagRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.Material;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.*;
+import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
@@ -88,6 +89,9 @@ public class Arborealis implements ModInitializer {
 	public static final HollowedLog HOLLOWED_NETHER_LOG = new HollowedLog(FabricBlockSettings.of(Material.WOOD));
 	public static final TreeCoreBlock TREE_CORE_BLOCK = new TreeCoreBlock(FabricBlockSettings.of(Material.WOOD));
 
+	public static final Block WARP_LEAVES = CreateLeavesBlockInvoker.createLeavesBlock(BlockSoundGroup.GRASS);
+	public static final Block WARP_WOOD = new PillarBlock(FabricBlockSettings.of(Material.WOOD).strength(2.0f).sounds(BlockSoundGroup.WOOD));
+
 	public static final TreeTap TREE_TAP = new TreeTap(FabricBlockSettings.of(Material.METAL));
 	public static final WoodenBucket WOODEN_BUCKET = new WoodenBucket(FabricBlockSettings.of(Material.WOOD));
 
@@ -116,8 +120,8 @@ public class Arborealis implements ModInitializer {
 
 				stacks.add(new ItemStack(WOODEN_BUCKET));
 				stacks.add(new ItemStack(BLANK_STENCIL));
-
-				stacks.add(new ItemStack(TEST_BLOCK));
+				stacks.add(new ItemStack(WARP_LEAVES));
+				stacks.add(new ItemStack(WARP_WOOD));
 			})
 			.build();
 
@@ -144,6 +148,9 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "hollowed_nether_log"), HOLLOWED_NETHER_LOG);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "tree_core_block"), TREE_CORE_BLOCK);
 
+		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "warp_leaves"), WARP_LEAVES);
+		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "warp_wood"), WARP_WOOD);
+
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "tree_tap"), TREE_TAP);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "wooden_bucket"), WOODEN_BUCKET);
 
@@ -154,6 +161,9 @@ public class Arborealis implements ModInitializer {
 
 		// Block item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "test_block"), new BlockItem(TEST_BLOCK, new FabricItemSettings()));
+
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_leaves"), new BlockItem(WARP_LEAVES, new FabricItemSettings()));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_wood"), new BlockItem(WARP_WOOD, new FabricItemSettings()));
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tree_tap"), new BlockItem(TREE_TAP, new FabricItemSettings().maxCount(16)));
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wooden_bucket"), new BlockItem(WOODEN_BUCKET, new FabricItemSettings().maxCount(16)));
@@ -181,6 +191,7 @@ public class Arborealis implements ModInitializer {
 		// SET IT ON FIRE!
 		FlammableBlockRegistry.getDefaultInstance().add(CARVED_WOOD, 5, 5);
 		FlammableBlockRegistry.getDefaultInstance().add(HOLLOWED_LOG, 5, 5);
+		FlammableBlockRegistry.getDefaultInstance().add(WARP_WOOD, 5, 5);
 
 		LOGGER.info("Arborealis Initialised!");
 	}

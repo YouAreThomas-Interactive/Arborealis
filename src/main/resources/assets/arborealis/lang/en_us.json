@@ -44,6 +44,9 @@
 
   "item.arborealis.stencil_carved": "Rune Stencil",
 
+  "block.arborealis.warp_leaves": "Warp Leaves",
+  "block.arborealis.warp_wood": "Warp Log",
+
   "block.arborealis.tree_tap": "Tree Tap",
   "block.arborealis.tree_tap.tooltip1": "§7Allows sap to be drained from trees.",
   "block.arborealis.tree_tap.tooltip2": "§8Place on a tree, and then §2right click",

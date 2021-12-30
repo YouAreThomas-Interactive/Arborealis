@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "arborealis:block/warp_log",
+    "side": "arborealis:block/warp_log"
+  }
+}
