@@ -14,6 +14,7 @@ import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
 import net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.*;
@@ -103,21 +104,20 @@ public class CarvedWoodModel implements UnbakedModel {
                     }
                     logEnd = "minecraft:block/pumpkin_top";
 
-                    loadFixedCuboids(log, strippedLog, logEnd);
+                    loadFixedCuboids(Blocks.PUMPKIN.getDefaultState());
                 } else if (idParts.length > 1) {
                     log = idParts[0] + ":block/" + idParts[1];
                     strippedLog = idParts[0] + ":block/stripped_" + idParts[1];
                     logEnd = idParts[0] + ":block/" + idParts[1] + "_top";
 
-                    loadFixedCuboids(log, strippedLog, logEnd);
+                    loadFixedCuboids(Blocks.OAK_LOG.getDefaultState());
                 }
 
                 breakTextureSprite = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)).getSprite();
 
                 // Core
                 DynamicCuboid core = new DynamicCuboid(1, 1, 1, 14, 14, 14);
-                core.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(strippedLog)));
-                core.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logEnd)));
+                core.applyTexturesFromBlock(Blocks.STRIPPED_OAK_LOG.getDefaultState());
 
                 // If the face has a rune, make it glow
                 for (Direction dir : Direction.values()) {
@@ -164,7 +164,7 @@ public class CarvedWoodModel implements UnbakedModel {
                                 cuboid.setSideOverlay(Direction.NORTH, 0x2bff95);
                             }
 
-                            cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+                            cuboid.applyTexturesFromBlock(Blocks.OAK_LOG.getDefaultState());
                             cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
                         }
                         northSideCount++;
@@ -185,7 +185,7 @@ public class CarvedWoodModel implements UnbakedModel {
                                 cuboid.setSideOverlay(Direction.EAST, 0x2bff95);
                             }
 
-                            cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+                            cuboid.applyTexturesFromBlock(Blocks.OAK_LOG.getDefaultState());
                             cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
                         }
                         eastSideCount++;
@@ -206,7 +206,7 @@ public class CarvedWoodModel implements UnbakedModel {
                                 cuboid.setSideOverlay(Direction.SOUTH, 0x2bff95);
                             }
 
-                            cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+                            cuboid.applyTexturesFromBlock(Blocks.OAK_LOG.getDefaultState());
                             cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
                         }
                         southSideCount++;
@@ -227,7 +227,7 @@ public class CarvedWoodModel implements UnbakedModel {
                                 cuboid.setSideOverlay(Direction.WEST, 0x2bff95);
                             }
 
-                            cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+                            cuboid.applyTexturesFromBlock(Blocks.OAK_LOG.getDefaultState());
                             cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
                         }
                         westSideCount++;
@@ -248,7 +248,7 @@ public class CarvedWoodModel implements UnbakedModel {
                                 cuboid.setSideOverlay(Direction.UP, 0x2bff95);
                             }
 
-                            cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logEnd)));
+                            cuboid.applyTexturesFromBlock(Blocks.OAK_LOG.getDefaultState());
                             cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
                         }
                         topSideCount++;
@@ -269,7 +269,7 @@ public class CarvedWoodModel implements UnbakedModel {
                                 cuboid.setSideOverlay(Direction.DOWN, 0x2bff95);
                             }
 
-                            cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logEnd)));
+                            cuboid.applyTexturesFromBlock(Blocks.OAK_LOG.getDefaultState());
                             cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
                         }
                         bottomSideCount++;
@@ -287,74 +287,56 @@ public class CarvedWoodModel implements UnbakedModel {
             }
         }
 
-        public void loadFixedCuboids(String log, String strippedLog, String logTop) {
+        public void loadFixedCuboids(BlockState blockState) {
             // Top
-            /*DynamicCuboid top = new DynamicCuboid(0, 15, 0, 16, 1, 16);
-            top.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
-            top.applyTexture(Direction.UP, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            addFixedCuboid(top);*/
-
             DynamicCuboid topNorth = new DynamicCuboid(0, 15, 0, 16, 1, 1);
-            topNorth.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            topNorth.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            topNorth.applyTexturesFromBlock(blockState);
             addFixedCuboid(topNorth);
 
             DynamicCuboid topSouth = new DynamicCuboid(0, 15, 15, 16, 1, 1);
-            topSouth.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            topSouth.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            topSouth.applyTexturesFromBlock(blockState);
             addFixedCuboid(topSouth);
 
             DynamicCuboid topEast = new DynamicCuboid(15, 15, 1, 1, 1, 14);
-            topEast.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            topEast.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            topEast.applyTexturesFromBlock(blockState);
             addFixedCuboid(topEast);
 
             DynamicCuboid topWest = new DynamicCuboid(0, 15, 1, 1, 1, 14);
-            topWest.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            topWest.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            topWest.applyTexturesFromBlock(blockState);
             addFixedCuboid(topWest);
 
             // Bottom
-            /*DynamicCuboid bottom = new DynamicCuboid(0, 0, 0, 16, 1, 16);
-            bottom.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
-            bottom.applyTexture(Direction.DOWN, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            addFixedCuboid(bottom);*/
-
             DynamicCuboid bottomNorth = new DynamicCuboid(0, 0, 0, 16, 1, 1);
-            bottomNorth.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            bottomNorth.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            bottomNorth.applyTexturesFromBlock(blockState);
             addFixedCuboid(bottomNorth);
 
             DynamicCuboid bottomSouth = new DynamicCuboid(0, 0, 15, 16, 1, 1);
-            bottomSouth.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            bottomSouth.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            bottomSouth.applyTexturesFromBlock(blockState);
             addFixedCuboid(bottomSouth);
 
             DynamicCuboid bottomEast = new DynamicCuboid(15, 0, 1, 1, 1, 14);
-            bottomEast.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            bottomEast.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            bottomEast.applyTexturesFromBlock(blockState);
             addFixedCuboid(bottomEast);
 
             DynamicCuboid bottomWest = new DynamicCuboid(0, 0, 1, 1, 1, 14);
-            bottomWest.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            bottomWest.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            bottomWest.applyTexturesFromBlock(blockState);
             addFixedCuboid(bottomWest);
 
             // Pillars
             DynamicCuboid pillar1 = new DynamicCuboid(0, 1, 0, 1, 14, 1);
-            pillar1.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            pillar1.applyTexturesFromBlock(blockState);
             addFixedCuboid(pillar1);
 
             DynamicCuboid pillar2 = new DynamicCuboid(0, 1, 15, 1, 14, 1);
-            pillar2.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            pillar2.applyTexturesFromBlock(blockState);
             addFixedCuboid(pillar2);
 
             DynamicCuboid pillar3 = new DynamicCuboid(15, 1, 15, 1, 14, 1);
-            pillar3.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            pillar3.applyTexturesFromBlock(blockState);
             addFixedCuboid(pillar3);
 
             DynamicCuboid pillar4 = new DynamicCuboid(15, 1, 0, 1, 14, 1);
-            pillar4.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            pillar4.applyTexturesFromBlock(blockState);
             addFixedCuboid(pillar4);
         }
 

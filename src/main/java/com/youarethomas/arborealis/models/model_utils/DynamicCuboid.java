@@ -1,5 +1,6 @@
 package com.youarethomas.arborealis.models.model_utils;
 
+import com.youarethomas.arborealis.Arborealis;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.renderer.v1.Renderer;
@@ -8,15 +9,20 @@ import net.fabricmc.fabric.api.renderer.v1.material.MaterialFinder;
 import net.fabricmc.fabric.api.renderer.v1.material.RenderMaterial;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
 import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
+import net.fabricmc.fabric.api.renderer.v1.mesh.QuadView;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.RenderLayers;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.function.Function;
 
 @Environment(EnvType.CLIENT)
@@ -85,6 +91,19 @@ public class DynamicCuboid {
 
     public void applyTexture(Direction side, SpriteIdentifier spriteIdentifier) {
         spriteIds.replace(side, spriteIdentifier);
+    }
+
+    public void applyTexturesFromBlock(BlockState blockState) {
+        BakedModel woodModel = MinecraftClient.getInstance().getBlockRenderManager().getModel(blockState);
+
+        spriteIds.clear();
+        for (Direction direction : Direction.values()) {
+            List<BakedQuad> quads = woodModel.getQuads(blockState, direction, Arborealis.RANDOM);
+            if (quads.size() > 0) {
+                Sprite sprite = quads.get(0).getSprite();
+                spriteIds.put(direction, new SpriteIdentifier(sprite.getAtlas().getId(), sprite.getId()));
+            }
+        }
     }
 
     public void create(QuadEmitter emitter, Function<SpriteIdentifier, Sprite> textureGetter) {
