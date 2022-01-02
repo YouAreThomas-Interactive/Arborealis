@@ -60,7 +60,7 @@ public class RegrowthSpoon extends ToolItem {
                 // If no sides are carved, reset to respective log block. Otherwise, update runes
                 if (blockReset) {
                     if (!world.isClient) {
-                        world.setBlockState(blockPos, Registry.BLOCK.get(new Identifier(be.getLogID())).getDefaultState());
+                        world.setBlockState(blockPos, be.getLogState());
                         itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand())); // Damage carving knife when carving is applied
                     }
                 } else {

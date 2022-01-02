@@ -62,13 +62,8 @@ public class StencilCarved extends Item {
                 CarvedWoodEntity be = (CarvedWoodEntity) world.getBlockEntity(pos);
 
                 // ... and assign relevant NBT data
-                if (be != null) {
-                    if (blockState.isIn(BlockTags.LOGS)) {
-                        be.setLogID(String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
-                    } else if (blockState.isOf(Blocks.PUMPKIN)) {
-                        be.setLogID("pumpkin");
-                    }
-                }
+                if (be != null)
+                    be.setLogState(blockState);
 
                 be.markRune(context.getSide(), pattern.clone());
                 be.checkForRunes();

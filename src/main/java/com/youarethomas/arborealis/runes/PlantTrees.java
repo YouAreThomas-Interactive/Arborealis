@@ -68,7 +68,7 @@ public class PlantTrees extends AbstractRune{
         int logCount = 1 + Arborealis.RANDOM.nextInt(3);
 
         for (int log = 0; log <= logCount; log++) {
-            world.setBlockState(basePos.offset(Direction.UP, log), Registry.BLOCK.get(new Identifier(be.getLogID())).getDefaultState());
+            world.setBlockState(basePos.offset(Direction.UP, log), be.getLogState().getBlock().getDefaultState());
 
             if (log == logCount) {
                 BlockPos topLogPos = basePos.offset(Direction.UP, log);

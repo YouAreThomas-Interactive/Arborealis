@@ -41,9 +41,6 @@ public class CarvingKnife extends ToolItem {
 
         // If the block clicked on is wood, create a new carved wood block
         if (blockState.isIn(BlockTags.LOGS) || blockState.isOf(Blocks.PUMPKIN)) {
-            /*if (playerEntity instanceof ServerPlayerEntity) {
-                Criteria.ITEM_USED_ON_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos, itemStack);
-            }*/
 
             // Swap the block out with a carved wood block...
             // TODO: Add in support for horizontal logs
@@ -53,18 +50,13 @@ public class CarvingKnife extends ToolItem {
                 world.setBlockState(blockPos, Arborealis.CARVED_NETHER_WOOD.getDefaultState());
             }
 
-            CarvedWoodEntity carvedEntity = (CarvedWoodEntity) world.getBlockEntity(blockPos);
+            CarvedWoodEntity be = (CarvedWoodEntity) world.getBlockEntity(blockPos);
 
             // ... and assign relevant NBT data
-            if (carvedEntity != null) {
-                if (blockState.isIn(BlockTags.LOGS)) {
-                    carvedEntity.setLogID(String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
-                } else if (blockState.isOf(Blocks.PUMPKIN)) {
-                    carvedEntity.setLogID("pumpkin");
-                }
-            }
+            if (be != null)
+                be.setLogState(blockState);
 
-            return drawCarvePlan(carvedEntity, context.getSide(), world, playerEntity); // Draw rune after creating the block
+            return drawCarvePlan(be, context.getSide(), world, playerEntity); // Draw rune after creating the block
         }
 
         // If shift-right click on a carved wood block, turn all carving plans into actual carvings

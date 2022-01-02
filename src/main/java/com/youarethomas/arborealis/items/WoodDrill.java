@@ -4,6 +4,7 @@ import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
 import com.youarethomas.arborealis.blocks.HollowedLog;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -61,10 +62,10 @@ public class WoodDrill extends ToolItem {
             }
         // If the block is a carved wood block
         } else if (blockState.isOf(Arborealis.CARVED_WOOD) || blockState.isOf(Arborealis.CARVED_NETHER_WOOD)) {
-            CarvedWoodEntity carvedEntity = (CarvedWoodEntity) world.getBlockEntity(blockPos);
+            CarvedWoodEntity be = (CarvedWoodEntity) world.getBlockEntity(blockPos);
 
-            if (carvedEntity != null) {
-                if (!Objects.equals(carvedEntity.getLogID(), "pumpkin")) {
+            if (be != null) {
+                if (!be.getLogState().isOf(Blocks.PUMPKIN)) {
                     if (!world.isClient()) {
                         String idString = String.valueOf(Registry.BLOCK.getId(blockState.getBlock()));
 

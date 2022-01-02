@@ -90,7 +90,7 @@ public class CarvedWood extends BlockWithEntity implements BlockEntityProvider {
         super.onBreak(world, pos, state, player);
         if (!player.isCreative()) {
             CarvedWoodEntity entity = (CarvedWoodEntity)world.getBlockEntity(pos);
-            dropStack(world, pos, Registry.ITEM.get(new Identifier(entity.getLogID())).getDefaultStack());
+            dropStack(world, pos, entity.getLogState().getBlock().asItem().getDefaultStack());
         }
     }
 
