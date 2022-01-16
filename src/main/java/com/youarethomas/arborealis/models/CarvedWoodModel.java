@@ -44,7 +44,6 @@ import java.util.stream.Stream;
 public class CarvedWoodModel implements UnbakedModel {
     private static final ThreadLocal<Collection<DynamicCuboid>> CUBOIDS = ThreadLocal.withInitial(ArrayList::new);
     private static final ThreadLocal<MeshBuilder> MESH_BUILDER = ThreadLocal.withInitial(() -> RendererAccess.INSTANCE.getRenderer().meshBuilder());
-    private Sprite breakTextureSprite;
 
     public void addFixedCuboid(DynamicCuboid cuboid) {
         CUBOIDS.get().add(cuboid);
@@ -88,15 +87,6 @@ public class CarvedWoodModel implements UnbakedModel {
 
             if (entity instanceof CarvedWoodEntity be) {
                 BlockState logState = be.getLogState();
-
-                // Get break texture
-                BlockState defaultLogState = logState.getBlock().getDefaultState();
-                BakedModel woodModel = MinecraftClient.getInstance().getBlockRenderManager().getModel(defaultLogState);
-                List<BakedQuad> quads = woodModel.getQuads(defaultLogState, Direction.NORTH, Arborealis.RANDOM);
-                if (quads.size() > 0) {
-                    System.out.println(defaultLogState.getBlock().getName());
-                    breakTextureSprite = quads.get(0).getSprite();
-                }
 
                 // ... made needlessly complicated due to pumpkins
                 loadFixedCuboids(logState);
@@ -364,7 +354,7 @@ public class CarvedWoodModel implements UnbakedModel {
 
         @Override
         public Sprite getParticleSprite() {
-            return breakTextureSprite;
+            return null; // Particle sprite is handled by turning the block back into the original log before breaking
         }
 
         @Override
