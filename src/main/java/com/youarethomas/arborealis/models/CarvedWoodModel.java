@@ -1,7 +1,9 @@
 package com.youarethomas.arborealis.models;
 
 import com.mojang.datafixers.util.Pair;
+import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
+import com.youarethomas.arborealis.mixins.AxeItemAccessor;
 import com.youarethomas.arborealis.models.model_utils.DynamicCuboid;
 import com.youarethomas.arborealis.runes.AbstractRune;
 import com.youarethomas.arborealis.util.RuneManager;
@@ -13,7 +15,9 @@ import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
 import net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.*;
@@ -24,6 +28,7 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.Properties;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -37,25 +42,23 @@ import java.util.stream.Stream;
 
 @Environment(EnvType.CLIENT)
 public class CarvedWoodModel implements UnbakedModel {
-
     private static final ThreadLocal<Collection<DynamicCuboid>> CUBOIDS = ThreadLocal.withInitial(ArrayList::new);
     private static final ThreadLocal<MeshBuilder> MESH_BUILDER = ThreadLocal.withInitial(() -> RendererAccess.INSTANCE.getRenderer().meshBuilder());
-    private Function<SpriteIdentifier, Sprite> textureGetter;
-
-    private Sprite breakTextureSprite;
 
     public void addFixedCuboid(DynamicCuboid cuboid) {
         CUBOIDS.get().add(cuboid);
     }
 
     public Collection<SpriteIdentifier> getTextures() {
-        Stream<SpriteIdentifier> spriteIDs = Stream.<SpriteIdentifier>builder().build();
+        List<SpriteIdentifier> spriteIds = new ArrayList<>();
 
         for (DynamicCuboid cuboid : CUBOIDS.get()) {
-            spriteIDs = Stream.concat(spriteIDs, cuboid.spriteIds.values().stream());
+            for (int sprite = 0; sprite < cuboid.spriteIds.size(); sprite++) {
+                spriteIds.add(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, cuboid.spriteIds.get(sprite).getId()));
+            }
         }
 
-        return spriteIDs.toList();
+        return spriteIds;
     }
 
     @Override
@@ -72,9 +75,6 @@ public class CarvedWoodModel implements UnbakedModel {
     @Nullable
     @Override
     public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
-        Renderer renderer = RendererAccess.INSTANCE.getRenderer();
-        this.textureGetter = textureGetter;
-
         return new Baked();
     }
 
@@ -85,43 +85,20 @@ public class CarvedWoodModel implements UnbakedModel {
         public void emitBlockQuads(BlockRenderView blockView, BlockState state, BlockPos pos, Supplier<Random> randomSupplier, RenderContext context) {
             BlockEntity entity = blockView.getBlockEntity(pos);
 
-            if (entity instanceof CarvedWoodEntity carvedEntity) {
-                // Bunch of ID stuff...
-                String logID = carvedEntity.getLogID();
-                String[] idParts = logID.split(":");
-                String log = "minecraft:block/oak_log";
-                String strippedLog = "minecraft:block/stripped_oak_log";
-                String logEnd = "minecraft:block/oak_log_top";
+            if (entity instanceof CarvedWoodEntity be) {
+                BlockState logState = be.getLogState();
 
                 // ... made needlessly complicated due to pumpkins
-                if (Objects.equals(carvedEntity.getLogID(), "pumpkin")) {
-                    log = "minecraft:block/pumpkin_side";
-                    if (state.get(Properties.LIT)) {
-                        strippedLog = "arborealis:block/pumpkin_side_lit";
-                    } else {
-                        strippedLog = "arborealis:block/pumpkin_side_carved";
-                    }
-                    logEnd = "minecraft:block/pumpkin_top";
-
-                    loadFixedCuboids(log, strippedLog, logEnd);
-                } else if (idParts.length > 1) {
-                    log = idParts[0] + ":block/" + idParts[1];
-                    strippedLog = idParts[0] + ":block/stripped_" + idParts[1];
-                    logEnd = idParts[0] + ":block/" + idParts[1] + "_top";
-
-                    loadFixedCuboids(log, strippedLog, logEnd);
-                }
-
-                breakTextureSprite = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)).getSprite();
+                loadFixedCuboids(logState);
 
                 // Core
                 DynamicCuboid core = new DynamicCuboid(1, 1, 1, 14, 14, 14);
-                core.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(strippedLog)));
-                core.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logEnd)));
+                Block strippedLog = AxeItemAccessor.getStrippedBlocks().get(logState.getBlock());
+                if (strippedLog != null)
+                    core.applyTexturesFromBlock(strippedLog.getStateWithProperties(logState));
 
                 // If the face has a rune, make it glow
                 for (Direction dir : Direction.values()) {
-                    CarvedWoodEntity be = ((CarvedWoodEntity) entity);
                     int[] faceArray = be.getFaceArray(dir);
 
                     // Check if rune is valid and tree is natural
@@ -164,8 +141,8 @@ public class CarvedWoodModel implements UnbakedModel {
                                 cuboid.setSideOverlay(Direction.NORTH, 0x2bff95);
                             }
 
-                            cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
-                            cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
+                            cuboid.applyTexturesFromBlock(logState);
+                            cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
                         }
                         northSideCount++;
                     }
@@ -185,8 +162,8 @@ public class CarvedWoodModel implements UnbakedModel {
                                 cuboid.setSideOverlay(Direction.EAST, 0x2bff95);
                             }
 
-                            cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
-                            cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
+                            cuboid.applyTexturesFromBlock(logState);
+                            cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
                         }
                         eastSideCount++;
                     }
@@ -206,8 +183,8 @@ public class CarvedWoodModel implements UnbakedModel {
                                 cuboid.setSideOverlay(Direction.SOUTH, 0x2bff95);
                             }
 
-                            cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
-                            cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
+                            cuboid.applyTexturesFromBlock(logState);
+                            cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
                         }
                         southSideCount++;
                     }
@@ -227,8 +204,8 @@ public class CarvedWoodModel implements UnbakedModel {
                                 cuboid.setSideOverlay(Direction.WEST, 0x2bff95);
                             }
 
-                            cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
-                            cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
+                            cuboid.applyTexturesFromBlock(logState);
+                            cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
                         }
                         westSideCount++;
                     }
@@ -248,8 +225,8 @@ public class CarvedWoodModel implements UnbakedModel {
                                 cuboid.setSideOverlay(Direction.UP, 0x2bff95);
                             }
 
-                            cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logEnd)));
-                            cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
+                            cuboid.applyTexturesFromBlock(logState);
+                            cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
                         }
                         topSideCount++;
                     }
@@ -269,8 +246,8 @@ public class CarvedWoodModel implements UnbakedModel {
                                 cuboid.setSideOverlay(Direction.DOWN, 0x2bff95);
                             }
 
-                            cuboid.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logEnd)));
-                            cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
+                            cuboid.applyTexturesFromBlock(logState);
+                            cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
                         }
                         bottomSideCount++;
                     }
@@ -279,7 +256,7 @@ public class CarvedWoodModel implements UnbakedModel {
                 //endregion
 
                 for (DynamicCuboid cuboid : CUBOIDS.get()) {
-                    cuboid.create(MESH_BUILDER.get().getEmitter(), textureGetter);
+                    cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
                 }
 
                 // And send her off!
@@ -287,74 +264,56 @@ public class CarvedWoodModel implements UnbakedModel {
             }
         }
 
-        public void loadFixedCuboids(String log, String strippedLog, String logTop) {
+        public void loadFixedCuboids(BlockState blockState) {
             // Top
-            /*DynamicCuboid top = new DynamicCuboid(0, 15, 0, 16, 1, 16);
-            top.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
-            top.applyTexture(Direction.UP, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            addFixedCuboid(top);*/
-
             DynamicCuboid topNorth = new DynamicCuboid(0, 15, 0, 16, 1, 1);
-            topNorth.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            topNorth.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            topNorth.applyTexturesFromBlock(blockState);
             addFixedCuboid(topNorth);
 
             DynamicCuboid topSouth = new DynamicCuboid(0, 15, 15, 16, 1, 1);
-            topSouth.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            topSouth.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            topSouth.applyTexturesFromBlock(blockState);
             addFixedCuboid(topSouth);
 
             DynamicCuboid topEast = new DynamicCuboid(15, 15, 1, 1, 1, 14);
-            topEast.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            topEast.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            topEast.applyTexturesFromBlock(blockState);
             addFixedCuboid(topEast);
 
             DynamicCuboid topWest = new DynamicCuboid(0, 15, 1, 1, 1, 14);
-            topWest.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            topWest.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            topWest.applyTexturesFromBlock(blockState);
             addFixedCuboid(topWest);
 
             // Bottom
-            /*DynamicCuboid bottom = new DynamicCuboid(0, 0, 0, 16, 1, 16);
-            bottom.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
-            bottom.applyTexture(Direction.DOWN, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            addFixedCuboid(bottom);*/
-
             DynamicCuboid bottomNorth = new DynamicCuboid(0, 0, 0, 16, 1, 1);
-            bottomNorth.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            bottomNorth.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            bottomNorth.applyTexturesFromBlock(blockState);
             addFixedCuboid(bottomNorth);
 
             DynamicCuboid bottomSouth = new DynamicCuboid(0, 0, 15, 16, 1, 1);
-            bottomSouth.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            bottomSouth.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            bottomSouth.applyTexturesFromBlock(blockState);
             addFixedCuboid(bottomSouth);
 
             DynamicCuboid bottomEast = new DynamicCuboid(15, 0, 1, 1, 1, 14);
-            bottomEast.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            bottomEast.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            bottomEast.applyTexturesFromBlock(blockState);
             addFixedCuboid(bottomEast);
 
             DynamicCuboid bottomWest = new DynamicCuboid(0, 0, 1, 1, 1, 14);
-            bottomWest.applyTextureTopAndBottom(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(logTop)));
-            bottomWest.applyTextureSides(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            bottomWest.applyTexturesFromBlock(blockState);
             addFixedCuboid(bottomWest);
 
             // Pillars
             DynamicCuboid pillar1 = new DynamicCuboid(0, 1, 0, 1, 14, 1);
-            pillar1.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            pillar1.applyTexturesFromBlock(blockState);
             addFixedCuboid(pillar1);
 
             DynamicCuboid pillar2 = new DynamicCuboid(0, 1, 15, 1, 14, 1);
-            pillar2.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            pillar2.applyTexturesFromBlock(blockState);
             addFixedCuboid(pillar2);
 
             DynamicCuboid pillar3 = new DynamicCuboid(15, 1, 15, 1, 14, 1);
-            pillar3.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            pillar3.applyTexturesFromBlock(blockState);
             addFixedCuboid(pillar3);
 
             DynamicCuboid pillar4 = new DynamicCuboid(15, 1, 0, 1, 14, 1);
-            pillar4.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(log)));
+            pillar4.applyTexturesFromBlock(blockState);
             addFixedCuboid(pillar4);
         }
 
@@ -395,7 +354,7 @@ public class CarvedWoodModel implements UnbakedModel {
 
         @Override
         public Sprite getParticleSprite() {
-            return breakTextureSprite;
+            return null; // Particle sprite is handled by turning the block back into the original log before breaking
         }
 
         @Override

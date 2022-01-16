@@ -20,7 +20,7 @@ import java.util.*;
 
 public class CarvedWoodEntity extends BlockEntity {
 
-    private String logID = "";
+    private BlockState logState = Blocks.OAK_LOG.getDefaultState();
 
     private int[] faceNorth = new int[49];
     private int[] faceEast = new int[49];
@@ -123,13 +123,13 @@ public class CarvedWoodEntity extends BlockEntity {
     }
 
     //region NBT Shenanigans
-    public void setLogID(String logID) {
-        this.logID = logID;
+    public void setLogState(BlockState logState) {
+        this.logState = logState;
         this.markDirty();
     }
 
-    public String getLogID() {
-        return logID;
+    public BlockState getLogState() {
+        return logState;
     }
 
     public void setFaceArray(Direction direction, int[] array) {
@@ -263,7 +263,7 @@ public class CarvedWoodEntity extends BlockEntity {
     public void writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
 
-        tag.putString("log_id", logID);
+        tag.put("log_state", NbtHelper.fromBlockState(logState));
 
         tag.putIntArray("face_north", faceNorth);
         tag.putIntArray("face_east", faceEast);
@@ -297,7 +297,7 @@ public class CarvedWoodEntity extends BlockEntity {
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
 
-        logID = tag.getString("log_id");
+        logState = NbtHelper.toBlockState(tag.getCompound("log_state"));
 
         faceNorth = tag.getIntArray("face_north");
         faceEast = tag.getIntArray("face_east");
