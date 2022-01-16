@@ -142,7 +142,7 @@ public class CarvedWoodModel implements UnbakedModel {
                             }
 
                             cuboid.applyTexturesFromBlock(logState);
-                            cuboid.create(MESH_BUILDER.get().getEmitter());
+                            cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
                         }
                         northSideCount++;
                     }
@@ -163,7 +163,7 @@ public class CarvedWoodModel implements UnbakedModel {
                             }
 
                             cuboid.applyTexturesFromBlock(logState);
-                            cuboid.create(MESH_BUILDER.get().getEmitter());
+                            cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
                         }
                         eastSideCount++;
                     }
@@ -184,7 +184,7 @@ public class CarvedWoodModel implements UnbakedModel {
                             }
 
                             cuboid.applyTexturesFromBlock(logState);
-                            cuboid.create(MESH_BUILDER.get().getEmitter());
+                            cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
                         }
                         southSideCount++;
                     }
@@ -205,7 +205,7 @@ public class CarvedWoodModel implements UnbakedModel {
                             }
 
                             cuboid.applyTexturesFromBlock(logState);
-                            cuboid.create(MESH_BUILDER.get().getEmitter());
+                            cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
                         }
                         westSideCount++;
                     }
@@ -226,7 +226,7 @@ public class CarvedWoodModel implements UnbakedModel {
                             }
 
                             cuboid.applyTexturesFromBlock(logState);
-                            cuboid.create(MESH_BUILDER.get().getEmitter());
+                            cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
                         }
                         topSideCount++;
                     }
@@ -247,7 +247,7 @@ public class CarvedWoodModel implements UnbakedModel {
                             }
 
                             cuboid.applyTexturesFromBlock(logState);
-                            cuboid.create(MESH_BUILDER.get().getEmitter());
+                            cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
                         }
                         bottomSideCount++;
                     }
@@ -256,7 +256,7 @@ public class CarvedWoodModel implements UnbakedModel {
                 //endregion
 
                 for (DynamicCuboid cuboid : CUBOIDS.get()) {
-                    cuboid.create(MESH_BUILDER.get().getEmitter());
+                    cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
                 }
 
                 // And send her off!
@@ -354,7 +354,7 @@ public class CarvedWoodModel implements UnbakedModel {
 
         @Override
         public Sprite getParticleSprite() {
-            return new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("minecraft", "oak_log")).getSprite();
+            return new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("minecraft", "block/oak_log")).getSprite();
         }
 
         @Override
