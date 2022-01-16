@@ -1,6 +1,7 @@
 package com.youarethomas.arborealis.models;
 
 import com.mojang.datafixers.util.Pair;
+import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
 import com.youarethomas.arborealis.mixins.AxeItemAccessor;
 import com.youarethomas.arborealis.models.model_utils.DynamicCuboid;
@@ -43,6 +44,7 @@ import java.util.stream.Stream;
 public class CarvedWoodModel implements UnbakedModel {
     private static final ThreadLocal<Collection<DynamicCuboid>> CUBOIDS = ThreadLocal.withInitial(ArrayList::new);
     private static final ThreadLocal<MeshBuilder> MESH_BUILDER = ThreadLocal.withInitial(() -> RendererAccess.INSTANCE.getRenderer().meshBuilder());
+    private Sprite breakTextureSprite;
 
     public void addFixedCuboid(DynamicCuboid cuboid) {
         CUBOIDS.get().add(cuboid);
@@ -87,9 +89,17 @@ public class CarvedWoodModel implements UnbakedModel {
             if (entity instanceof CarvedWoodEntity be) {
                 BlockState logState = be.getLogState();
 
+                // Get break texture
+                BlockState defaultLogState = logState.getBlock().getDefaultState();
+                BakedModel woodModel = MinecraftClient.getInstance().getBlockRenderManager().getModel(defaultLogState);
+                List<BakedQuad> quads = woodModel.getQuads(defaultLogState, Direction.NORTH, Arborealis.RANDOM);
+                if (quads.size() > 0) {
+                    System.out.println(defaultLogState.getBlock().getName());
+                    breakTextureSprite = quads.get(0).getSprite();
+                }
+
                 // ... made needlessly complicated due to pumpkins
-                if (logState.isIn(BlockTags.LOGS) || logState.isOf(Blocks.PUMPKIN))
-                    loadFixedCuboids(logState);
+                loadFixedCuboids(logState);
 
                 // Core
                 DynamicCuboid core = new DynamicCuboid(1, 1, 1, 14, 14, 14);
@@ -354,7 +364,7 @@ public class CarvedWoodModel implements UnbakedModel {
 
         @Override
         public Sprite getParticleSprite() {
-            return new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("minecraft", "block/oak_log")).getSprite();
+            return breakTextureSprite;
         }
 
         @Override

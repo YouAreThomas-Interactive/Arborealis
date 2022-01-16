@@ -179,10 +179,8 @@ public class DynamicCuboid {
                 } else if (axisInfo == Direction.Axis.X) {
                     // East-west (rotate north/south, up/down)
                     switch (direction) {
-                        case UP -> emitter.spriteBake(0, spriteIds.get(direction), MutableQuadView.BAKE_LOCK_UV | MutableQuadView.BAKE_ROTATE_90);
-                        case DOWN -> emitter.spriteBake(0, spriteIds.get(direction), MutableQuadView.BAKE_LOCK_UV | MutableQuadView.BAKE_ROTATE_90);
+                        case UP, DOWN, SOUTH -> emitter.spriteBake(0, spriteIds.get(direction), MutableQuadView.BAKE_LOCK_UV | MutableQuadView.BAKE_ROTATE_90);
                         case NORTH -> emitter.spriteBake(0, spriteIds.get(direction), MutableQuadView.BAKE_LOCK_UV | MutableQuadView.BAKE_ROTATE_270);
-                        case SOUTH -> emitter.spriteBake(0, spriteIds.get(direction), MutableQuadView.BAKE_LOCK_UV | MutableQuadView.BAKE_ROTATE_90);
                         default -> emitter.spriteBake(0, spriteIds.get(direction), MutableQuadView.BAKE_LOCK_UV);
                     }
                 } else {
