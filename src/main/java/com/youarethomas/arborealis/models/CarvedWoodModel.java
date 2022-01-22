@@ -354,7 +354,8 @@ public class CarvedWoodModel implements UnbakedModel {
 
         @Override
         public Sprite getParticleSprite() {
-            return null; // Particle sprite is handled by turning the block back into the original log before breaking
+            // Particle sprite is handled by turning the block back into the original log before breaking. This invisible texture controls things like the running texture... or lack thereof
+            return new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(Arborealis.MOD_ID, "invisible")).getSprite();
         }
 
         @Override

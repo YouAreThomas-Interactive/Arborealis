@@ -37,10 +37,12 @@ public class ArborealisClient implements ClientModInitializer {
 
         // Register pumpkin texture - super important for mod functionality x
         ClientSpriteRegistryCallback.event(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).register((atlasTexture, registry) -> {
+            registry.register(new Identifier("arborealis:block/invisible"));
             registry.register(new Identifier("arborealis:block/pumpkin_side_carved"));
             registry.register(new Identifier("arborealis:block/pumpkin_side_lit"));
             registry.register(new Identifier("arborealis:rune/rune"));
             registry.register(new Identifier("arborealis:item/stencil_carved"));
+            registry.register(new Identifier("arborealis:invisible"));
         });
     }
 }
