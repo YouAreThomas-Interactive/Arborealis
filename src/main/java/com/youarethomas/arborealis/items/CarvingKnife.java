@@ -1,14 +1,13 @@
 package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
+import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
@@ -18,7 +17,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,12 +43,12 @@ public class CarvingKnife extends ToolItem {
             // Swap the block out with a carved wood block...
             // TODO: Add in support for horizontal logs
             if (blockState.isIn(BlockTags.LOGS_THAT_BURN)) {
-                world.setBlockState(blockPos, Arborealis.CARVED_WOOD.getDefaultState());
+                world.setBlockState(blockPos, Arborealis.CARVED_LOG.getDefaultState());
             } else {
-                world.setBlockState(blockPos, Arborealis.CARVED_NETHER_WOOD.getDefaultState());
+                world.setBlockState(blockPos, Arborealis.CARVED_NETHER_LOG.getDefaultState());
             }
 
-            CarvedWoodEntity be = (CarvedWoodEntity) world.getBlockEntity(blockPos);
+            CarvedLogEntity be = (CarvedLogEntity) world.getBlockEntity(blockPos);
 
             // ... and assign relevant NBT data
             if (be != null)
@@ -60,10 +58,10 @@ public class CarvingKnife extends ToolItem {
         }
 
         // If shift-right click on a carved wood block, turn all carving plans into actual carvings
-        if (blockState.isOf(Arborealis.CARVED_WOOD) || blockState.isOf(Arborealis.CARVED_NETHER_WOOD)) {
+        if (blockState.isOf(Arborealis.CARVED_LOG) || blockState.isOf(Arborealis.CARVED_NETHER_LOG)) {
             if (playerEntity.isSneaking()) {
                 if (!world.isClient()) {
-                    CarvedWoodEntity be = (CarvedWoodEntity) world.getBlockEntity(blockPos);
+                    CarvedLogEntity be = (CarvedLogEntity) world.getBlockEntity(blockPos);
                     be.performCarve();
                     be.setFaceCatalysed(context.getSide(), false);
                     itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand())); // Damage carving knife when carving is applied
@@ -72,14 +70,14 @@ public class CarvingKnife extends ToolItem {
                 }
                 return ActionResult.SUCCESS;
             } else {
-                return drawCarvePlan((CarvedWoodEntity) world.getBlockEntity(blockPos), context.getSide(), world, playerEntity);
+                return drawCarvePlan((CarvedLogEntity) world.getBlockEntity(blockPos), context.getSide(), world, playerEntity);
             }
         }
 
         return ActionResult.PASS;
     }
 
-    private ActionResult drawCarvePlan(CarvedWoodEntity carvedWoodEntity, Direction side, World world, PlayerEntity player) {
+    private ActionResult drawCarvePlan(CarvedLogEntity carvedWoodEntity, Direction side, World world, PlayerEntity player) {
         // Get the raytrace hit
         MinecraftClient client = MinecraftClient.getInstance();
         HitResult pixelHit = client.crosshairTarget;

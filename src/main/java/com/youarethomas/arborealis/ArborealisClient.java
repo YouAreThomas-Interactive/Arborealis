@@ -24,15 +24,15 @@ public class ArborealisClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         // Load models
-        ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/hollowed_log_oak"))));
+        ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/carved_log/carved_log_frame"))));
 
         DynamicModelRegistry.registerModels();
 
         // Block Entity Renderers
-        BlockEntityRendererRegistry.INSTANCE.register(Arborealis.HOLLOWED_LOG_ENTITY, HollowedLogEntityRenderer::new);
+        //BlockEntityRendererRegistry.INSTANCE.register(Arborealis.HOLLOWED_LOG_ENTITY, HollowedLogEntityRenderer::new);
 
         // Render Layers
-        BlockRenderLayerMap.INSTANCE.putBlock(Arborealis.HOLLOWED_LOG, RenderLayer.getCutout());
+        //BlockRenderLayerMap.INSTANCE.putBlock(Arborealis.HOLLOWED_LOG, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(Arborealis.WOODEN_BUCKET, RenderLayer.getTranslucent());
 
         // Register pumpkin texture - super important for mod functionality x

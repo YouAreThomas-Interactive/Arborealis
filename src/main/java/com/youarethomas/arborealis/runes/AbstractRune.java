@@ -1,7 +1,7 @@
 package com.youarethomas.arborealis.runes;
 
 import com.google.gson.annotations.SerializedName;
-import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
+import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -20,13 +20,13 @@ public abstract class AbstractRune {
         return Integer.decode(colour);
     }
 
-    public abstract void onRuneFound(World world, BlockPos pos, CarvedWoodEntity be);
+    public abstract void onRuneFound(World world, BlockPos pos, CarvedLogEntity be);
 
-    public abstract void onRuneLost(World world, BlockPos pos, CarvedWoodEntity be);
+    public abstract void onRuneLost(World world, BlockPos pos, CarvedLogEntity be);
 
-    public abstract void onServerTick(World world, BlockPos pos, CarvedWoodEntity be);
+    public abstract void onServerTick(World world, BlockPos pos, CarvedLogEntity be);
 
-    public abstract void onClientTick(World world, BlockPos pos, CarvedWoodEntity be);
+    public abstract void onClientTick(World world, BlockPos pos, CarvedLogEntity be);
 
     public boolean showRadiusEffect() {
         return false;

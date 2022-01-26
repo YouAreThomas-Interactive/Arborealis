@@ -1,15 +1,13 @@
 package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
+import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -34,7 +32,7 @@ public class StencilBlank extends Item {
         PlayerEntity player = context.getPlayer();
 
         if (!world.isClient) {
-            if (world.getBlockEntity(pos) instanceof CarvedWoodEntity be) {
+            if (world.getBlockEntity(pos) instanceof CarvedLogEntity be) {
                 // Create pattern
                 int[] pattern = be.getFaceArray(context.getSide());
                 pattern = Arrays.stream(pattern).map(i -> i == 1 ? 2 : i).toArray();

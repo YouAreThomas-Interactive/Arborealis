@@ -1,6 +1,6 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "arborealis:item/wood_drill"
+    "layer0": "arborealis:item/log_drill"
   }
 }

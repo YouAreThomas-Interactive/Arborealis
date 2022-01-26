@@ -41,7 +41,7 @@ public class TreeCoreBlock extends Block {
         super.onBreak(world, pos, state, player);
         if (!player.isCreative()) {
             dropStack(world, pos, new ItemStack(Arborealis.TREE_CORE, 1));
-            dropStack(world, pos, Registry.ITEM.get(Arborealis.LogIDs.get(state.get(TreeCoreBlock.LOG_ID))).getDefaultStack());
+            //dropStack(world, pos, Registry.ITEM.get(Arborealis.LogIDs.get(state.get(TreeCoreBlock.LOG_ID))).getDefaultStack());
         }
     }
 }

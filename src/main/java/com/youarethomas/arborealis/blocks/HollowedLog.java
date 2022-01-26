@@ -1,7 +1,6 @@
 package com.youarethomas.arborealis.blocks;
 
 import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
 import com.youarethomas.arborealis.util.TreeManager;
 import net.minecraft.block.Block;
@@ -85,7 +84,7 @@ public class HollowedLog extends Block implements BlockEntityProvider {
         if (!player.isCreative()) {
             HollowedLogEntity entity = (HollowedLogEntity)world.getBlockEntity(pos);
             dropStack(world, pos, Registry.ITEM.get(new Identifier(entity.getItemID())).getDefaultStack());
-            dropStack(world, pos, Registry.ITEM.get(Arborealis.LogIDs.get(state.get(TreeCoreBlock.LOG_ID))).getDefaultStack());
+            //dropStack(world, pos, Registry.ITEM.get(Arborealis.LogIDs.get(state.get(TreeCoreBlock.LOG_ID))).getDefaultStack());
         }
     }
 }

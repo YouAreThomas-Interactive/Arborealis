@@ -1,7 +1,7 @@
 package com.youarethomas.arborealis.blocks;
 
 import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
+import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.util.RuneManager;
 import com.youarethomas.arborealis.util.TreeManager;
 import net.minecraft.block.*;
@@ -11,29 +11,25 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.system.CallbackI;
 
 import java.util.function.ToIntFunction;
 
-public class CarvedWood extends BlockWithEntity implements BlockEntityProvider {
+public class CarvedLog extends BlockWithEntity implements BlockEntityProvider {
 
     public static BooleanProperty LIT = BooleanProperty.of("lit");
 
-    public CarvedWood(Settings settings) {
+    public CarvedLog(Settings settings) {
         super(settings.luminance(createLightLevelFromLitBlockState(15)).strength(2.0F));
         setDefaultState(getStateManager().getDefaultState().with(LIT, false));
     }
@@ -41,7 +37,7 @@ public class CarvedWood extends BlockWithEntity implements BlockEntityProvider {
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new CarvedWoodEntity(pos, state);
+        return new CarvedLogEntity(pos, state);
     }
 
     @Override
@@ -55,7 +51,7 @@ public class CarvedWood extends BlockWithEntity implements BlockEntityProvider {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        CarvedWoodEntity be = (CarvedWoodEntity) world.getBlockEntity(pos);
+        CarvedLogEntity be = (CarvedLogEntity) world.getBlockEntity(pos);
 
         Direction hitSide = hit.getSide();
         int[] faceArray = be.getFaceArray(hitSide);
@@ -89,7 +85,7 @@ public class CarvedWood extends BlockWithEntity implements BlockEntityProvider {
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         BlockEntity be = world.getBlockEntity(pos);
 
-        if (be instanceof CarvedWoodEntity carvedWoodEntity) {
+        if (be instanceof CarvedLogEntity carvedWoodEntity) {
             world.setBlockState(pos, carvedWoodEntity.getLogState());
             world.breakBlock(pos, !player.isCreative());
         }
@@ -102,6 +98,6 @@ public class CarvedWood extends BlockWithEntity implements BlockEntityProvider {
 
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return checkType(type, Arborealis.CARVED_WOOD_ENTITY, world.isClient ? CarvedWoodEntity::clientTick : CarvedWoodEntity::serverTick);
+        return checkType(type, Arborealis.CARVED_LOG_ENTITY, world.isClient ? CarvedLogEntity::clientTick : CarvedLogEntity::serverTick);
     }
 }

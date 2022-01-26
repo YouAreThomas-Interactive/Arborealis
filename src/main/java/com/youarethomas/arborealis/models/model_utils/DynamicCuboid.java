@@ -44,6 +44,8 @@ public class DynamicCuboid {
     private HashMap<Direction, Integer> overlays = new HashMap<>();
     private HashMap<Direction, Boolean> emissives = new HashMap<>();
 
+    private BlockState blockState = null;
+
     public DynamicCuboid(float x, float y, float z, float xSize, float ySize, float zSize) {
         this.x = x;
         this.y = y;
@@ -80,24 +82,13 @@ public class DynamicCuboid {
         }
     }
 
-    public void applyTextureTopAndBottom(SpriteIdentifier spriteIdentifier) {
-        spriteIds.replace(Direction.UP, spriteIdentifier.getSprite());
-        spriteIds.replace(Direction.DOWN, spriteIdentifier.getSprite());
-    }
-
-    public void applyTextureSides(SpriteIdentifier spriteIdentifier) {
-        spriteIds.replace(Direction.NORTH, spriteIdentifier.getSprite());
-        spriteIds.replace(Direction.EAST, spriteIdentifier.getSprite());
-        spriteIds.replace(Direction.SOUTH, spriteIdentifier.getSprite());
-        spriteIds.replace(Direction.WEST, spriteIdentifier.getSprite());
-    }
-
     public void applyTexture(Direction side, SpriteIdentifier spriteIdentifier) {
         spriteIds.replace(side, spriteIdentifier.getSprite());
     }
 
     public void applyTexturesFromBlock(BlockState blockState) {
         BakedModel woodModel = MinecraftClient.getInstance().getBlockRenderManager().getModel(blockState);
+        this.blockState = blockState;
 
         spriteIds.clear();
         for (Direction direction : Direction.values()) {
@@ -109,7 +100,7 @@ public class DynamicCuboid {
         }
     }
 
-    public void create(QuadEmitter emitter, BlockState blockState) {
+    public void create(QuadEmitter emitter) {
         /* So emitters are kinda complicated:
            You're drawing a plane from the left-bottom, up to the right-top, so it's important that
            the left and bottom numbers are smaller than the right and top numbers, otherwise you'll
@@ -147,7 +138,7 @@ public class DynamicCuboid {
     private void BakeTexture(QuadEmitter emitter, Direction direction, BlockState blockState) {
         if (spriteIds.containsKey(direction) && spriteIds.get(direction) != null) {
             // Sprite rotation, courtesy of bitwise voo-doo
-            if (blockState.contains(PillarBlock.AXIS)) {
+            if (blockState != null && blockState.contains(PillarBlock.AXIS)) {
                 Direction.Axis axisInfo = blockState.get(PillarBlock.AXIS);
 
                 if (axisInfo == Direction.Axis.Z) {

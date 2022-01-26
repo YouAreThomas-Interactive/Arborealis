@@ -1,17 +1,12 @@
 package com.youarethomas.arborealis.runes;
 
 import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
-import com.youarethomas.arborealis.util.TreeManager;
-import com.youarethomas.arborealis.util.TreeStructure;
-import net.minecraft.block.Block;
+import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class PlantTrees extends AbstractRune{
@@ -20,17 +15,17 @@ public class PlantTrees extends AbstractRune{
     final int SPEED = 10;
 
     @Override
-    public void onRuneFound(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onRuneFound(World world, BlockPos pos, CarvedLogEntity be) {
         runeActive = true;
     }
 
     @Override
-    public void onRuneLost(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onRuneLost(World world, BlockPos pos, CarvedLogEntity be) {
         runeActive = false;
     }
 
     @Override
-    public void onServerTick(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {
         int randomCheck = Arborealis.RANDOM.nextInt(SPEED);
         if (randomCheck == 1) {
             BlockPos.iterateRandomly(Arborealis.RANDOM, 1, pos, be.radius - 1).forEach(blockPos -> {
@@ -55,7 +50,7 @@ public class PlantTrees extends AbstractRune{
     }
 
     @Override
-    public void onClientTick(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onClientTick(World world, BlockPos pos, CarvedLogEntity be) {
 
     }
 
@@ -64,7 +59,7 @@ public class PlantTrees extends AbstractRune{
         return true;
     }
 
-    public void generateTree(World world, BlockPos basePos, CarvedWoodEntity be) {
+    public void generateTree(World world, BlockPos basePos, CarvedLogEntity be) {
         int logCount = 1 + Arborealis.RANDOM.nextInt(3);
 
         for (int log = 0; log <= logCount; log++) {

@@ -1,7 +1,7 @@
 package com.youarethomas.arborealis.runes;
 
 import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
+import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.util.TreeManager;
 import com.youarethomas.arborealis.util.TreeStructure;
 import net.minecraft.tag.BlockTags;
@@ -14,17 +14,17 @@ public class AreaChop extends AbstractRune{
     final int SPEED = 2;
 
     @Override
-    public void onRuneFound(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onRuneFound(World world, BlockPos pos, CarvedLogEntity be) {
         runeActive = true;
     }
 
     @Override
-    public void onRuneLost(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onRuneLost(World world, BlockPos pos, CarvedLogEntity be) {
         runeActive = false;
     }
 
     @Override
-    public void onServerTick(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {
         // Iterate randomly through logs
         BlockPos.iterateRandomly(Arborealis.RANDOM, SPEED, pos, be.radius).forEach(blockPos -> {
             // If the block found is a log
@@ -46,7 +46,7 @@ public class AreaChop extends AbstractRune{
     }
 
     @Override
-    public void onClientTick(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onClientTick(World world, BlockPos pos, CarvedLogEntity be) {
 
     }
 

@@ -14,11 +14,10 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
-import org.lwjgl.system.CallbackI;
 
 import java.util.*;
 
-public class CarvedWoodEntity extends BlockEntity {
+public class CarvedLogEntity extends BlockEntity {
 
     private BlockState logState = Blocks.OAK_LOG.getDefaultState();
 
@@ -49,19 +48,17 @@ public class CarvedWoodEntity extends BlockEntity {
     private final int BASE_RADIUS = 10;
     public int radius = 10;
     private boolean showRadius;
+    private boolean reload = true;
 
     private List<AbstractRune> runesPresentLastCheck = new ArrayList<>();
 
     public Timer chopTimer = new Timer();
 
-
-    private boolean reload = true;
-
-    public CarvedWoodEntity(BlockPos pos, BlockState state) {
-        super(Arborealis.CARVED_WOOD_ENTITY, pos, state);
+    public CarvedLogEntity(BlockPos pos, BlockState state) {
+        super(Arborealis.CARVED_LOG_ENTITY, pos, state);
     }
 
-    public static void clientTick(World world, BlockPos pos, BlockState state, CarvedWoodEntity be) {
+    public static void clientTick(World world, BlockPos pos, BlockState state, CarvedLogEntity be) {
         for (AbstractRune rune : be.runesPresentLastCheck) {
             rune.onClientTick(world, pos, be);
         }
@@ -73,7 +70,7 @@ public class CarvedWoodEntity extends BlockEntity {
         // TODO: Rune particles?
     }
 
-    public static void serverTick(World world, BlockPos pos, BlockState state, CarvedWoodEntity be) {
+    public static void serverTick(World world, BlockPos pos, BlockState state, CarvedLogEntity be) {
         if (be.reload) {
             be.runesPresentLastCheck.clear();
             be.reload = false;

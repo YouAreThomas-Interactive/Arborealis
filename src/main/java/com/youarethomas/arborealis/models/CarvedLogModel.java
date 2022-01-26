@@ -2,7 +2,7 @@ package com.youarethomas.arborealis.models;
 
 import com.mojang.datafixers.util.Pair;
 import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
+import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.mixins.AxeItemAccessor;
 import com.youarethomas.arborealis.models.model_utils.DynamicCuboid;
 import com.youarethomas.arborealis.runes.AbstractRune;
@@ -10,14 +10,16 @@ import com.youarethomas.arborealis.util.RuneManager;
 import com.youarethomas.arborealis.util.TreeManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.renderer.v1.Renderer;
+import net.fabricmc.fabric.api.client.model.BakedModelManagerHelper;
+import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
+import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
 import net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
+import net.fabricmc.fabric.impl.client.model.ModelLoadingRegistryImpl;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.*;
@@ -25,10 +27,9 @@ import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.ItemStack;
-import net.minecraft.state.property.Properties;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -38,10 +39,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 @Environment(EnvType.CLIENT)
-public class CarvedWoodModel implements UnbakedModel {
+public class CarvedLogModel implements UnbakedModel {
     private static final ThreadLocal<Collection<DynamicCuboid>> CUBOIDS = ThreadLocal.withInitial(ArrayList::new);
     private static final ThreadLocal<MeshBuilder> MESH_BUILDER = ThreadLocal.withInitial(() -> RendererAccess.INSTANCE.getRenderer().meshBuilder());
 
@@ -85,11 +85,8 @@ public class CarvedWoodModel implements UnbakedModel {
         public void emitBlockQuads(BlockRenderView blockView, BlockState state, BlockPos pos, Supplier<Random> randomSupplier, RenderContext context) {
             BlockEntity entity = blockView.getBlockEntity(pos);
 
-            if (entity instanceof CarvedWoodEntity be) {
+            if (entity instanceof CarvedLogEntity be) {
                 BlockState logState = be.getLogState();
-
-                // ... made needlessly complicated due to pumpkins
-                loadFixedCuboids(logState);
 
                 // Core
                 DynamicCuboid core = new DynamicCuboid(1, 1, 1, 14, 14, 14);
@@ -129,7 +126,7 @@ public class CarvedWoodModel implements UnbakedModel {
                 int northSideCount = 0;
                 for (int y = 13; y >= 1; y -= 2) {
                     for (int x = 13; x >= 1; x -= 2) {
-                        int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.NORTH)[northSideCount];
+                        int carveState = ((CarvedLogEntity) entity).getFaceArray(Direction.NORTH)[northSideCount];
 
                         // Where a state of 1 means carved - do not render anything
                         if (carveState != 1) {
@@ -142,7 +139,7 @@ public class CarvedWoodModel implements UnbakedModel {
                             }
 
                             cuboid.applyTexturesFromBlock(logState);
-                            cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
+                            cuboid.create(MESH_BUILDER.get().getEmitter());
                         }
                         northSideCount++;
                     }
@@ -152,7 +149,7 @@ public class CarvedWoodModel implements UnbakedModel {
                 int eastSideCount = 0;
                 for (int y = 13; y >= 1; y -= 2) {
                     for (int z = 13; z >= 1; z -= 2) {
-                        int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.EAST)[eastSideCount];
+                        int carveState = ((CarvedLogEntity) entity).getFaceArray(Direction.EAST)[eastSideCount];
 
                         if (carveState != 1) {
                             DynamicCuboid cuboid;
@@ -163,7 +160,7 @@ public class CarvedWoodModel implements UnbakedModel {
                             }
 
                             cuboid.applyTexturesFromBlock(logState);
-                            cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
+                            cuboid.create(MESH_BUILDER.get().getEmitter());
                         }
                         eastSideCount++;
                     }
@@ -173,7 +170,7 @@ public class CarvedWoodModel implements UnbakedModel {
                 int southSideCount = 0;
                 for (int y = 13; y >= 1; y -= 2) {
                     for (int x = 1; x <= 13; x += 2) {
-                        int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.SOUTH)[southSideCount];
+                        int carveState = ((CarvedLogEntity) entity).getFaceArray(Direction.SOUTH)[southSideCount];
 
                         if (carveState != 1) {
                             DynamicCuboid cuboid;
@@ -184,7 +181,7 @@ public class CarvedWoodModel implements UnbakedModel {
                             }
 
                             cuboid.applyTexturesFromBlock(logState);
-                            cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
+                            cuboid.create(MESH_BUILDER.get().getEmitter());
                         }
                         southSideCount++;
                     }
@@ -194,7 +191,7 @@ public class CarvedWoodModel implements UnbakedModel {
                 int westSideCount = 0;
                 for (int y = 13; y >= 1; y -= 2) {
                     for (int z = 1; z <= 13; z += 2) {
-                        int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.WEST)[westSideCount];
+                        int carveState = ((CarvedLogEntity) entity).getFaceArray(Direction.WEST)[westSideCount];
 
                         if (carveState != 1) {
                             DynamicCuboid cuboid;
@@ -205,7 +202,7 @@ public class CarvedWoodModel implements UnbakedModel {
                             }
 
                             cuboid.applyTexturesFromBlock(logState);
-                            cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
+                            cuboid.create(MESH_BUILDER.get().getEmitter());
                         }
                         westSideCount++;
                     }
@@ -215,7 +212,7 @@ public class CarvedWoodModel implements UnbakedModel {
                 int topSideCount = 0;
                 for (int x = 13; x >= 1; x -= 2) {
                     for (int z = 1; z <= 13; z += 2) {
-                        int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.UP)[topSideCount];
+                        int carveState = ((CarvedLogEntity) entity).getFaceArray(Direction.UP)[topSideCount];
 
                         if (carveState != 1) {
                             DynamicCuboid cuboid;
@@ -226,7 +223,7 @@ public class CarvedWoodModel implements UnbakedModel {
                             }
 
                             cuboid.applyTexturesFromBlock(logState);
-                            cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
+                            cuboid.create(MESH_BUILDER.get().getEmitter());
                         }
                         topSideCount++;
                     }
@@ -236,7 +233,7 @@ public class CarvedWoodModel implements UnbakedModel {
                 int bottomSideCount = 0;
                 for (int x = 13; x >= 1; x -= 2) {
                     for (int z = 1; z <= 13; z += 2) {
-                        int carveState = ((CarvedWoodEntity) entity).getFaceArray(Direction.DOWN)[bottomSideCount];
+                        int carveState = ((CarvedLogEntity) entity).getFaceArray(Direction.DOWN)[bottomSideCount];
 
                         if (carveState != 1) {
                             DynamicCuboid cuboid;
@@ -247,7 +244,7 @@ public class CarvedWoodModel implements UnbakedModel {
                             }
 
                             cuboid.applyTexturesFromBlock(logState);
-                            cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
+                            cuboid.create(MESH_BUILDER.get().getEmitter());
                         }
                         bottomSideCount++;
                     }
@@ -256,65 +253,15 @@ public class CarvedWoodModel implements UnbakedModel {
                 //endregion
 
                 for (DynamicCuboid cuboid : CUBOIDS.get()) {
-                    cuboid.create(MESH_BUILDER.get().getEmitter(), logState);
+                    cuboid.create(MESH_BUILDER.get().getEmitter());
                 }
 
                 // And send her off!
+
+                BakedModel carvedLogFrame = BakedModelManagerHelper.getModel(MinecraftClient.getInstance().getBakedModelManager(), new Identifier(Arborealis.MOD_ID, "block/carved_log/carved_log_frame"));
+                context.fallbackConsumer().accept(carvedLogFrame);
                 context.meshConsumer().accept(MESH_BUILDER.get().build());
             }
-        }
-
-        public void loadFixedCuboids(BlockState blockState) {
-            // Top
-            DynamicCuboid topNorth = new DynamicCuboid(0, 15, 0, 16, 1, 1);
-            topNorth.applyTexturesFromBlock(blockState);
-            addFixedCuboid(topNorth);
-
-            DynamicCuboid topSouth = new DynamicCuboid(0, 15, 15, 16, 1, 1);
-            topSouth.applyTexturesFromBlock(blockState);
-            addFixedCuboid(topSouth);
-
-            DynamicCuboid topEast = new DynamicCuboid(15, 15, 1, 1, 1, 14);
-            topEast.applyTexturesFromBlock(blockState);
-            addFixedCuboid(topEast);
-
-            DynamicCuboid topWest = new DynamicCuboid(0, 15, 1, 1, 1, 14);
-            topWest.applyTexturesFromBlock(blockState);
-            addFixedCuboid(topWest);
-
-            // Bottom
-            DynamicCuboid bottomNorth = new DynamicCuboid(0, 0, 0, 16, 1, 1);
-            bottomNorth.applyTexturesFromBlock(blockState);
-            addFixedCuboid(bottomNorth);
-
-            DynamicCuboid bottomSouth = new DynamicCuboid(0, 0, 15, 16, 1, 1);
-            bottomSouth.applyTexturesFromBlock(blockState);
-            addFixedCuboid(bottomSouth);
-
-            DynamicCuboid bottomEast = new DynamicCuboid(15, 0, 1, 1, 1, 14);
-            bottomEast.applyTexturesFromBlock(blockState);
-            addFixedCuboid(bottomEast);
-
-            DynamicCuboid bottomWest = new DynamicCuboid(0, 0, 1, 1, 1, 14);
-            bottomWest.applyTexturesFromBlock(blockState);
-            addFixedCuboid(bottomWest);
-
-            // Pillars
-            DynamicCuboid pillar1 = new DynamicCuboid(0, 1, 0, 1, 14, 1);
-            pillar1.applyTexturesFromBlock(blockState);
-            addFixedCuboid(pillar1);
-
-            DynamicCuboid pillar2 = new DynamicCuboid(0, 1, 15, 1, 14, 1);
-            pillar2.applyTexturesFromBlock(blockState);
-            addFixedCuboid(pillar2);
-
-            DynamicCuboid pillar3 = new DynamicCuboid(15, 1, 15, 1, 14, 1);
-            pillar3.applyTexturesFromBlock(blockState);
-            addFixedCuboid(pillar3);
-
-            DynamicCuboid pillar4 = new DynamicCuboid(15, 1, 0, 1, 14, 1);
-            pillar4.applyTexturesFromBlock(blockState);
-            addFixedCuboid(pillar4);
         }
 
         @Override
@@ -323,9 +270,7 @@ public class CarvedWoodModel implements UnbakedModel {
         }
 
         @Override
-        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
-            return null;
-        }
+        public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) { return null; }
 
         @Override
         public boolean isVanillaAdapter() {

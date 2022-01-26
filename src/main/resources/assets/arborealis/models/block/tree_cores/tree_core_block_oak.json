@@ -1,9 +1,0 @@
-{
-  "parent": "arborealis:block/tree_cores/template_tree_core_block",
-  "textures": {
-    "core": "arborealis:block/tree_core_block",
-    "log": "minecraft:block/oak_log",
-    "logtop": "minecraft:block/oak_log_top",
-    "logstripped": "minecraft:block/stripped_oak_log"
-  }
-}

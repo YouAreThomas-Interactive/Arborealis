@@ -1,7 +1,7 @@
 package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
+import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.blocks.HollowedLog;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -26,9 +26,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Objects;
 
-public class WoodDrill extends ToolItem {
+public class LogDrill extends ToolItem {
 
-    public WoodDrill(ToolMaterial material, Settings settings) {
+    public LogDrill(ToolMaterial material, Settings settings) {
         super(material, settings);
     }
 
@@ -46,7 +46,7 @@ public class WoodDrill extends ToolItem {
                 String idString = String.valueOf(Registry.ITEM.getId(blockState.getBlock().asItem()));
                 System.out.println(idString);
 
-                Arborealis.LogIDs.forEach((key, value) -> {
+                /*Arborealis.LogIDs.forEach((key, value) -> {
                     if (Objects.equals(value.toString(), idString)) {
                         if (blockState.isIn(BlockTags.LOGS_THAT_BURN)) {
                             world.setBlockState(blockPos, Arborealis.HOLLOWED_LOG.getDefaultState().with(HollowedLog.LOG_ID, key));
@@ -56,20 +56,20 @@ public class WoodDrill extends ToolItem {
 
                         itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand()));
                     }
-                });
+                });*/
             } else {
                 world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
             }
         // If the block is a carved wood block
-        } else if (blockState.isOf(Arborealis.CARVED_WOOD) || blockState.isOf(Arborealis.CARVED_NETHER_WOOD)) {
-            CarvedWoodEntity be = (CarvedWoodEntity) world.getBlockEntity(blockPos);
+        } else if (blockState.isOf(Arborealis.CARVED_LOG) || blockState.isOf(Arborealis.CARVED_NETHER_LOG)) {
+            CarvedLogEntity be = (CarvedLogEntity) world.getBlockEntity(blockPos);
 
             if (be != null) {
                 if (!be.getLogState().isOf(Blocks.PUMPKIN)) {
                     if (!world.isClient()) {
                         String idString = String.valueOf(Registry.BLOCK.getId(blockState.getBlock()));
 
-                        Arborealis.LogIDs.forEach((key, value) -> {
+                        /*Arborealis.LogIDs.forEach((key, value) -> {
                             if (Objects.equals(value.toString(), idString)) {
                                 if (blockState.isIn(BlockTags.LOGS_THAT_BURN)) {
                                     world.setBlockState(blockPos, Arborealis.HOLLOWED_LOG.getDefaultState().with(HollowedLog.LOG_ID, key));
@@ -79,7 +79,7 @@ public class WoodDrill extends ToolItem {
 
                                 itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand()));
                             }
-                        });
+                        });*/
                     } else {
                         world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
                     }
@@ -96,10 +96,10 @@ public class WoodDrill extends ToolItem {
     // Append tooltip when pressing shift key
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         if (Screen.hasShiftDown()) {
-            tooltip.add(new TranslatableText("item.arborealis.wood_drill.tooltip1"));
-            tooltip.add(new TranslatableText("item.arborealis.wood_drill.tooltip2"));
-            tooltip.add(new TranslatableText("item.arborealis.wood_drill.tooltip3"));
-            tooltip.add(new TranslatableText("item.arborealis.wood_drill.tooltip4"));
+            tooltip.add(new TranslatableText("item.arborealis.log_drill.tooltip1"));
+            tooltip.add(new TranslatableText("item.arborealis.log_drill.tooltip2"));
+            tooltip.add(new TranslatableText("item.arborealis.log_drill.tooltip3"));
+            tooltip.add(new TranslatableText("item.arborealis.log_drill.tooltip4"));
         } else {
             tooltip.add(new TranslatableText("item.arborealis.hidden_tooltip"));
         }

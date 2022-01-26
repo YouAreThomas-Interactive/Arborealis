@@ -1,7 +1,7 @@
 package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
+import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.util.TreeManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.gui.screen.Screen;
@@ -13,10 +13,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
@@ -39,8 +37,8 @@ public class RegrowthSpoon extends ToolItem {
         BlockState blockState = world.getBlockState(blockPos);
         ItemStack itemStack = context.getStack();
 
-        if (blockState.isOf(Arborealis.CARVED_WOOD) || blockState.isOf(Arborealis.CARVED_NETHER_WOOD)) {
-            CarvedWoodEntity be = (CarvedWoodEntity) world.getBlockEntity(blockPos);
+        if (blockState.isOf(Arborealis.CARVED_LOG) || blockState.isOf(Arborealis.CARVED_NETHER_LOG)) {
+            CarvedLogEntity be = (CarvedLogEntity) world.getBlockEntity(blockPos);
 
             if (be != null) {
                 be.setFaceArray(context.getSide(), new int[49]); // reset side of face
