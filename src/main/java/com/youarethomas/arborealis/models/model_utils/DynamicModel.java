@@ -24,6 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockRenderView;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.system.CallbackI;
 
 import java.util.*;
 import java.util.function.Function;
@@ -71,10 +72,15 @@ public abstract class DynamicModel implements UnbakedModel {
         }
 
         private void loadModel(CuboidBuilder builder, RenderContext context) {
+
             for (var model : builder.models.get().entrySet()) {
-                context.pushTransform(model.getValue());
-                context.fallbackConsumer().accept(model.getKey());
-                context.popTransform();
+                if (model.getValue() != null) {
+                    context.pushTransform(model.getValue());
+                    context.fallbackConsumer().accept(model.getKey());
+                    context.popTransform();
+                } else {
+                    context.fallbackConsumer().accept(model.getKey());
+                }
             }
 
             for (DynamicCuboid cuboid : builder.cuboids.get()) {
@@ -143,6 +149,10 @@ public abstract class DynamicModel implements UnbakedModel {
             cuboids.get().add(cuboid);
         }
 
+        public void addBakedModel(BakedModel model) {
+            models.get().put(model, null);
+        }
+
         public void addBakedModel(BakedModel model, RenderContext.QuadTransform transform) {
             models.get().put(model, transform);
         }
@@ -150,11 +160,18 @@ public abstract class DynamicModel implements UnbakedModel {
         public static class RetextureFromBlock implements RenderContext.QuadTransform
         {
             private final BlockState blockState;
+            private boolean lockTextures = false;
             HashMap<Direction, Sprite> spriteIds = new HashMap<>();
 
-            public RetextureFromBlock(BlockState blockState)
+            /**
+             * Rip the textures off the given block.
+             * @param blockState The block to take the textures from.
+             * @param lockTextures If true, textures are locked despite the block's rotation.
+             */
+            public RetextureFromBlock(BlockState blockState, boolean lockTextures)
             {
                 this.blockState = blockState;
+                this.lockTextures = lockTextures;
                 BakedModel woodModel = MinecraftClient.getInstance().getBlockRenderManager().getModel(blockState);
 
                 for (Direction dir : Direction.values()) {
@@ -176,7 +193,7 @@ public abstract class DynamicModel implements UnbakedModel {
             private void BakeTexture(MutableQuadView quadView, Direction direction, BlockState blockState) {
                 if (spriteIds.containsKey(direction) && spriteIds.get(direction) != null) {
                     // Sprite rotation, courtesy of bitwise voo-doo
-                    if (blockState != null && blockState.contains(PillarBlock.AXIS)) {
+                    if (blockState != null && blockState.contains(PillarBlock.AXIS) && lockTextures) {
                         Direction.Axis axisInfo = blockState.get(PillarBlock.AXIS);
 
                         if (axisInfo == Direction.Axis.Z) {

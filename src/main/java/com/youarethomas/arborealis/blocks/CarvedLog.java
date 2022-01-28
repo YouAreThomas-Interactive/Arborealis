@@ -83,12 +83,10 @@ public class CarvedLog extends BlockWithEntity implements BlockEntityProvider {
 
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        BlockEntity be = world.getBlockEntity(pos);
+        CarvedLogEntity be = (CarvedLogEntity)world.getBlockEntity(pos);
 
-        if (be instanceof CarvedLogEntity carvedWoodEntity) {
-            world.setBlockState(pos, carvedWoodEntity.getLogState());
-            world.breakBlock(pos, !player.isCreative());
-        }
+        world.setBlockState(pos, be.getLogState());
+        world.breakBlock(pos, !player.isCreative());
     }
 
     @Override

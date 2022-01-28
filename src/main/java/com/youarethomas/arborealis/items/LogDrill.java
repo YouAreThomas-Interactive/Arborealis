@@ -2,6 +2,7 @@ package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
+import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
 import com.youarethomas.arborealis.blocks.HollowedLog;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -14,6 +15,7 @@ import net.minecraft.item.ToolItem;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -41,55 +43,25 @@ public class LogDrill extends ToolItem {
         ItemStack itemStack = context.getStack();
 
         // If the block is a log block
-        if (blockState.isIn(BlockTags.LOGS)) {
-            if (!world.isClient()) {
-                String idString = String.valueOf(Registry.ITEM.getId(blockState.getBlock().asItem()));
-                System.out.println(idString);
+        if (blockState.isIn(BlockTags.LOGS) || blockState.isOf(Arborealis.CARVED_LOG) || blockState.isOf(Arborealis.CARVED_NETHER_LOG)) {
+            String idString = String.valueOf(Registry.ITEM.getId(blockState.getBlock().asItem()));
+            System.out.println(idString);
 
-                /*Arborealis.LogIDs.forEach((key, value) -> {
-                    if (Objects.equals(value.toString(), idString)) {
-                        if (blockState.isIn(BlockTags.LOGS_THAT_BURN)) {
-                            world.setBlockState(blockPos, Arborealis.HOLLOWED_LOG.getDefaultState().with(HollowedLog.LOG_ID, key));
-                        } else {
-                            world.setBlockState(blockPos, Arborealis.HOLLOWED_NETHER_LOG.getDefaultState().with(HollowedLog.LOG_ID, key));
-                        }
-
-                        itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand()));
-                    }
-                });*/
+            if (blockState.isIn(BlockTags.LOGS_THAT_BURN)) {
+                world.setBlockState(blockPos, Arborealis.HOLLOWED_LOG.getDefaultState().with(Properties.HORIZONTAL_FACING, context.getPlayerFacing().getOpposite()));
             } else {
-                world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                world.setBlockState(blockPos, Arborealis.HOLLOWED_NETHER_LOG.getDefaultState().with(Properties.HORIZONTAL_FACING, context.getPlayerFacing().getOpposite()));
             }
-        // If the block is a carved wood block
-        } else if (blockState.isOf(Arborealis.CARVED_LOG) || blockState.isOf(Arborealis.CARVED_NETHER_LOG)) {
-            CarvedLogEntity be = (CarvedLogEntity) world.getBlockEntity(blockPos);
 
-            if (be != null) {
-                if (!be.getLogState().isOf(Blocks.PUMPKIN)) {
-                    if (!world.isClient()) {
-                        String idString = String.valueOf(Registry.BLOCK.getId(blockState.getBlock()));
+            HollowedLogEntity be = (HollowedLogEntity)world.getBlockEntity(blockPos);
+            be.setLogState(blockState);
 
-                        /*Arborealis.LogIDs.forEach((key, value) -> {
-                            if (Objects.equals(value.toString(), idString)) {
-                                if (blockState.isIn(BlockTags.LOGS_THAT_BURN)) {
-                                    world.setBlockState(blockPos, Arborealis.HOLLOWED_LOG.getDefaultState().with(HollowedLog.LOG_ID, key));
-                                } else {
-                                    world.setBlockState(blockPos, Arborealis.HOLLOWED_NETHER_LOG.getDefaultState().with(HollowedLog.LOG_ID, key));
-                                }
-
-                                itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand()));
-                            }
-                        });*/
-                    } else {
-                        world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
-                    }
-                }
-            }
+            itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand()));
         } else {
-            return ActionResult.PASS;
+            world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
         }
 
-        return ActionResult.SUCCESS;
+        return ActionResult.PASS;
     }
 
     @Override

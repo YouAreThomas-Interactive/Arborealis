@@ -41,7 +41,6 @@ public class CarvingKnife extends ToolItem {
         if (blockState.isIn(BlockTags.LOGS) || blockState.isOf(Blocks.PUMPKIN)) {
 
             // Swap the block out with a carved wood block...
-            // TODO: Add in support for horizontal logs
             if (blockState.isIn(BlockTags.LOGS_THAT_BURN)) {
                 world.setBlockState(blockPos, Arborealis.CARVED_LOG.getDefaultState());
             } else {

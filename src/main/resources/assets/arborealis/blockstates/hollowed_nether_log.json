@@ -1,6 +1,8 @@
 {
   "variants": {
-    "logid=6": { "model": "arborealis:block/hollowed_logs/hollowed_log_crimson" },
-    "logid=7": { "model": "arborealis:block/hollowed_logs/hollowed_log_warped" }
+    "facing=north": { "model": "arborealis:block/hollowed_log_model", "uvlock": true},
+    "facing=east":  { "model": "arborealis:block/hollowed_log_model", "y":  90, "uvlock": true },
+    "facing=south": { "model": "arborealis:block/hollowed_log_model", "y": 180, "uvlock": true },
+    "facing=west":  { "model": "arborealis:block/hollowed_log_model", "y": 270, "uvlock": true }
   }
 }
