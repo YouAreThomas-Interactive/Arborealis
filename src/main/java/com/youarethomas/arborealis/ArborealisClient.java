@@ -37,6 +37,7 @@ public class ArborealisClient implements ClientModInitializer {
 
         // Render Layers
         BlockRenderLayerMap.INSTANCE.putBlock(Arborealis.HOLLOWED_LOG, RenderLayer.getCutout());
+        BlockRenderLayerMap.INSTANCE.putBlock(Arborealis.WARP_SAPLING, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(Arborealis.WOODEN_BUCKET, RenderLayer.getTranslucent());
 
         // Register pumpkin texture - super important for mod functionality x

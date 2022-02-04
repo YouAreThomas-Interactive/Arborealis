@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "   ",
+    " S ",
+    "WLW"
+  ],
+  "key": {
+    "L": {
+      "item": "minecraft:lodestone"
+    },
+    "S": {
+      "tag": "minecraft:saplings"
+    },
+    "W": {
+      "item": "arborealis:warp_root"
+    }
+  },
+  "result": {
+    "item": "arborealis:warp_sapling",
+    "count": 1
+  }
+}

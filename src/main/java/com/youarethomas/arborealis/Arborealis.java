@@ -33,6 +33,7 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.system.CallbackI;
 
 import java.util.Random;
 
@@ -69,6 +70,8 @@ public class Arborealis implements ModInitializer {
 	public static final Item BLANK_STENCIL = new StencilBlank(new FabricItemSettings());
 	public static final Item CARVED_STENCIL = new StencilCarved(new FabricItemSettings().maxCount(1));
 
+	public static final Item WARP_ROOT = new Item(new FabricItemSettings());
+
 	// Blocks
 	public static final TestBlock TEST_BLOCK = new TestBlock(FabricBlockSettings.of(Material.STONE));
 
@@ -78,6 +81,7 @@ public class Arborealis implements ModInitializer {
 	public static final HollowedLog HOLLOWED_NETHER_LOG = new HollowedLog(FabricBlockSettings.of(Material.WOOD));
 	public static final TreeCoreBlock TREE_CORE_BLOCK = new TreeCoreBlock(FabricBlockSettings.of(Material.WOOD));
 
+	public static final WarpSapling WARP_SAPLING = new WarpSapling(FabricBlockSettings.of(Material.PLANT));
 	public static final Block WARP_LEAVES = CreateLeavesBlockInvoker.createLeavesBlock(BlockSoundGroup.GRASS);
 	public static final Block WARP_WOOD = new PillarBlock(FabricBlockSettings.of(Material.WOOD).strength(2.0f).sounds(BlockSoundGroup.WOOD));
 
@@ -109,6 +113,8 @@ public class Arborealis implements ModInitializer {
 
 				stacks.add(new ItemStack(WOODEN_BUCKET));
 				stacks.add(new ItemStack(BLANK_STENCIL));
+				stacks.add(new ItemStack(WARP_ROOT));
+				stacks.add(new ItemStack(WARP_SAPLING));
 				stacks.add(new ItemStack(WARP_LEAVES));
 				stacks.add(new ItemStack(WARP_WOOD));
 			})
@@ -135,6 +141,7 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "hollowed_nether_log"), HOLLOWED_NETHER_LOG);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "tree_core_block"), TREE_CORE_BLOCK);
 
+		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "warp_sapling"), WARP_SAPLING);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "warp_leaves"), WARP_LEAVES);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "warp_wood"), WARP_WOOD);
 
@@ -149,6 +156,7 @@ public class Arborealis implements ModInitializer {
 		// Block item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "test_block"), new BlockItem(TEST_BLOCK, new FabricItemSettings()));
 
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_sapling"), new BlockItem(WARP_SAPLING, new FabricItemSettings()));
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_leaves"), new BlockItem(WARP_LEAVES, new FabricItemSettings()));
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_wood"), new BlockItem(WARP_WOOD, new FabricItemSettings()));
 
@@ -170,6 +178,8 @@ public class Arborealis implements ModInitializer {
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stencil_blank"), BLANK_STENCIL);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stencil_carved"), CARVED_STENCIL);
+
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_root"), WARP_ROOT);
 
 		// Model registration
 		DynamicModelRegistry.register(new CarvedLogDModel(), new Identifier(MOD_ID, "block/carved_log_model"));
