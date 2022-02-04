@@ -18,11 +18,11 @@
   "item.arborealis.carving_knife.tooltip2": "§2Right click §8to create a carving plan,",
   "item.arborealis.carving_knife.tooltip3": "§8then §2shift+right click §8to carve.",
 
-  "item.arborealis.wood_drill": "Wood Drill",
-  "item.arborealis.wood_drill.tooltip1": "§7Used for hollowing out logs.",
-  "item.arborealis.wood_drill.tooltip2": "§2Right click §8on a log to hollow it",
-  "item.arborealis.wood_drill.tooltip3": "§8out, and then right click to add",
-  "item.arborealis.wood_drill.tooltip4": "§8items or a §2Life Core.",
+  "item.arborealis.log_drill": "Log Drill",
+  "item.arborealis.log_drill.tooltip1": "§7Used for hollowing out logs.",
+  "item.arborealis.log_drill.tooltip2": "§2Right click §8on a log to hollow it",
+  "item.arborealis.log_drill.tooltip3": "§8out, and then right click to add",
+  "item.arborealis.log_drill.tooltip4": "§8items or a §2Life Core.",
 
   "item.arborealis.regrowth_spoon": "Spoon of Regrowth",
   "item.arborealis.regrowth_spoon.tooltip1": "§7Allows logs to be 'un-carved'",

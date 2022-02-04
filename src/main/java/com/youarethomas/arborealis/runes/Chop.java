@@ -1,6 +1,6 @@
 package com.youarethomas.arborealis.runes;
 
-import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
+import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.util.TreeManager;
 import com.youarethomas.arborealis.util.TreeStructure;
 import net.minecraft.util.math.BlockPos;
@@ -11,7 +11,7 @@ import java.util.TimerTask;
 public class Chop extends AbstractRune{
 
     @Override
-    public void onRuneFound(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onRuneFound(World world, BlockPos pos, CarvedLogEntity be) {
         be.chopTimer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -24,17 +24,17 @@ public class Chop extends AbstractRune{
     }
 
     @Override
-    public void onRuneLost(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onRuneLost(World world, BlockPos pos, CarvedLogEntity be) {
         be.chopTimer.cancel();
     }
 
     @Override
-    public void onServerTick(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {
 
     }
 
     @Override
-    public void onClientTick(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onClientTick(World world, BlockPos pos, CarvedLogEntity be) {
 
     }
 }

@@ -44,6 +44,8 @@ public class DynamicCuboid {
     private HashMap<Direction, Integer> overlays = new HashMap<>();
     private HashMap<Direction, Boolean> emissives = new HashMap<>();
 
+    private BlockState blockState = null;
+
     public DynamicCuboid(float x, float y, float z, float xSize, float ySize, float zSize) {
         this.x = x;
         this.y = y;
@@ -80,24 +82,13 @@ public class DynamicCuboid {
         }
     }
 
-    public void applyTextureTopAndBottom(SpriteIdentifier spriteIdentifier) {
-        spriteIds.replace(Direction.UP, spriteIdentifier.getSprite());
-        spriteIds.replace(Direction.DOWN, spriteIdentifier.getSprite());
-    }
-
-    public void applyTextureSides(SpriteIdentifier spriteIdentifier) {
-        spriteIds.replace(Direction.NORTH, spriteIdentifier.getSprite());
-        spriteIds.replace(Direction.EAST, spriteIdentifier.getSprite());
-        spriteIds.replace(Direction.SOUTH, spriteIdentifier.getSprite());
-        spriteIds.replace(Direction.WEST, spriteIdentifier.getSprite());
-    }
-
     public void applyTexture(Direction side, SpriteIdentifier spriteIdentifier) {
         spriteIds.replace(side, spriteIdentifier.getSprite());
     }
 
     public void applyTexturesFromBlock(BlockState blockState) {
         BakedModel woodModel = MinecraftClient.getInstance().getBlockRenderManager().getModel(blockState);
+        this.blockState = blockState;
 
         spriteIds.clear();
         for (Direction direction : Direction.values()) {
@@ -109,8 +100,7 @@ public class DynamicCuboid {
         }
     }
 
-    public void create(QuadEmitter emitter, BlockState blockState) {
-
+    public void create(QuadEmitter emitter) {
         /* So emitters are kinda complicated:
            You're drawing a plane from the left-bottom, up to the right-top, so it's important that
            the left and bottom numbers are smaller than the right and top numbers, otherwise you'll
@@ -129,32 +119,15 @@ public class DynamicCuboid {
             }
 
             switch (direction) {
-                case NORTH -> {
-                    emitter.square(direction, 1f - ((x + xSize) * PIXEL_SIZE), y * PIXEL_SIZE, 1f - (x * PIXEL_SIZE), (y + ySize) * PIXEL_SIZE, z * PIXEL_SIZE);
-                    BakeTexture(emitter, direction, blockState);
-                }
-                case SOUTH -> {
-                    emitter.square(direction, x * PIXEL_SIZE, y * PIXEL_SIZE, (x + xSize) * PIXEL_SIZE, (y + ySize) * PIXEL_SIZE, 1f - ((z + zSize) * PIXEL_SIZE));
-                    BakeTexture(emitter, direction, blockState);
-                }
-                case EAST  -> {
-                    emitter.square(direction, 1f - ((z + zSize) * PIXEL_SIZE), y * PIXEL_SIZE, 1f - (z * PIXEL_SIZE), (y + ySize) * PIXEL_SIZE, 1f - ((x + xSize) * PIXEL_SIZE));
-                    BakeTexture(emitter, direction, blockState);
-                }
-                case WEST  -> {
-                    emitter.square(direction, z * PIXEL_SIZE, y * PIXEL_SIZE, (z + zSize) * PIXEL_SIZE, (y + ySize) * PIXEL_SIZE, x * PIXEL_SIZE);
-                    BakeTexture(emitter, direction, blockState);
-                }
-                case UP    -> {
-                    emitter.square(direction, x * PIXEL_SIZE, 1f - ((z + zSize) * PIXEL_SIZE), (x + xSize) * PIXEL_SIZE, 1f - (z * PIXEL_SIZE), 1f - ((y + ySize) * PIXEL_SIZE));
-                    BakeTexture(emitter, direction, blockState);
-                }
-                case DOWN  -> {
-                    emitter.square(direction, x * PIXEL_SIZE, z * PIXEL_SIZE, (x + xSize) * PIXEL_SIZE, (z + zSize) * PIXEL_SIZE, y * PIXEL_SIZE);
-                    BakeTexture(emitter, direction, blockState);
-                }
+                case NORTH -> emitter.square(direction, 1f - ((x + xSize) * PIXEL_SIZE), y * PIXEL_SIZE, 1f - (x * PIXEL_SIZE), (y + ySize) * PIXEL_SIZE, z * PIXEL_SIZE);
+                case SOUTH -> emitter.square(direction, x * PIXEL_SIZE, y * PIXEL_SIZE, (x + xSize) * PIXEL_SIZE, (y + ySize) * PIXEL_SIZE, 1f - ((z + zSize) * PIXEL_SIZE));
+                case EAST  -> emitter.square(direction, 1f - ((z + zSize) * PIXEL_SIZE), y * PIXEL_SIZE, 1f - (z * PIXEL_SIZE), (y + ySize) * PIXEL_SIZE, 1f - ((x + xSize) * PIXEL_SIZE));
+                case WEST  -> emitter.square(direction, z * PIXEL_SIZE, y * PIXEL_SIZE, (z + zSize) * PIXEL_SIZE, (y + ySize) * PIXEL_SIZE, x * PIXEL_SIZE);
+                case UP    -> emitter.square(direction, x * PIXEL_SIZE, 1f - ((z + zSize) * PIXEL_SIZE), (x + xSize) * PIXEL_SIZE, 1f - (z * PIXEL_SIZE), 1f - ((y + ySize) * PIXEL_SIZE));
+                case DOWN  -> emitter.square(direction, x * PIXEL_SIZE, z * PIXEL_SIZE, (x + xSize) * PIXEL_SIZE, (z + zSize) * PIXEL_SIZE, y * PIXEL_SIZE);
             }
 
+            BakeTexture(emitter, direction, blockState);
             emitter.spriteColor(0, overlayColour, overlayColour, overlayColour, overlayColour);
             if (isEmissive)
                 emitter.material(RendererAccess.INSTANCE.getRenderer().materialFinder().emissive(0, true).find());
@@ -164,8 +137,8 @@ public class DynamicCuboid {
 
     private void BakeTexture(QuadEmitter emitter, Direction direction, BlockState blockState) {
         if (spriteIds.containsKey(direction) && spriteIds.get(direction) != null) {
-            // Sprite rotation
-            if (blockState.contains(PillarBlock.AXIS)) {
+            // Sprite rotation, courtesy of bitwise voo-doo
+            if (blockState != null && blockState.contains(PillarBlock.AXIS)) {
                 Direction.Axis axisInfo = blockState.get(PillarBlock.AXIS);
 
                 if (axisInfo == Direction.Axis.Z) {

@@ -1,17 +1,12 @@
 package com.youarethomas.arborealis.runes;
 
 import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
+import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.CropBlock;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.lwjgl.opengl.ARBRobustness;
-
-import java.util.HashMap;
 
 public class PlantCrops extends AbstractRune{
 
@@ -19,17 +14,17 @@ public class PlantCrops extends AbstractRune{
     final int SPEED = 20;
 
     @Override
-    public void onRuneFound(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onRuneFound(World world, BlockPos pos, CarvedLogEntity be) {
         runeActive = true;
     }
 
     @Override
-    public void onRuneLost(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onRuneLost(World world, BlockPos pos, CarvedLogEntity be) {
         runeActive = false;
     }
 
     @Override
-    public void onServerTick(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {
         // Iterate randomly through logs
         BlockPos.iterateRandomly(Arborealis.RANDOM, SPEED, pos, be.radius).forEach(blockPos -> {
             BlockState foundState = world.getBlockState(blockPos);
@@ -41,7 +36,7 @@ public class PlantCrops extends AbstractRune{
     }
 
     @Override
-    public void onClientTick(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onClientTick(World world, BlockPos pos, CarvedLogEntity be) {
 
     }
 

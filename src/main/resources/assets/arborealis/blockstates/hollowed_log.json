@@ -1,10 +1,8 @@
 {
   "variants": {
-    "logid=0": { "model": "arborealis:block/hollowed_logs/hollowed_log_oak" },
-    "logid=1": { "model": "arborealis:block/hollowed_logs/hollowed_log_spruce" },
-    "logid=2": { "model": "arborealis:block/hollowed_logs/hollowed_log_birch" },
-    "logid=3": { "model": "arborealis:block/hollowed_logs/hollowed_log_jungle" },
-    "logid=4": { "model": "arborealis:block/hollowed_logs/hollowed_log_dark_oak" },
-    "logid=5": { "model": "arborealis:block/hollowed_logs/hollowed_log_acacia" }
+    "facing=north": { "model": "arborealis:block/hollowed_log_model", "uvlock": true},
+    "facing=east":  { "model": "arborealis:block/hollowed_log_model", "y":  90, "uvlock": true },
+    "facing=south": { "model": "arborealis:block/hollowed_log_model", "y": 180, "uvlock": true },
+    "facing=west":  { "model": "arborealis:block/hollowed_log_model", "y": 270, "uvlock": true }
   }
 }

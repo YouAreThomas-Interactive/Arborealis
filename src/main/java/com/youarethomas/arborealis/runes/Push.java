@@ -1,12 +1,9 @@
 package com.youarethomas.arborealis.runes;
 
-import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
+import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.util.ArborealisUtil;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MovementType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -19,17 +16,17 @@ public class Push extends AbstractRune{
     final double MULTIPLIER = 0.1D;
 
     @Override
-    public void onRuneFound(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onRuneFound(World world, BlockPos pos, CarvedLogEntity be) {
         applyEffect = true;
     }
 
     @Override
-    public void onRuneLost(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onRuneLost(World world, BlockPos pos, CarvedLogEntity be) {
         applyEffect = false;
     }
 
     @Override
-    public void onServerTick(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {
         if (applyEffect) {
             List<Entity> entities = ArborealisUtil.getEntitiesInRadius(world, pos, be.radius, false);
 
@@ -52,7 +49,7 @@ public class Push extends AbstractRune{
     }
 
     @Override
-    public void onClientTick(World world, BlockPos pos, CarvedWoodEntity be) {
+    public void onClientTick(World world, BlockPos pos, CarvedLogEntity be) {
 
     }
 

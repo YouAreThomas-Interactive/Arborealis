@@ -1,7 +1,7 @@
 package com.youarethomas.arborealis.util;
 
 import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.block_entities.CarvedWoodEntity;
+import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.runes.AbstractRune;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
@@ -11,9 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.TreeSet;
 
 /**
@@ -145,13 +143,13 @@ public class TreeManager {
         int lifeForceTotal = 0;
         for (BlockPos pos : tree.logs) {
             BlockEntity be = world.getBlockEntity(pos);
-            if (be instanceof CarvedWoodEntity) {
+            if (be instanceof CarvedLogEntity) {
                 for (Direction dir : Direction.values()) {
-                    int[] faceArray = ((CarvedWoodEntity) be).getFaceArray(dir);
+                    int[] faceArray = ((CarvedLogEntity) be).getFaceArray(dir);
 
                     AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
 
-                    if (rune != null && tree.isNatural() && ((CarvedWoodEntity) be).getFaceCatalysed(dir)) {
+                    if (rune != null && tree.isNatural() && ((CarvedLogEntity) be).getFaceCatalysed(dir)) {
                         lifeForceTotal += rune.lifeForce;
                     }
                 }
@@ -163,9 +161,9 @@ public class TreeManager {
         // Deactivate every rune in tree if over life force limit
         for (BlockPos pos : tree.logs) {
             BlockEntity be = world.getBlockEntity(pos);
-            if (be instanceof CarvedWoodEntity) {
-                ((CarvedWoodEntity) be).setRunesActive(lifeForceTotal <= LIFE_FORCE_MAX);
-                ((CarvedWoodEntity) be).checkForRunes();
+            if (be instanceof CarvedLogEntity) {
+                ((CarvedLogEntity) be).setRunesActive(lifeForceTotal <= LIFE_FORCE_MAX);
+                ((CarvedLogEntity) be).checkForRunes();
             }
         }
     }
