@@ -2,6 +2,8 @@ package com.youarethomas.arborealis;
 
 import com.youarethomas.arborealis.block_entity_renderers.HollowedLogEntityRenderer;
 import com.youarethomas.arborealis.models.model_utils.DynamicModelRegistry;
+import gui.StencilBagScreen;
+import gui.StencilBagScreenHandler;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -9,6 +11,7 @@ import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.model.ExtraModelProvider;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
+import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -31,6 +34,9 @@ public class ArborealisClient implements ClientModInitializer {
         ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/hollowed_log/tree_core"))));
 
         DynamicModelRegistry.registerModels();
+
+        // Screen Handlers
+        ScreenRegistry.register(Arborealis.STENCIL_BAG_SCREEN_HANDLER, StencilBagScreen::new);
 
         // Block Entity Renderers
         BlockEntityRendererRegistry.register(Arborealis.HOLLOWED_LOG_ENTITY, HollowedLogEntityRenderer::new);

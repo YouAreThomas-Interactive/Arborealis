@@ -14,18 +14,22 @@ import com.youarethomas.arborealis.tool_materials.CopperKnifeMaterial;
 import com.youarethomas.arborealis.tool_materials.RegrowthSpoonMaterial;
 import com.youarethomas.arborealis.tool_materials.WoodDrillMaterial;
 import com.youarethomas.arborealis.util.RuneManager;
+import gui.StencilBagScreenHandler;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
+import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.*;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
@@ -85,6 +89,9 @@ public class Arborealis implements ModInitializer {
 	public static BlockEntityType<CarvedLogEntity> CARVED_LOG_ENTITY;
 	public static BlockEntityType<HollowedLogEntity> HOLLOWED_LOG_ENTITY;
 	public static BlockEntityType<WoodenBucketEntity> WOODEN_BUCKET_ENTITY;
+
+	// Screen Handlers
+	public static ScreenHandlerType<StencilBagScreenHandler> STENCIL_BAG_SCREEN_HANDLER;
 
 	// Tags
 	public static final Tag<Block> MODIFIED_LOGS = TagRegistry.block(new Identifier(MOD_ID, "modified_logs"));
@@ -166,6 +173,9 @@ public class Arborealis implements ModInitializer {
 		DynamicModelRegistry.register(new CarvedLogDModel(), new Identifier(MOD_ID, "block/carved_log_model"));
 		DynamicModelRegistry.register(new HollowedLogDModel(), new Identifier(MOD_ID, "block/hollowed_log_model"));
 		DynamicModelRegistry.register(new CarvedStencilModel(), new ModelIdentifier("arborealis:item/stencil_carved#inventory"));
+
+		// Screen Handler
+		STENCIL_BAG_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(new Identifier(MOD_ID, "stencil_bag"), StencilBagScreenHandler::new);
 
 		// SET IT ON FIRE!
 		FlammableBlockRegistry.getDefaultInstance().add(CARVED_LOG, 5, 5);

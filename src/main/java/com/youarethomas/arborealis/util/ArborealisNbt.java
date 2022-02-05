@@ -1,9 +1,13 @@
 package com.youarethomas.arborealis.util;
 
 import com.youarethomas.arborealis.runes.AbstractRune;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.util.ItemScatterer;
+import net.minecraft.util.collection.DefaultedList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,16 +21,6 @@ public class ArborealisNbt {
         return nbt;
     }
 
-    public static NbtList serializeRuneList(List<AbstractRune> runeList) {
-        NbtList list = new NbtList();
-
-        for (AbstractRune rune : runeList) {
-            list.add(serializeRune(rune));
-        }
-
-        return list;
-    }
-
     public static AbstractRune deserializeRune(NbtCompound nbt) {
         if (nbt.contains("rune_id")) {
             String id = nbt.getString("rune_id");
@@ -35,6 +29,16 @@ public class ArborealisNbt {
         }
 
         return null;
+    }
+
+    public static NbtList serializeRuneList(List<AbstractRune> runeList) {
+        NbtList list = new NbtList();
+
+        for (AbstractRune rune : runeList) {
+            list.add(serializeRune(rune));
+        }
+
+        return list;
     }
 
     public static List<AbstractRune> deserializeRuneList(NbtList nbtList) {
