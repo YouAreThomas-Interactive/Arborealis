@@ -1,6 +1,7 @@
 package gui;
 
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.items.StencilBag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -16,39 +17,37 @@ public class StencilBagScreenHandler extends ScreenHandler {
     //The client will call the other constructor with an empty Inventory and the screenHandler will automatically
     //sync this empty inventory with the inventory on the server.
     public StencilBagScreenHandler(int syncId, PlayerInventory playerInventory) {
-        this(syncId, playerInventory, new SimpleInventory(9));
+        this(syncId, playerInventory, new SimpleInventory(StencilBag.BAG_SLOTS));
     }
 
     //This constructor gets called from the BlockEntity on the server without calling the other constructor first, the server knows the inventory of the container
     //and can therefore directly provide it as an argument. This inventory will then be synced to the client.
     public StencilBagScreenHandler(int syncId, PlayerInventory playerInventory, Inventory inventory) {
         super(Arborealis.STENCIL_BAG_SCREEN_HANDLER, syncId);
-        checkSize(inventory, 9);
+        checkSize(inventory, StencilBag.BAG_SLOTS);
         this.inventory = inventory;
         //some inventories do custom logic when a player opens it.
         inventory.onOpen(playerInventory.player);
 
         //This will place the slot in the correct locations for a 3x3 Grid. The slots exist on both server and client!
         //This will not render the background of the slots however, this is the Screens job
-        int m;
-        int l;
+
         //Our inventory
-        for (m = 0; m < 3; ++m) {
-            for (l = 0; l < 3; ++l) {
-                this.addSlot(new StencilBagSlot(inventory, l + m * 3, 62 + l * 18, 17 + m * 18));
+        for (int y = 0; y < 2; ++y) {
+            for (int x = 0; x < 9; ++x) {
+                this.addSlot(new StencilBagSlot(inventory, x + y * 9, 8 + x * 18, 18 + y * 18));
             }
         }
         //The player inventory
-        for (m = 0; m < 3; ++m) {
-            for (l = 0; l < 9; ++l) {
-                this.addSlot(new Slot(playerInventory, l + m * 9 + 9, 8 + l * 18, 84 + m * 18));
+        for (int y = 0; y < 3; ++y) {
+            for (int x = 0; x < 9; ++x) {
+                this.addSlot(new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, 66 + y * 18));
             }
         }
         //The player Hotbar
-        for (m = 0; m < 9; ++m) {
-            this.addSlot(new Slot(playerInventory, m, 8 + m * 18, 142));
+        for (int x = 0; x < 9; ++x) {
+            this.addSlot(new Slot(playerInventory, x, 8 + x * 18, 124));
         }
-
     }
 
     @Override
@@ -56,29 +55,22 @@ public class StencilBagScreenHandler extends ScreenHandler {
         return this.inventory.canPlayerUse(player);
     }
 
-    // Shift + Player Inv Slot
     @Override
-    public ItemStack transferSlot(PlayerEntity player, int invSlot) {
-        ItemStack newStack = ItemStack.EMPTY;
-        Slot slot = this.slots.get(invSlot);
+    public ItemStack transferSlot(PlayerEntity player, int index) {
+        ItemStack itemStack = ItemStack.EMPTY;
+        Slot slot = (Slot)this.slots.get(index);
         if (slot != null && slot.hasStack()) {
-            ItemStack originalStack = slot.getStack();
-            newStack = originalStack.copy();
-            if (invSlot < this.inventory.size()) {
-                if (!this.insertItem(originalStack, this.inventory.size(), this.slots.size(), true)) {
-                    return ItemStack.EMPTY;
-                }
-            } else if (!this.insertItem(originalStack, 0, this.inventory.size(), false)) {
+            ItemStack itemStack2 = slot.getStack();
+            itemStack = itemStack2.copy();
+            if (index < this.inventory.size() ? !this.insertItem(itemStack2, this.inventory.size(), this.slots.size(), true) : !this.insertItem(itemStack2, 0, this.inventory.size(), false)) {
                 return ItemStack.EMPTY;
             }
-
-            if (originalStack.isEmpty()) {
+            if (itemStack2.isEmpty()) {
                 slot.setStack(ItemStack.EMPTY);
             } else {
                 slot.markDirty();
             }
         }
-
-        return newStack;
+        return itemStack;
     }
 }

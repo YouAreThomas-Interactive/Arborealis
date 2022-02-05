@@ -6,8 +6,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 
 public class StencilBagSlot extends Slot {
-    public StencilBagSlot(Inventory inventory, int i, int j, int k) {
-        super(inventory, i, j, k);
+    public StencilBagSlot(Inventory inventory, int index, int x, int y) {
+        super(inventory, index, x, y);
     }
 
     @Override

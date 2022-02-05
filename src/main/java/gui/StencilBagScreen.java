@@ -1,6 +1,7 @@
 package gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.youarethomas.arborealis.Arborealis;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -9,11 +10,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class StencilBagScreen extends HandledScreen<StencilBagScreenHandler> {
-    //A path to the gui texture. In this example we use the texture from the dispenser
-    private static final Identifier TEXTURE = new Identifier("minecraft", "textures/gui/container/dispenser.png");
+    private static final Identifier TEXTURE = new Identifier(Arborealis.MOD_ID, "textures/gui/stencil_bag.png");
 
     public StencilBagScreen(StencilBagScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
+        this.backgroundHeight = 148;
     }
 
     @Override
@@ -27,16 +28,15 @@ public class StencilBagScreen extends HandledScreen<StencilBagScreenHandler> {
     }
 
     @Override
+    protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+        // Override to draw only the bag name, but in white, and not the player inventory title
+        this.textRenderer.draw(matrices, this.title, (float)this.titleX, (float)this.titleY, 0xe4e4e4);
+    }
+
+    @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);
         drawMouseoverTooltip(matrices, mouseX, mouseY);
-    }
-
-    @Override
-    protected void init() {
-        super.init();
-        // Center the title
-        titleX = (backgroundWidth - textRenderer.getWidth(title)) / 2;
     }
 }

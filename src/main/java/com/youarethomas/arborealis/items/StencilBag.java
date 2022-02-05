@@ -1,30 +1,19 @@
 package com.youarethomas.arborealis.items;
 
-import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.runes.AbstractRune;
 import com.youarethomas.arborealis.util.ImplementedInventory;
-import com.youarethomas.arborealis.util.RuneManager;
 import gui.StencilBagScreenHandler;
-import net.fabricmc.fabric.api.client.screen.v1.Screens;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -35,12 +24,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class StencilBag extends Item implements NamedScreenHandlerFactory, ImplementedInventory {
+    public static final int BAG_SLOTS = 18;
     private ItemStack openBag;
-    //private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(9, ItemStack.EMPTY);
 
     public StencilBag(Settings settings) {
         super(settings);
@@ -88,7 +76,7 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
     @Override
     public DefaultedList<ItemStack> getItems() {
         //System.out.println("Get items");
-        DefaultedList<ItemStack> inventory = DefaultedList.ofSize(9, ItemStack.EMPTY);
+        DefaultedList<ItemStack> inventory = DefaultedList.ofSize(StencilBag.BAG_SLOTS, ItemStack.EMPTY);
 
         NbtCompound nbt = openBag.getOrCreateNbt();
         Inventories.readNbt(nbt, inventory);
