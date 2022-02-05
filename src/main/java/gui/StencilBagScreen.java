@@ -2,6 +2,7 @@ package gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.items.StencilBag;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -13,7 +14,7 @@ public class StencilBagScreen extends HandledScreen<StencilBagScreenHandler> {
     private static final Identifier TEXTURE = new Identifier(Arborealis.MOD_ID, "textures/gui/stencil_bag.png");
 
     public StencilBagScreen(StencilBagScreenHandler handler, PlayerInventory inventory, Text title) {
-        super(handler, inventory, title);
+        super(handler, inventory, StencilBag.openBag.getName());
         this.backgroundHeight = 148;
     }
 

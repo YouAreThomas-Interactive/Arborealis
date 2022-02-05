@@ -28,7 +28,7 @@ import java.util.List;
 
 public class StencilBag extends Item implements NamedScreenHandlerFactory, ImplementedInventory {
     public static final int BAG_SLOTS = 18;
-    private ItemStack openBag;
+    public static ItemStack openBag; // The active bag that's opened by the player
 
     public StencilBag(Settings settings) {
         super(settings);
@@ -36,9 +36,11 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        // Can probably replace with something else... use is a bit shit
         openBag = player.getStackInHand(hand);
 
         if (!world.isClient) {
+            // If you shift-right click the bag...
             if (player.isSneaking()) {
                 player.openHandledScreen(this);
                 return TypedActionResult.success(openBag);
@@ -55,6 +57,7 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
         World world = context.getWorld();
         BlockState blockState = world.getBlockState(blockPos);
 
+        // If you right click the bag on a block...
         // TODO: apply active stencil
 
         return ActionResult.PASS;
@@ -75,7 +78,6 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
 
     @Override
     public DefaultedList<ItemStack> getItems() {
-        //System.out.println("Get items");
         DefaultedList<ItemStack> inventory = DefaultedList.ofSize(StencilBag.BAG_SLOTS, ItemStack.EMPTY);
 
         NbtCompound nbt = openBag.getOrCreateNbt();
@@ -86,7 +88,6 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
 
     @Override
     public void setStack(int slot, ItemStack stack) {
-        System.out.println("Set Stack");
         DefaultedList<ItemStack> inventory = this.getItems();
 
         inventory.set(slot, stack);
@@ -99,7 +100,6 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
 
     @Override
     public ItemStack removeStack(int slot) {
-        System.out.println("Remove stack 1");
         DefaultedList<ItemStack> inventory = this.getItems();
         ItemStack removedStack = Inventories.removeStack(inventory, slot);
 
@@ -110,7 +110,6 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
 
     @Override
     public ItemStack removeStack(int slot, int count) {
-        System.out.println("Remove stack 2");
         DefaultedList<ItemStack> inventory = this.getItems();
 
         ItemStack result = Inventories.splitStack(inventory, slot, count);
@@ -131,7 +130,7 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
 
     @Override
     public Text getDisplayName() {
-        return new TranslatableText(this.getTranslationKey());
+        return this.getName(openBag); // Copies bag item name
     }
 
     @Nullable
