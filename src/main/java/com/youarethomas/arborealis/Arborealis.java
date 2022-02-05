@@ -67,6 +67,7 @@ public class Arborealis implements ModInitializer {
 
 	public static final Item BLANK_STENCIL = new StencilBlank(new FabricItemSettings());
 	public static final Item CARVED_STENCIL = new StencilCarved(new FabricItemSettings().maxCount(1));
+	public static final Item STENCIL_BAG = new StencilBag(new FabricItemSettings().maxCount(1));
 
 	// Blocks
 	public static final TestBlock TEST_BLOCK = new TestBlock(FabricBlockSettings.of(Material.STONE));
@@ -105,6 +106,7 @@ public class Arborealis implements ModInitializer {
 
 				stacks.add(new ItemStack(WOODEN_BUCKET));
 				stacks.add(new ItemStack(BLANK_STENCIL));
+				stacks.add(new ItemStack(STENCIL_BAG));
 
 				stacks.add(new ItemStack(TEST_BLOCK));
 			})
@@ -158,6 +160,7 @@ public class Arborealis implements ModInitializer {
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stencil_blank"), BLANK_STENCIL);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stencil_carved"), CARVED_STENCIL);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stencil_bag"), STENCIL_BAG);
 
 		// Model registration
 		DynamicModelRegistry.register(new CarvedLogDModel(), new Identifier(MOD_ID, "block/carved_log_model"));
