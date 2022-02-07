@@ -1,5 +1,6 @@
 package com.youarethomas.arborealis.items;
 
+import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.util.ImplementedInventory;
 import gui.StencilBagScreenHandler;
 import net.minecraft.block.BlockState;
@@ -40,11 +41,9 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
         openBag = player.getStackInHand(hand);
 
         if (!world.isClient) {
-            // If you shift-right click the bag...
-            if (player.isSneaking()) {
-                player.openHandledScreen(this);
-                return TypedActionResult.success(openBag);
-            }
+            // If you right-click the bag in the air...
+            player.openHandledScreen(this);
+            return TypedActionResult.success(openBag);
         }
 
         return TypedActionResult.pass(openBag);
@@ -57,8 +56,23 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
         World world = context.getWorld();
         BlockState blockState = world.getBlockState(blockPos);
 
-        // If you right click the bag on a block...
-        // TODO: apply active stencil
+        DefaultedList<ItemStack> inventory = DefaultedList.ofSize(StencilBag.BAG_SLOTS, ItemStack.EMPTY);
+        NbtCompound nbt = context.getStack().getNbt();
+
+        if (nbt != null) {
+            Inventories.readNbt(nbt, inventory);
+
+            if (nbt.contains("selected")) {
+                int selectedSlot = nbt.getInt("selected");
+                ItemStack stack = inventory.get(selectedSlot);
+
+                if (stack.isOf(Arborealis.CARVED_STENCIL)) {
+                    StencilCarved stencil = (StencilCarved) stack.getItem();
+                    stencil.useStencil(stack, world, blockState, blockPos, context.getSide());
+                    return ActionResult.SUCCESS;
+                }
+            }
+        }
 
         return ActionResult.PASS;
     }

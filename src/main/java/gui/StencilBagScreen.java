@@ -26,6 +26,8 @@ public class StencilBagScreen extends HandledScreen<StencilBagScreenHandler> {
         int x = (width - backgroundWidth) / 2;
         int y = (height - backgroundHeight) / 2;
         drawTexture(matrices, x, y, 0, 0, backgroundWidth, backgroundHeight);
+
+        drawTexture(matrices, x + 8, y + 18, 182, 18, 16, 16);
     }
 
     @Override

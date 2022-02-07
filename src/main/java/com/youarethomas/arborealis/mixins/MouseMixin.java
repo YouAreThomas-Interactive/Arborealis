@@ -28,21 +28,22 @@ public class MouseMixin {
 
     @Inject(method = "onMouseScroll(JDD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;scrollInHotbar(D)V"), cancellable = true)
     private void onMouseScroll(long window, double horizontal, double vertical, CallbackInfo info) {
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        PlayerEntity player = MinecraftClient.getInstance().player;
+        PlayerEntity serverPlayer = MinecraftClient.getInstance().getServer().getPlayerManager().getPlayer(player.getEntityName());
 
-        if (player != null && player.isSneaking()) {
-            ItemStack itemInHand = player.getStackInHand(Hand.MAIN_HAND);
+        if (serverPlayer != null && player.isSneaking()) {
+            ItemStack itemInHand = serverPlayer.getStackInHand(Hand.MAIN_HAND);
 
             // If player is holding shift and holding a stencil bag, cancel the normal hotbar scroll and instead...
             if (itemInHand.isOf(Arborealis.STENCIL_BAG)) {
                 DefaultedList<ItemStack> inventory = DefaultedList.ofSize(StencilBag.BAG_SLOTS, ItemStack.EMPTY);
 
                 NbtCompound nbt = itemInHand.getNbt();
-                Inventories.readNbt(nbt, inventory);
-
                 int selectedStencilSlot = 0;
 
                 if (nbt != null) {
+                    Inventories.readNbt(nbt, inventory);
+
                     if (nbt.contains("selected")) {
                         // Get the currently selected slot
                         selectedStencilSlot = nbt.getInt("selected");
