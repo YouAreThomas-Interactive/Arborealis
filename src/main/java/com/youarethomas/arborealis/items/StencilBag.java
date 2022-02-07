@@ -1,7 +1,9 @@
 package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.runes.AbstractRune;
 import com.youarethomas.arborealis.util.ImplementedInventory;
+import com.youarethomas.arborealis.util.RuneManager;
 import gui.StencilBagScreenHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.gui.screen.Screen;
@@ -9,6 +11,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
+import net.minecraft.item.DyeableItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
@@ -25,14 +28,24 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 
-public class StencilBag extends Item implements NamedScreenHandlerFactory, ImplementedInventory {
+public class StencilBag extends Item implements NamedScreenHandlerFactory, ImplementedInventory, DyeableItem {
     public static final int BAG_SLOTS = 18;
     public static ItemStack openBag; // The active bag that's opened by the player
 
     public StencilBag(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    public int getColor(ItemStack stack) {
+        NbtCompound nbtCompound = stack.getSubNbt(DISPLAY_KEY);
+        if (nbtCompound != null && nbtCompound.contains(COLOR_KEY, 99)) {
+            return nbtCompound.getInt(COLOR_KEY);
+        }
+        return 0xFFFFFF;
     }
 
     @Override
@@ -42,8 +55,10 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
 
         if (!world.isClient) {
             // If you right-click the bag in the air...
-            player.openHandledScreen(this);
-            return TypedActionResult.success(openBag);
+            if (Screen.hasShiftDown()) {
+                player.openHandledScreen(this);
+                return TypedActionResult.success(openBag);
+            }
         }
 
         return TypedActionResult.pass(openBag);
@@ -80,8 +95,51 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         if (Screen.hasShiftDown()) {
-            // TODO: Load tooltip based on NBT
-            tooltip.add(new TranslatableText("item.arborealis.stencil_bag.tooltip1"));
+
+            DefaultedList<ItemStack> inventory = DefaultedList.ofSize(StencilBag.BAG_SLOTS, ItemStack.EMPTY);
+
+            NbtCompound nbt = stack.getNbt();
+            String selectedRuneName = new TranslatableText("item.arborealis.stencil_bag.none").getString();
+            int numberOfRunes = 0;
+
+            if (nbt != null) {
+                Inventories.readNbt(nbt, inventory);
+
+                for (int i = 0; i < StencilBag.BAG_SLOTS; i++) {
+                    if (!getStack(i).isEmpty()) {
+                        numberOfRunes++;
+                    }
+                }
+
+                if (nbt.contains("selected")) {
+                    // Get the item stack at the specified spot
+                    ItemStack selectedStack = inventory.get(nbt.getInt("selected"));
+                    if (!selectedStack.isEmpty()) {
+                        NbtCompound stencilNbt = selectedStack.getNbt();
+
+                        // Same code as in StencilCarved to get the rune from the pattern
+                        if (stencilNbt != null && stencilNbt.contains("pattern")) {
+                            int[] pattern = stencilNbt.getIntArray("pattern");
+                            pattern = Arrays.stream(pattern).map(i -> i == 2 ? 1 : i).toArray();
+
+                            if (RuneManager.isValidRune(pattern)) {
+                                AbstractRune rune = RuneManager.getRuneFromArray(pattern);
+
+                                selectedRuneName = new TranslatableText("rune.arborealis." + rune.name).getString(); // Set to the rune name (retains colour too)
+                            } else {
+                                selectedRuneName = new TranslatableText("rune.arborealis.unknown").getString();
+                            }
+                        }
+
+                        // If the stencil is renamed, append the name of the item
+                        if (selectedStack.hasCustomName()) {
+                            selectedRuneName = String.format("%s %s", selectedRuneName, String.format("(%s)", selectedStack.getName().getString()));
+                        }
+                    }
+                }
+            }
+
+            tooltip.add(new TranslatableText("item.arborealis.stencil_bag.tooltip1", numberOfRunes, selectedRuneName));
             tooltip.add(new TranslatableText("item.arborealis.stencil_bag.tooltip2"));
             tooltip.add(new TranslatableText("item.arborealis.stencil_bag.tooltip3"));
             tooltip.add(new TranslatableText("item.arborealis.stencil_bag.tooltip4"));

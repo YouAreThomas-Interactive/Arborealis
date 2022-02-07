@@ -3,10 +3,12 @@ package gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.items.StencilBag;
+import com.youarethomas.arborealis.items.StencilCarved;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -27,7 +29,11 @@ public class StencilBagScreen extends HandledScreen<StencilBagScreenHandler> {
         int y = (height - backgroundHeight) / 2;
         drawTexture(matrices, x, y, 0, 0, backgroundWidth, backgroundHeight);
 
-        drawTexture(matrices, x + 7, y + 17, 182, 18, 16, 16);
+        NbtCompound nbt = StencilBag.openBag.getNbt();
+        if (nbt != null && nbt.contains("selected")) {
+            int selectedSlot = nbt.getInt("selected");
+            drawTexture(matrices, x + ((selectedSlot % 9) * 18) + 7, y + ((selectedSlot / 9) * 18) + 17, 181, 17, 18, 18);
+        }
     }
 
     @Override

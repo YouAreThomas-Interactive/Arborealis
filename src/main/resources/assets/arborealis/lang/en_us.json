@@ -40,12 +40,12 @@
   "item.arborealis.conductive_sap": "Conductive Sap",
 
   "item.arborealis.stencil_bag": "Stencil Bag",
-  "item.arborealis.stencil_bag.tooltip1": "§7Contains 0 Stencils. Active Stencil: None",
+  "item.arborealis.stencil_bag.tooltip1": "§7Contains §6%d §7Stencils. Active Stencil: %s",
   "item.arborealis.stencil_bag.tooltip2": "§2Shift + Right click §8while holding the bag to",
   "item.arborealis.stencil_bag.tooltip3": "§8open it. §2Shift + Scroll §8to change the current",
   "item.arborealis.stencil_bag.tooltip4": "§8Stencil. §2Right click §8to apply selected stencil.",
 
-  "item.arborealis.stencil_bag.selected": "Selected: ",
+  "item.arborealis.stencil_bag.selected": "Selected: %s",
   "item.arborealis.stencil_bag.none": "None",
 
   "item.arborealis.stencil_carved": "Rune Stencil",

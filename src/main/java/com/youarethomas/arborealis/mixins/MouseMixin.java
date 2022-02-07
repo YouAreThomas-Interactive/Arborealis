@@ -95,7 +95,7 @@ public class MouseMixin {
                 }
 
                 // Send a message to the player on their hud that displays which rune is now selected
-                player.sendMessage(new LiteralText(new TranslatableText("item.arborealis.stencil_bag.selected").getString() + selectedMsg), true);
+                player.sendMessage(new TranslatableText("item.arborealis.stencil_bag.selected", selectedMsg), true);
                 info.cancel();
             }
         }

@@ -5,14 +5,15 @@ import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
 import com.youarethomas.arborealis.block_entities.WoodenBucketEntity;
 import com.youarethomas.arborealis.blocks.*;
 import com.youarethomas.arborealis.items.*;
+import com.youarethomas.arborealis.misc.StencilBagDyeRecipe;
 import com.youarethomas.arborealis.models.CarvedLogDModel;
 import com.youarethomas.arborealis.models.CarvedStencilModel;
 import com.youarethomas.arborealis.models.HollowedLogDModel;
 import com.youarethomas.arborealis.models.model_utils.DynamicModelRegistry;
 import com.youarethomas.arborealis.runes.*;
-import com.youarethomas.arborealis.tool_materials.CopperKnifeMaterial;
-import com.youarethomas.arborealis.tool_materials.RegrowthSpoonMaterial;
-import com.youarethomas.arborealis.tool_materials.WoodDrillMaterial;
+import com.youarethomas.arborealis.items.tool_materials.CopperKnifeMaterial;
+import com.youarethomas.arborealis.items.tool_materials.RegrowthSpoonMaterial;
+import com.youarethomas.arborealis.items.tool_materials.WoodDrillMaterial;
 import com.youarethomas.arborealis.util.RuneManager;
 import gui.StencilBagScreenHandler;
 import net.fabricmc.api.ModInitializer;
@@ -28,7 +29,8 @@ import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.*;
-import net.minecraft.screen.ScreenHandler;
+import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
@@ -92,6 +94,8 @@ public class Arborealis implements ModInitializer {
 
 	// Screen Handlers
 	public static ScreenHandlerType<StencilBagScreenHandler> STENCIL_BAG_SCREEN_HANDLER;
+
+	public static SpecialRecipeSerializer<StencilBagDyeRecipe> STENCIL_BAG_DYE;
 
 	// Tags
 	public static final Tag<Block> MODIFIED_LOGS = TagRegistry.block(new Identifier(MOD_ID, "modified_logs"));
@@ -176,6 +180,9 @@ public class Arborealis implements ModInitializer {
 
 		// Screen Handler
 		STENCIL_BAG_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(new Identifier(MOD_ID, "stencil_bag"), StencilBagScreenHandler::new);
+
+		//
+		STENCIL_BAG_DYE =  RecipeSerializer.register("crafting_special_bag_dye", new SpecialRecipeSerializer<StencilBagDyeRecipe>(StencilBagDyeRecipe::new));
 
 		// SET IT ON FIRE!
 		FlammableBlockRegistry.getDefaultInstance().add(CARVED_LOG, 5, 5);

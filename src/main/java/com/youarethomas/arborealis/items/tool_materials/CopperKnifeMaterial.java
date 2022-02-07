@@ -1,4 +1,4 @@
-package com.youarethomas.arborealis.tool_materials;
+package com.youarethomas.arborealis.items.tool_materials;
 
 import net.minecraft.item.Items;
 import net.minecraft.item.ToolMaterial;
