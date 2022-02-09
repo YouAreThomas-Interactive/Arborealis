@@ -49,14 +49,26 @@ public class MouseMixin {
                         selectedStencilSlot = nbt.getInt("selected");
 
                         // Move to the next slot with an item in it, wrapping around to the start if none found
-                        for (int i = 1; i <= StencilBag.BAG_SLOTS; i++) {
-                            int newSlot = (selectedStencilSlot + i) % StencilBag.BAG_SLOTS;
-                            if (inventory.get(newSlot).isOf(Arborealis.CARVED_STENCIL)) {
-                                selectedStencilSlot = newSlot;
-                                nbt.putInt("selected", selectedStencilSlot);
-                                break;
+                        if (vertical > 0) {
+                            for (int i = 1; i <= StencilBag.BAG_SLOTS; i++) {
+                                int newSlot = (selectedStencilSlot + i) % StencilBag.BAG_SLOTS;
+                                if (inventory.get(newSlot).isOf(Arborealis.CARVED_STENCIL)) {
+                                    selectedStencilSlot = newSlot;
+                                    nbt.putInt("selected", selectedStencilSlot);
+                                    break;
+                                }
+                            }
+                        } else {
+                            for (int i = StencilBag.BAG_SLOTS - 1; i >= 0; i--) {
+                                int newSlot = (selectedStencilSlot + i) % StencilBag.BAG_SLOTS;
+                                if (inventory.get(newSlot).isOf(Arborealis.CARVED_STENCIL)) {
+                                    selectedStencilSlot = newSlot;
+                                    nbt.putInt("selected", selectedStencilSlot);
+                                    break;
+                                }
                             }
                         }
+
                     } else {
                         nbt.putInt("selected", selectedStencilSlot);
                     }

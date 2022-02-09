@@ -93,7 +93,7 @@ public class DynamicCuboid {
         spriteIds.clear();
         for (Direction direction : Direction.values()) {
             List<BakedQuad> quads = woodModel.getQuads(blockState, direction, Arborealis.RANDOM);
-            if (quads.size() > 0) {
+            if (quads != null && quads.size() > 0) {
                 Sprite sprite = quads.get(0).getSprite();
                 spriteIds.put(direction, sprite);
             }

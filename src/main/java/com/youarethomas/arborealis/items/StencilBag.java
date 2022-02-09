@@ -1,6 +1,7 @@
 package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.runes.AbstractRune;
 import com.youarethomas.arborealis.util.ImplementedInventory;
 import com.youarethomas.arborealis.util.RuneManager;
@@ -18,6 +19,7 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
@@ -72,7 +74,7 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
         BlockState blockState = world.getBlockState(blockPos);
 
         DefaultedList<ItemStack> inventory = DefaultedList.ofSize(StencilBag.BAG_SLOTS, ItemStack.EMPTY);
-        NbtCompound nbt = context.getStack().getNbt();
+        NbtCompound nbt = player.getMainHandStack().getNbt();
 
         if (nbt != null) {
             Inventories.readNbt(nbt, inventory);
@@ -84,6 +86,9 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
                 if (stack.isOf(Arborealis.CARVED_STENCIL)) {
                     StencilCarved stencil = (StencilCarved) stack.getItem();
                     stencil.useStencil(stack, world, blockState, blockPos, context.getSide());
+                    if (player.getOffHandStack().isOf(Arborealis.CARVING_KNIFE)) {
+                        CarvingKnife.carve(world, (CarvedLogEntity)world.getBlockEntity(blockPos), context.getSide(), player, player.getOffHandStack(), blockPos, Hand.OFF_HAND);
+                    }
                     return ActionResult.SUCCESS;
                 }
             }
