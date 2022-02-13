@@ -33,7 +33,7 @@ public class RegrowthSpoon extends ToolItem {
         // Get all the things
         World world = context.getWorld();
         BlockPos blockPos = context.getBlockPos();
-        PlayerEntity playerEntity = context.getPlayer();
+        PlayerEntity player = context.getPlayer();
         BlockState blockState = world.getBlockState(blockPos);
         ItemStack itemStack = context.getStack();
 
@@ -41,9 +41,17 @@ public class RegrowthSpoon extends ToolItem {
             CarvedLogEntity be = (CarvedLogEntity) world.getBlockEntity(blockPos);
 
             if (be != null) {
-                be.setFaceArray(context.getSide(), new int[49]); // reset side of face
-                be.setFaceCatalysed(context.getSide(), false);
-                be.setFaceGlow(context.getSide(), false);
+                if (player.isSneaking()) {
+                    for (Direction dir : Direction.values()) {
+                        be.setFaceArray(dir, new int[49]); // reset side of face
+                        be.setFaceCatalysed(dir, false);
+                        be.setFaceGlow(dir, false);
+                    }
+                } else {
+                    be.setFaceArray(context.getSide(), new int[49]); // reset side of face
+                    be.setFaceCatalysed(context.getSide(), false);
+                    be.setFaceGlow(context.getSide(), false);
+                }
 
                 // Check to see if any sides are carved
                 boolean blockReset = true;
@@ -59,14 +67,14 @@ public class RegrowthSpoon extends ToolItem {
                 if (blockReset) {
                     if (!world.isClient) {
                         world.setBlockState(blockPos, be.getLogState());
-                        itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand())); // Damage carving knife when carving is applied
+                        itemStack.damage(1, player, (p) -> p.sendToolBreakStatus(context.getHand())); // Damage carving knife when carving is applied
                     }
                 } else {
                     be.checkForRunes();
                 }
 
                 if (world.isClient) {
-                    world.playSound(playerEntity, blockPos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1.0F, 0.5F);
+                    world.playSound(player, blockPos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1.0F, 0.5F);
                 }
 
                 return ActionResult.SUCCESS;
