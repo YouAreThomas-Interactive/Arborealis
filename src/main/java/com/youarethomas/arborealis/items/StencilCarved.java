@@ -16,6 +16,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,10 +33,12 @@ public class StencilCarved extends Item {
     public ActionResult useOnBlock(ItemUsageContext context) {
         World world = context.getWorld();
         BlockPos pos = context.getBlockPos();
-        ItemStack stack = context.getStack();
         BlockState blockState = world.getBlockState(pos);
-        PlayerEntity player = context.getPlayer();
 
+        return useStencil(context.getStack(), world, blockState, pos, context.getSide());
+    }
+
+    public ActionResult useStencil(ItemStack stack, World world, BlockState blockState, BlockPos pos, Direction side) {
         // Get pattern
         NbtCompound nbt = stack.getNbt();
         if (nbt != null && nbt.contains("pattern")) {
@@ -43,7 +46,7 @@ public class StencilCarved extends Item {
 
             // Apply the pattern
             if (world.getBlockEntity(pos) instanceof CarvedLogEntity be) {
-                be.markRune(context.getSide(), pattern.clone());
+                be.markRune(side, pattern.clone());
                 be.checkForRunes();
 
                 return ActionResult.SUCCESS;
@@ -60,14 +63,14 @@ public class StencilCarved extends Item {
                 if (be != null)
                     be.setLogState(blockState);
 
-                be.markRune(context.getSide(), pattern.clone());
+                be.markRune(side, pattern.clone());
                 be.checkForRunes();
 
                 return ActionResult.SUCCESS;
             }
         }
 
-        return ActionResult.PASS;
+        return  ActionResult.PASS;
     }
 
     @Override

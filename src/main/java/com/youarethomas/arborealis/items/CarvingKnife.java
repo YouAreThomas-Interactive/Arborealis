@@ -14,6 +14,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -35,48 +36,54 @@ public class CarvingKnife extends ToolItem {
         BlockPos blockPos = context.getBlockPos();
         PlayerEntity playerEntity = context.getPlayer();
         BlockState blockState = world.getBlockState(blockPos);
-        ItemStack itemStack = context.getStack();
+        ItemStack knifeStack = playerEntity.getMainHandStack();
 
-        // If the block clicked on is wood, create a new carved wood block
-        if (blockState.isIn(BlockTags.LOGS) || blockState.isOf(Blocks.PUMPKIN)) {
+        if (knifeStack.isOf(Arborealis.CARVING_KNIFE)) {
+            // If the block clicked on is wood, create a new carved wood block
+            if (blockState.isIn(BlockTags.LOGS) || blockState.isOf(Blocks.PUMPKIN)) {
+                // Swap the block out with a carved wood block...
+                if (blockState.isIn(BlockTags.LOGS_THAT_BURN)) {
+                    world.setBlockState(blockPos, Arborealis.CARVED_LOG.getDefaultState());
+                } else {
+                    world.setBlockState(blockPos, Arborealis.CARVED_NETHER_LOG.getDefaultState());
+                }
 
-            // Swap the block out with a carved wood block...
-            if (blockState.isIn(BlockTags.LOGS_THAT_BURN)) {
-                world.setBlockState(blockPos, Arborealis.CARVED_LOG.getDefaultState());
-            } else {
-                world.setBlockState(blockPos, Arborealis.CARVED_NETHER_LOG.getDefaultState());
+                CarvedLogEntity be = (CarvedLogEntity) world.getBlockEntity(blockPos);
+
+                // ... and assign relevant NBT data
+                if (be != null)
+                    be.setLogState(blockState);
+
+                return drawCarvePlan(be, context.getSide(), world, playerEntity); // Draw rune after creating the block
             }
 
-            CarvedLogEntity be = (CarvedLogEntity) world.getBlockEntity(blockPos);
-
-            // ... and assign relevant NBT data
-            if (be != null)
-                be.setLogState(blockState);
-
-            return drawCarvePlan(be, context.getSide(), world, playerEntity); // Draw rune after creating the block
-        }
-
-        // If shift-right click on a carved wood block, turn all carving plans into actual carvings
-        if (blockState.isOf(Arborealis.CARVED_LOG) || blockState.isOf(Arborealis.CARVED_NETHER_LOG)) {
-            if (playerEntity.isSneaking()) {
-                if (!world.isClient()) {
-                    CarvedLogEntity be = (CarvedLogEntity) world.getBlockEntity(blockPos);
-                    be.performCarve();
-                    be.setFaceCatalysed(context.getSide(), false);
-                    itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand())); // Damage carving knife when carving is applied
+            // If shift-right click on a carved wood block, turn all carving plans into actual carvings
+            if (blockState.isOf(Arborealis.CARVED_LOG) || blockState.isOf(Arborealis.CARVED_NETHER_LOG)) {
+                if (playerEntity.isSneaking()) {
+                    carve(world, (CarvedLogEntity) world.getBlockEntity(blockPos), context.getSide(), playerEntity, knifeStack, blockPos, context.getHand());
+                    return ActionResult.SUCCESS;
                 } else {
-                    world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    return drawCarvePlan((CarvedLogEntity) world.getBlockEntity(blockPos), context.getSide(), world, playerEntity);
                 }
-                return ActionResult.SUCCESS;
-            } else {
-                return drawCarvePlan((CarvedLogEntity) world.getBlockEntity(blockPos), context.getSide(), world, playerEntity);
             }
         }
 
         return ActionResult.PASS;
     }
 
-    private ActionResult drawCarvePlan(CarvedLogEntity carvedWoodEntity, Direction side, World world, PlayerEntity player) {
+    //carve(world, be, context.getSide(), playerEntity, knifeStack, blockPos, context.getHand());
+
+    public static void carve(World world, CarvedLogEntity be, Direction side, PlayerEntity player, ItemStack knifeStack, BlockPos pos, Hand hand) {
+        if (!world.isClient()) {
+            be.performCarve();
+            be.setFaceCatalysed(side, false);
+            knifeStack.damage(1, player, (p) -> p.sendToolBreakStatus(hand)); // Damage carving knife when carving is applied
+        } else {
+            world.playSound(player, pos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        }
+    }
+
+    public static ActionResult drawCarvePlan(CarvedLogEntity carvedWoodEntity, Direction side, World world, PlayerEntity player) {
         // Get the raytrace hit
         MinecraftClient client = MinecraftClient.getInstance();
         HitResult pixelHit = client.crosshairTarget;

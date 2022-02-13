@@ -176,7 +176,7 @@ public abstract class DynamicModel implements UnbakedModel {
 
                 for (Direction dir : Direction.values()) {
                     List<BakedQuad> quads = woodModel.getQuads(blockState, dir, Arborealis.RANDOM);
-                    if (quads.size() > 0) {
+                    if (quads != null && quads.size() > 0) {
                         Sprite sprite = quads.get(0).getSprite();
                         spriteIds.put(dir, sprite);
                     }

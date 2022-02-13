@@ -1,12 +1,12 @@
-package com.youarethomas.arborealis.tool_materials;
+package com.youarethomas.arborealis.items.tool_materials;
 
 import net.minecraft.item.Items;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.recipe.Ingredient;
 
-public class RegrowthSpoonMaterial implements ToolMaterial {
+public class WoodDrillMaterial implements ToolMaterial {
 
-    public static final RegrowthSpoonMaterial INSTANCE = new RegrowthSpoonMaterial();
+    public static final WoodDrillMaterial INSTANCE = new WoodDrillMaterial();
 
     @Override
     public int getDurability() {
@@ -35,6 +35,6 @@ public class RegrowthSpoonMaterial implements ToolMaterial {
 
     @Override
     public Ingredient getRepairIngredient() {
-        return Ingredient.empty();
+        return Ingredient.ofItems(Items.AMETHYST_SHARD);
     }
 }

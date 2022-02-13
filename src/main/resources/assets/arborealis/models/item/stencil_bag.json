@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "arborealis:item/stencil_bag_string",
+    "layer1": "arborealis:item/stencil_bag"
+  }
+}

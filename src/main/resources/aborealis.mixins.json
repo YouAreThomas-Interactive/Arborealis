@@ -6,7 +6,8 @@
   "mixins": [
     "RecipeMixin",
     "CreateLeavesBlockInvoker",
-    "AxeItemAccessor"
+    "AxeItemAccessor",
+    "MouseMixin"
   ],
   "client": [],
   "server": [],
