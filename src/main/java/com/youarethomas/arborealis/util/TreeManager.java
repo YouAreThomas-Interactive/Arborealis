@@ -153,9 +153,9 @@ public class TreeManager {
                         lifeForceTotal += rune.lifeForce;
                     }
                 }
-            } else if (world.getBlockState(pos).isOf(Arborealis.TREE_CORE_BLOCK)) {
+            } /*else if (world.getBlockState(pos).isOf(Arborealis.TREE_CORE_BLOCK)) {
                 lifeForceTotal -= 4;
-            }
+            }*/
         }
 
         // Deactivate every rune in tree if over life force limit

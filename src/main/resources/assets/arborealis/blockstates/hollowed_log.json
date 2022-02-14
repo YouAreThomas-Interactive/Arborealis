@@ -1,8 +1,8 @@
 {
   "variants": {
-    "facing=north": { "model": "arborealis:block/hollowed_log_model", "uvlock": true},
-    "facing=east":  { "model": "arborealis:block/hollowed_log_model", "y":  90, "uvlock": true },
-    "facing=south": { "model": "arborealis:block/hollowed_log_model", "y": 180, "uvlock": true },
-    "facing=west":  { "model": "arborealis:block/hollowed_log_model", "y": 270, "uvlock": true }
+    "facing=north": { "model": "arborealis:block/hollowed_log", "uvlock": true},
+    "facing=east":  { "model": "arborealis:block/hollowed_log", "y":  90, "uvlock": true },
+    "facing=south": { "model": "arborealis:block/hollowed_log", "y": 180, "uvlock": true },
+    "facing=west":  { "model": "arborealis:block/hollowed_log", "y": 270, "uvlock": true }
   }
 }

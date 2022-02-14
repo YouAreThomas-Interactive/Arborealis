@@ -9,9 +9,12 @@
     },
     {
       "item": "minecraft:warped_fungus"
+    },
+    {
+      "item": "minecraft:warped_roots"
     }
   ],
   "result": {
-    "item": "arborealis:warp_root"
+    "item": "arborealis:warp_graft"
   }
 }

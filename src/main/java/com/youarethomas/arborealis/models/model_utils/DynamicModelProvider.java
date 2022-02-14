@@ -18,7 +18,7 @@ public class DynamicModelProvider implements ModelResourceProvider {
     }
 
     @Override
-    public @Nullable UnbakedModel loadModelResource(Identifier resourceId, ModelProviderContext context) throws ModelProviderException {
+    public @Nullable UnbakedModel loadModelResource(Identifier resourceId, ModelProviderContext context) {
         if(resourceId.equals(identifier)) {
             return model;
         } else {

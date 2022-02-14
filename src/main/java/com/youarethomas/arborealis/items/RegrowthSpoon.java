@@ -41,6 +41,7 @@ public class RegrowthSpoon extends ToolItem {
             CarvedLogEntity be = (CarvedLogEntity) world.getBlockEntity(blockPos);
 
             if (be != null) {
+                // Clear all sides if shift-right clicked
                 if (player.isSneaking()) {
                     for (Direction dir : Direction.values()) {
                         be.setFaceArray(dir, new int[49]); // reset side of face
@@ -91,6 +92,7 @@ public class RegrowthSpoon extends ToolItem {
             tooltip.add(new TranslatableText("item.arborealis.regrowth_spoon.tooltip1"));
             tooltip.add(new TranslatableText("item.arborealis.regrowth_spoon.tooltip2"));
             tooltip.add(new TranslatableText("item.arborealis.regrowth_spoon.tooltip3"));
+            tooltip.add(new TranslatableText("item.arborealis.regrowth_spoon.tooltip4"));
         } else {
             tooltip.add(new TranslatableText("item.arborealis.hidden_tooltip"));
         }

@@ -1,5 +1,5 @@
 {
   "variants": {
-    "": { "model": "arborealis:block/carved_log_model" }
+    "": { "model": "arborealis:block/carved_log" }
   }
 }

@@ -13,6 +13,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.PillarBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.*;
+import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.render.model.json.ModelOverrideList;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
@@ -32,24 +33,38 @@ import java.util.function.Supplier;
 
 public abstract class DynamicModel implements UnbakedModel {
     private static final ThreadLocal<MeshBuilder> MESH_BUILDER = ThreadLocal.withInitial(() -> RendererAccess.INSTANCE.getRenderer().meshBuilder());
+    // The minecraft default block model
+    private static final Identifier DEFAULT_BLOCK_MODEL = new Identifier("minecraft:block/block");
+    private static final SpriteIdentifier INVISIBLE_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(Arborealis.MOD_ID, "invisible"));
+
+    private ModelTransformation transformation;
 
     @Override
     public Collection<Identifier> getModelDependencies() {
-        return Collections.emptyList();
+        return Arrays.asList(DEFAULT_BLOCK_MODEL);
     }
 
     @Override
     public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences) {
-        return Collections.emptyList();
+        return Arrays.asList(INVISIBLE_TEXTURE);
     }
 
     public abstract void createBlockQuads(CuboidBuilder builder, BlockRenderView renderView, BlockPos pos);
 
     public abstract void createItemQuads(CuboidBuilder builder, ItemStack itemStack);
 
+    public SpriteIdentifier getParticleSpriteId() {
+        return INVISIBLE_TEXTURE;
+    }
+
     @Nullable
     @Override
     public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
+        // Load the default block model
+        JsonUnbakedModel defaultBlockModel = (JsonUnbakedModel) loader.getOrLoadModel(DEFAULT_BLOCK_MODEL);
+        // Get its ModelTransformation
+        transformation = defaultBlockModel.getTransformations();
+
         return new BakedDynamicModel();
     }
 
@@ -112,7 +127,7 @@ public abstract class DynamicModel implements UnbakedModel {
 
         @Override
         public boolean isSideLit() {
-            return false;
+            return true;
         }
 
         @Override
@@ -123,12 +138,12 @@ public abstract class DynamicModel implements UnbakedModel {
         @Override
         public Sprite getParticleSprite() {
             // Particle sprite is handled by turning the block back into the original log before breaking. This invisible texture controls things like the running texture... or lack thereof
-            return new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(Arborealis.MOD_ID, "invisible")).getSprite();
+            return getParticleSpriteId().getSprite();
         }
 
         @Override
         public ModelTransformation getTransformation() {
-            return ModelTransformation.NONE;
+            return transformation;
         }
 
         @Override

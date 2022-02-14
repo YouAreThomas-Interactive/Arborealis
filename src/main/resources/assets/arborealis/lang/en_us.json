@@ -26,8 +26,9 @@
 
   "item.arborealis.regrowth_spoon": "Spoon of Regrowth",
   "item.arborealis.regrowth_spoon.tooltip1": "§7Allows logs to be 'un-carved'",
-  "item.arborealis.regrowth_spoon.tooltip2": "§2Right click §8on a carved log to revert",
-  "item.arborealis.regrowth_spoon.tooltip3": "§8that side to its original state",
+  "item.arborealis.regrowth_spoon.tooltip2": "§2Right click §8on a carved log to revert that",
+  "item.arborealis.regrowth_spoon.tooltip3": "§8side to its original state. §2Shift + right",
+  "item.arborealis.regrowth_spoon.tooltip4": "§8click to clear all sides.",
 
   "item.arborealis.tree_core": "Life Core",
   "item.arborealis.tree_core.tooltip1": "§7Increases a tree's life force.",
@@ -55,7 +56,8 @@
   "block.arborealis.warp_sapling": "Warp Sapling",
   "block.arborealis.warp_leaves": "Warp Leaves",
   "block.arborealis.warp_wood": "Warp Log",
-  "item.arborealis.warp_root": "Warp Root",
+  "block.arborealis.warp_core": "Warp Core",
+  "item.arborealis.warp_graft": "Warp Graft",
 
   "block.arborealis.tree_tap": "Tree Tap",
   "block.arborealis.tree_tap.tooltip1": "§7Allows sap to be drained from trees.",
