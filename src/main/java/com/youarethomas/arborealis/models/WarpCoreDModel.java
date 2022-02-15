@@ -14,18 +14,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockRenderView;
 
 public class WarpCoreDModel extends DynamicModel {
-@Override
-public void createBlockQuads(CuboidBuilder builder, BlockRenderView renderView, BlockPos pos) {
-    BlockState lodestoneState = Blocks.LODESTONE.getDefaultState();
-    BlockState warpWoodState = Arborealis.WARP_WOOD.getDefaultState();
+    @Override
+    public void createBlockQuads(CuboidBuilder builder, BlockRenderView renderView, BlockPos pos) {
+        BlockState lodestoneState = Blocks.LODESTONE.getDefaultState();
+        BlockState warpWoodState = Arborealis.WARP_WOOD.getDefaultState();
 
-    DynamicCuboid core = new DynamicCuboid(1, 1, 1, 14, 14, 14);
-    core.applyTexturesFromBlock(lodestoneState);
-    builder.addCuboid(core);
+        DynamicCuboid core = new DynamicCuboid(1, 1, 1, 14, 14, 14);
+        core.applyTexturesFromBlock(lodestoneState);
+        builder.addCuboid(core);
 
-    BakedModel frame = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/warp_core_frame"));
-    builder.addBakedModel(frame, new CuboidBuilder.RetextureFromBlock(warpWoodState, false));
-}
+        BakedModel frame = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/warp_core_frame"));
+        builder.addBakedModel(frame, new CuboidBuilder.RetextureFromBlock(warpWoodState, false));
+    }
 
     @Override
     public void createItemQuads(CuboidBuilder builder, ItemStack itemStack) {

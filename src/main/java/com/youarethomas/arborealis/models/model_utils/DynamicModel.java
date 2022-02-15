@@ -6,10 +6,10 @@ import net.fabricmc.fabric.api.client.model.BakedModelManagerHelper;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
-import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.PillarBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.*;
@@ -25,7 +25,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockRenderView;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.system.CallbackI;
 
 import java.util.*;
 import java.util.function.Function;
@@ -75,7 +74,9 @@ public abstract class DynamicModel implements UnbakedModel {
             CuboidBuilder blockBuilder = new CuboidBuilder();
             createBlockQuads(blockBuilder, blockView, pos);
 
+            if (state.contains(HorizontalFacingBlock.FACING)) context.pushTransform(new CuboidBuilder.RotateToFacing(state.get(HorizontalFacingBlock.FACING)));
             loadModel(blockBuilder, context);
+            if (state.contains(HorizontalFacingBlock.FACING)) context.popTransform();
         }
 
         @Override
@@ -87,7 +88,6 @@ public abstract class DynamicModel implements UnbakedModel {
         }
 
         private void loadModel(CuboidBuilder builder, RenderContext context) {
-
             for (var model : builder.models.get().entrySet()) {
                 if (model.getValue() != null) {
                     context.pushTransform(model.getValue());
@@ -172,8 +172,7 @@ public abstract class DynamicModel implements UnbakedModel {
             models.get().put(model, transform);
         }
 
-        public static class RetextureFromBlock implements RenderContext.QuadTransform
-        {
+        public static class RetextureFromBlock implements RenderContext.QuadTransform {
             private final BlockState blockState;
             private boolean lockTextures = false;
             HashMap<Direction, Sprite> spriteIds = new HashMap<>();
@@ -233,6 +232,47 @@ public abstract class DynamicModel implements UnbakedModel {
                         quadView.spriteBake(0, spriteIds.get(direction), MutableQuadView.BAKE_LOCK_UV);
                     }
                 }
+            }
+        }
+
+        public static class RotateToFacing implements RenderContext.QuadTransform {
+            private final Direction facing;
+
+            public RotateToFacing(Direction facing) {
+                this.facing = facing;
+            }
+
+            @Override
+            public boolean transform(MutableQuadView quad) {
+                BakedQuad bakedQuad = quad.toBakedQuad(0, null, false);
+
+                for (int v = 0; v < 4; v++) {
+                    float x = Float.intBitsToFloat(bakedQuad.getVertexData()[(v * 8)]);
+                    float y = Float.intBitsToFloat(bakedQuad.getVertexData()[1 + (v * 8)]);
+                    float z = Float.intBitsToFloat(bakedQuad.getVertexData()[2 + (v * 8)]);
+
+                    float newX = x;
+                    float newZ = z;
+
+                    switch (facing) {
+                        case SOUTH -> {
+                            newX = -(x - 0.5f) + 0.5f;
+                            newZ = -(z - 0.5f) + 0.5f;
+                        }
+                        case WEST -> {
+                            newX = z;
+                            newZ = -(x - 0.5f) + 0.5f;
+                        }
+                        case EAST -> {
+                            newX = -(z - 0.5f) + 0.5f;
+                            newZ = x;
+                        }
+                    }
+
+                    quad.pos(v, newX, y, newZ);
+                }
+
+                return true;
             }
         }
     }
