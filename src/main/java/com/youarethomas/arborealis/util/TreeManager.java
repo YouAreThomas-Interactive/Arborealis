@@ -2,6 +2,7 @@ package com.youarethomas.arborealis.util;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
+import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
 import com.youarethomas.arborealis.runes.AbstractRune;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
@@ -9,6 +10,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 import java.util.HashSet;
@@ -143,19 +145,20 @@ public class TreeManager {
         int lifeForceTotal = 0;
         for (BlockPos pos : tree.logs) {
             BlockEntity be = world.getBlockEntity(pos);
-            if (be instanceof CarvedLogEntity) {
+            if (be instanceof CarvedLogEntity carvedEntity) {
                 for (Direction dir : Direction.values()) {
-                    int[] faceArray = ((CarvedLogEntity) be).getFaceArray(dir);
+                    int[] faceArray = carvedEntity.getFaceArray(dir);
 
                     AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
 
-                    if (rune != null && tree.isNatural() && ((CarvedLogEntity) be).getFaceCatalysed(dir)) {
+                    if (rune != null && tree.isNatural() && carvedEntity.getFaceCatalysed(dir)) {
                         lifeForceTotal += rune.lifeForce;
                     }
                 }
-            } /*else if (world.getBlockState(pos).isOf(Arborealis.TREE_CORE_BLOCK)) {
-                lifeForceTotal -= 4;
-            }*/
+            } else if (be instanceof HollowedLogEntity hollowEntity) {
+                if (hollowEntity.getItemID() == Registry.ITEM.getId(Arborealis.TREE_CORE))
+                    lifeForceTotal -= 4;
+            }
         }
 
         // Deactivate every rune in tree if over life force limit

@@ -6,6 +6,8 @@ import com.youarethomas.arborealis.mixins.AxeItemAccessor;
 import com.youarethomas.arborealis.models.model_utils.DynamicModel;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -29,10 +31,13 @@ public class HollowedLogDModel extends DynamicModel {
         BakedModel logInside = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/hollowed_log/hollowed_log_inside"));
         builder.addBakedModel(logInside, new CuboidBuilder.RetextureFromBlock(strippedState, true));
 
-        // Render a tree core, if there's a core in the block
+        // Render a tree core, if there's a core in the block, and the tether
         if (Objects.equals(be.getItemID().toString(), new Identifier(Arborealis.MOD_ID, "tree_core").toString())) {
             BakedModel treeCore = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/hollowed_log/tree_core"));
             builder.addBakedModel(treeCore);
+
+            BakedModel coreTether = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/hollowed_log/core_tether"));
+            builder.addBakedModel(coreTether, new CuboidBuilder.RetextureFromBlock(strippedState, true));
         }
     }
 

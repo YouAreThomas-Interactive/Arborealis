@@ -133,7 +133,6 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(WARP_LEAVES));
 				stacks.add(new ItemStack(WARP_WOOD));
 				stacks.add(new ItemStack(WARP_CORE));
-				stacks.add(new ItemStack(HOLLOWED_LOG));
 			})
 			.build();
 
@@ -173,7 +172,6 @@ public class Arborealis implements ModInitializer {
 
 		// Block item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "test_block"), new BlockItem(TEST_BLOCK, new FabricItemSettings()));
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "hollowed_log"), new BlockItem(HOLLOWED_LOG, new FabricItemSettings()));
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_sapling"), new BlockItem(WARP_SAPLING, new FabricItemSettings()));
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_leaves"), new BlockItem(WARP_LEAVES, new FabricItemSettings()));

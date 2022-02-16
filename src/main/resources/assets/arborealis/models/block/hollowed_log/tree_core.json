@@ -32,12 +32,81 @@
 			}
 		}
 	],
+	"gui_light": "front",
+	"display": {
+		"thirdperson_righthand": {
+			"translation": [-0.75, 1.25, 0],
+			"scale": [0.3, 0.3, 0.3]
+		},
+		"thirdperson_lefthand": {
+			"translation": [-0.75, 1.25, 0],
+			"scale": [0.3, 0.3, 0.3]
+		},
+		"firstperson_righthand": {
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"firstperson_lefthand": {
+			"scale": [0.4, 0.4, 0.4]
+		},
+		"ground": {
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"gui": {
+			"scale": [0.75, 0.75, 0.75]
+		},
+		"fixed": {
+			"scale": [0.75, 0.75, 0.75]
+		}
+	},
 	"groups": [
 		{
 			"name": "Core",
 			"origin": [0, 0, 0],
 			"color": 0,
 			"children": [0, 1]
+		},
+		{
+			"name": "inside",
+			"origin": [0, 0, 0],
+			"color": 0,
+			"children": []
+		},
+		{
+			"name": "Core",
+			"origin": [0, 0, 0],
+			"color": 0,
+			"children": []
+		},
+		{
+			"name": "TetherVar1",
+			"origin": [0, 0, 0],
+			"color": 0,
+			"children": [
+				{
+					"name": "face",
+					"origin": [0, 0, 0],
+					"color": 0,
+					"children": []
+				},
+				{
+					"name": "face",
+					"origin": [0, 0, 0],
+					"color": 0,
+					"children": []
+				},
+				{
+					"name": "face",
+					"origin": [0, 0, 0],
+					"color": 0,
+					"children": []
+				},
+				{
+					"name": "face",
+					"origin": [0, 0, 0],
+					"color": 0,
+					"children": []
+				}
+			]
 		}
 	]
 }

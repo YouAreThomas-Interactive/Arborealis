@@ -8,6 +8,8 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.LiteralText;
@@ -37,21 +39,17 @@ public class HollowedLog extends HorizontalFacingBlock implements BlockEntityPro
     }
 
     @Override
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
-        return this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite());
-    }
-
-    @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         HollowedLogEntity entity = ((HollowedLogEntity) world.getBlockEntity(pos));
 
-        player.sendMessage(new LiteralText(entity.getItemID().toString()), false);
-
         if (Objects.equals(entity.getItemID(), new Identifier(""))) {
             if (!player.getStackInHand(hand).isEmpty()) {
+                if (world.isClient) {
+                    world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.3F);
+                }
+
                 ItemStack itemInHand = player.getStackInHand(hand);
                 entity.setItemID(Registry.ITEM.getId(itemInHand.getItem()));
-                System.out.println(Registry.ITEM.getId(itemInHand.getItem()));
 
                 // Update all runes in the tree
                 TreeManager.checkLifeForce(world, pos);
@@ -63,8 +61,13 @@ public class HollowedLog extends HorizontalFacingBlock implements BlockEntityPro
                 return ActionResult.SUCCESS;
             }
         } else {
-            player.getInventory().offerOrDrop(Registry.ITEM.get(entity.getItemID()).getDefaultStack());
-            entity.setItemID(new Identifier(""));
+            if (world.isClient) {
+                world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.6F);
+            } else {
+                player.getInventory().offerOrDrop(Registry.ITEM.get(entity.getItemID()).getDefaultStack());
+                entity.setItemID(new Identifier(""));
+            }
+
             return ActionResult.SUCCESS;
         }
 
@@ -80,8 +83,8 @@ public class HollowedLog extends HorizontalFacingBlock implements BlockEntityPro
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         HollowedLogEntity be = (HollowedLogEntity)world.getBlockEntity(pos);
-
         world.setBlockState(pos, be.getLogState());
+
         world.breakBlock(pos, !player.isCreative());
     }
 }

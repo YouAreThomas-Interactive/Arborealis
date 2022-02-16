@@ -127,7 +127,7 @@ public abstract class DynamicModel implements UnbakedModel {
 
         @Override
         public boolean isSideLit() {
-            return true;
+            return false;
         }
 
         @Override
@@ -269,6 +269,7 @@ public abstract class DynamicModel implements UnbakedModel {
                         }
                     }
 
+                    quad.nominalFace(quad.lightFace()); // Random bullshit go! No but seriously this fixes the lighting on south facing rotations... idk why
                     quad.pos(v, newX, y, newZ);
                 }
 

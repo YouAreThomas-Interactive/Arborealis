@@ -44,8 +44,9 @@ public class LogDrill extends ToolItem {
 
         // If the block is a log block
         if (blockState.isIn(BlockTags.LOGS) || blockState.isOf(Arborealis.CARVED_LOG) || blockState.isOf(Arborealis.CARVED_NETHER_LOG)) {
-            String idString = String.valueOf(Registry.ITEM.getId(blockState.getBlock().asItem()));
-            System.out.println(idString);
+            if (world.isClient) {
+                world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
+            }
 
             if (blockState.isIn(BlockTags.LOGS_THAT_BURN)) {
                 world.setBlockState(blockPos, Arborealis.HOLLOWED_LOG.getDefaultState().with(Properties.HORIZONTAL_FACING, context.getPlayerFacing().getOpposite()));
@@ -57,8 +58,9 @@ public class LogDrill extends ToolItem {
             be.setLogState(blockState);
 
             itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand()));
-        } else {
-            world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
+
+
+            return ActionResult.SUCCESS;
         }
 
         return ActionResult.PASS;
