@@ -21,6 +21,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -44,23 +45,25 @@ public class LogDrill extends ToolItem {
 
         // If the block is a log block
         if (blockState.isIn(BlockTags.LOGS) || blockState.isOf(Arborealis.CARVED_LOG) || blockState.isOf(Arborealis.CARVED_NETHER_LOG)) {
-            if (world.isClient) {
-                world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
+            if (context.getSide() != Direction.UP && context.getSide() != Direction.DOWN) {
+                if (world.isClient) {
+                    world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                }
+
+                if (blockState.isIn(BlockTags.LOGS_THAT_BURN)) {
+                    world.setBlockState(blockPos, Arborealis.HOLLOWED_LOG.getDefaultState().with(Properties.HORIZONTAL_FACING, context.getSide()));
+                } else {
+                    world.setBlockState(blockPos, Arborealis.HOLLOWED_NETHER_LOG.getDefaultState().with(Properties.HORIZONTAL_FACING, context.getSide()));
+                }
+
+                HollowedLogEntity be = (HollowedLogEntity)world.getBlockEntity(blockPos);
+                be.setLogState(blockState);
+
+                itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand()));
+
+
+                return ActionResult.SUCCESS;
             }
-
-            if (blockState.isIn(BlockTags.LOGS_THAT_BURN)) {
-                world.setBlockState(blockPos, Arborealis.HOLLOWED_LOG.getDefaultState().with(Properties.HORIZONTAL_FACING, context.getPlayerFacing().getOpposite()));
-            } else {
-                world.setBlockState(blockPos, Arborealis.HOLLOWED_NETHER_LOG.getDefaultState().with(Properties.HORIZONTAL_FACING, context.getPlayerFacing().getOpposite()));
-            }
-
-            HollowedLogEntity be = (HollowedLogEntity)world.getBlockEntity(blockPos);
-            be.setLogState(blockState);
-
-            itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand()));
-
-
-            return ActionResult.SUCCESS;
         }
 
         return ActionResult.PASS;
