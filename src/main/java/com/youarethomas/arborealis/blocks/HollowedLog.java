@@ -8,6 +8,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;

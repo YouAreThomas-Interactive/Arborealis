@@ -6,7 +6,6 @@ import net.fabricmc.fabric.api.client.model.BakedModelManagerHelper;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
-import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
 import net.minecraft.block.BlockState;
@@ -80,23 +79,33 @@ public abstract class DynamicModel implements UnbakedModel {
 
         @Override
         public void emitBlockQuads(BlockRenderView blockView, BlockState state, BlockPos pos, Supplier<Random> randomSupplier, RenderContext context) {
-            CuboidBuilder blockBuilder = new CuboidBuilder();
-            createBlockQuads(blockBuilder, blockView, pos);
+            CuboidBuilder builder = new CuboidBuilder();
+            createBlockQuads(builder, blockView, pos);
 
-            if (state.contains(HorizontalFacingBlock.FACING)) context.pushTransform(new CuboidBuilder.RotateToFacing(state.get(HorizontalFacingBlock.FACING)));
-            loadModel(blockBuilder, context);
-            if (state.contains(HorizontalFacingBlock.FACING)) context.popTransform();
+            // Render out the pre-baked models, doing the retexture after the rotation transform
+            for (var model : builder.models.get().entrySet()) {
+                if (model.getValue() != null) {
+                    context.pushTransform(model.getValue()); // Retexture transform
+                    if (state.contains(HorizontalFacingBlock.FACING)) context.pushTransform(new CuboidBuilder.RotateToFacing(state.get(HorizontalFacingBlock.FACING))); // Rotation transform
+
+                    context.fallbackConsumer().accept(model.getKey());
+
+                    if (state.contains(HorizontalFacingBlock.FACING)) context.popTransform();
+                    context.popTransform();
+                } else {
+                    context.fallbackConsumer().accept(model.getKey());
+                }
+            }
+
+            loadDynamicModels(builder, context);
         }
 
         @Override
         public void emitItemQuads(ItemStack stack, Supplier<Random> randomSupplier, RenderContext context) {
-            CuboidBuilder itemBuilder = new CuboidBuilder();
-            createItemQuads(itemBuilder, stack);
+            CuboidBuilder builder = new CuboidBuilder();
+            createItemQuads(builder, stack);
 
-            loadModel(itemBuilder, context);
-        }
-
-        private void loadModel(CuboidBuilder builder, RenderContext context) {
+            // Render out the pre-baked models
             for (var model : builder.models.get().entrySet()) {
                 if (model.getValue() != null) {
                     context.pushTransform(model.getValue());
@@ -107,6 +116,10 @@ public abstract class DynamicModel implements UnbakedModel {
                 }
             }
 
+            loadDynamicModels(builder, context);
+        }
+
+        private void loadDynamicModels(CuboidBuilder builder, RenderContext context) {
             for (DynamicCuboid cuboid : builder.cuboids.get()) {
                 cuboid.create(MESH_BUILDER.get().getEmitter());
             }

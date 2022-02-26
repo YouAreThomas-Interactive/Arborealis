@@ -13,6 +13,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
+import javax.sound.midi.SysexMessage;
 import java.util.HashSet;
 import java.util.TreeSet;
 
@@ -156,8 +157,9 @@ public class TreeManager {
                     }
                 }
             } else if (be instanceof HollowedLogEntity hollowEntity) {
-                if (hollowEntity.getItemID() == Registry.ITEM.getId(Arborealis.TREE_CORE))
+                if (hollowEntity.getItemID().equals(Registry.ITEM.getId(Arborealis.TREE_CORE))) {
                     lifeForceTotal -= 4;
+                }
             }
         }
 
