@@ -302,8 +302,8 @@ public abstract class DynamicModel implements UnbakedModel {
                         }
                     }
 
-                    quad.nominalFace(quad.lightFace()); // Random bullshit go! No but seriously this fixes the lighting on south facing rotations... idk why
                     quad.pos(v, newX, y, newZ);
+                    quad.nominalFace(quad.lightFace()); // Random bullshit go! No but seriously this fixes the lighting on south facing rotations... idk why
                 }
 
                 return true;
