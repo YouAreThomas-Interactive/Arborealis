@@ -7,7 +7,7 @@ import com.youarethomas.arborealis.runes.AbstractRune;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.*;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -18,9 +18,9 @@ import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
 import javax.sound.midi.SysexMessage;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Contains helper methods related to creating {@code TreeStructure} and {@code LogStructure} definition.
@@ -28,9 +28,13 @@ import java.util.TreeSet;
  */
 public class TreeManager extends PersistentState {
 
+    private static final String TREE_MANAGER_NBT = "arborealis.treemanager";
+    private static final String TREE_STRUCTURE_MAPPING_KEYS_NBT = "arborealis.treemanager.treestructuremapping.keys";
+    private static final String TREE_STRUCTURE_MAPPING_VALUES_NBT = "arborealis.treemanager.treestructuremapping.values";
+
     private static final int LIFE_FORCE_MAX = 3;
 
-    private Hashtable<Vec3i, TreeStructure> treeStructureMapping;
+    private Hashtable<BlockPos, TreeStructure> treeStructureMapping;
 
     /**
      * Default constructor of the tree manager.
@@ -39,9 +43,64 @@ public class TreeManager extends PersistentState {
         this.treeStructureMapping = new Hashtable<>();
     }
 
+    /**
+     * Constructs the manager with a generated tree structure mapping.
+     *
+     * @param treeStructureMapping The generated tree structure mapping.
+     */
+    public TreeManager(Hashtable<BlockPos, TreeStructure> treeStructureMapping) {
+        this.treeStructureMapping = treeStructureMapping;
+    }
+
     @Override
     public NbtCompound writeNbt(NbtCompound nbt) {
-        return null;
+        // Handles the encoding of the block positions in the tree structure mapping.
+        NbtList nbtPositionKeys = new NbtList();
+
+        for(BlockPos pos : this.treeStructureMapping.keySet()) {
+            nbtPositionKeys.add(NbtHelper.fromBlockPos(pos));
+        }
+
+        nbt.put(TREE_STRUCTURE_MAPPING_KEYS_NBT, nbtPositionKeys);
+
+        // Handles the encoding of the tree structures in the tree structure mapping.
+        NbtList nbtTreeStructureValues = new NbtList();
+
+        for(TreeStructure structure : this.treeStructureMapping.values()) {
+            nbtTreeStructureValues.add(TreeStructure.toNbt(structure));
+        }
+
+        nbt.put(TREE_STRUCTURE_MAPPING_VALUES_NBT, nbtTreeStructureValues);
+
+        return nbt;
+    }
+
+    public static TreeManager fromNbt(NbtCompound nbt) {
+        Hashtable<BlockPos, TreeStructure> treeStructureMapping = new Hashtable<>();
+
+        if(nbt.contains(TREE_STRUCTURE_MAPPING_KEYS_NBT) && nbt.contains(TREE_STRUCTURE_MAPPING_VALUES_NBT)) {
+            // Generates the position keys.
+            NbtList nbtPositionKeys = nbt.getList(TREE_STRUCTURE_MAPPING_KEYS_NBT, NbtElement.COMPOUND_TYPE);
+
+            List<BlockPos> positionKeys = nbtPositionKeys.stream()
+                    .map(element -> NbtHelper.toBlockPos((NbtCompound) element)).toList();
+
+            // Generates the tree structure keys.
+            NbtList nbtTreeStructureValues = nbt.getList(TREE_STRUCTURE_MAPPING_VALUES_NBT, NbtElement.COMPOUND_TYPE);
+
+            List<TreeStructure> treeStructureValues = nbtTreeStructureValues.stream()
+                    .map(element -> TreeStructure.fromNbt((NbtCompound) element)).toList();
+
+            // Generates the hashmap from the keys and values.
+            treeStructureMapping.putAll(IntStream.range(0, positionKeys.size()).boxed()
+                    .collect(Collectors.toMap(positionKeys::get, treeStructureValues::get)));
+        }
+
+        return new TreeManager(treeStructureMapping);
+    }
+
+    public static TreeManager getManager(ServerWorld serverWorld) {
+        return serverWorld.getPersistentStateManager().getOrCreate(TreeManager::fromNbt, TreeManager::new, TREE_MANAGER_NBT);
     }
 
     /**If valid, returns a tree definition with structure and leaves from a given log block.
