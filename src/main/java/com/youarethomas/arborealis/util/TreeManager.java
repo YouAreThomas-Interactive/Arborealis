@@ -7,11 +7,14 @@ import com.youarethomas.arborealis.runes.AbstractRune;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
 import javax.sound.midi.SysexMessage;
@@ -23,7 +26,7 @@ import java.util.TreeSet;
  * Contains helper methods related to creating {@code TreeStructure} and {@code LogStructure} definition.
  * <br> May eventually contain a stored list of TreeStructures to iterate through to determine if trees stop being valid natural trees
  */
-public class TreeManager {
+public class TreeManager extends PersistentState {
 
     private static final int LIFE_FORCE_MAX = 3;
 
@@ -34,6 +37,11 @@ public class TreeManager {
      */
     public TreeManager() {
         this.treeStructureMapping = new Hashtable<>();
+    }
+
+    @Override
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        return null;
     }
 
     /**If valid, returns a tree definition with structure and leaves from a given log block.
