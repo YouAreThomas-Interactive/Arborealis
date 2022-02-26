@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.model.BakedModelManagerHelper;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MeshBuilder;
 import net.fabricmc.fabric.api.renderer.v1.mesh.MutableQuadView;
+import net.fabricmc.fabric.api.renderer.v1.mesh.QuadEmitter;
 import net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel;
 import net.fabricmc.fabric.api.renderer.v1.render.RenderContext;
 import net.minecraft.block.BlockState;
@@ -19,6 +20,7 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -32,8 +34,12 @@ import java.util.function.Supplier;
 
 public abstract class DynamicModel implements UnbakedModel {
     private static final ThreadLocal<MeshBuilder> MESH_BUILDER = ThreadLocal.withInitial(() -> RendererAccess.INSTANCE.getRenderer().meshBuilder());
-    // The minecraft default block model
+
+    // The minecraft default block and item models
     private static final Identifier DEFAULT_BLOCK_MODEL = new Identifier("minecraft:block/block");
+    private static final Identifier DEFAULT_ITEM_MODEL = new Identifier("minecraft:item/generated");
+
+    // A blank invisible texture
     private static final SpriteIdentifier INVISIBLE_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(Arborealis.MOD_ID, "invisible"));
 
     private ModelTransformation transformation;
@@ -44,25 +50,28 @@ public abstract class DynamicModel implements UnbakedModel {
     }
 
     @Override
-    public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences) {
-        return Arrays.asList(INVISIBLE_TEXTURE);
-    }
+    public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences) { return Arrays.asList(INVISIBLE_TEXTURE); }
 
     public abstract void createBlockQuads(CuboidBuilder builder, BlockRenderView renderView, BlockPos pos);
 
     public abstract void createItemQuads(CuboidBuilder builder, ItemStack itemStack);
 
-    public SpriteIdentifier getParticleSpriteId() {
-        return INVISIBLE_TEXTURE;
-    }
+    public boolean renderItemAsBlock() { return true; }
+
+    public SpriteIdentifier getParticleSpriteId() { return INVISIBLE_TEXTURE; }
 
     @Nullable
     @Override
     public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
-        // Load the default block model
-        JsonUnbakedModel defaultBlockModel = (JsonUnbakedModel) loader.getOrLoadModel(DEFAULT_BLOCK_MODEL);
-        // Get its ModelTransformation
-        transformation = defaultBlockModel.getTransformations();
+        // If marked to render as block, use default block transformation. Otherwise, use item transformation
+        JsonUnbakedModel defaultTransform;
+        if (renderItemAsBlock()) {
+            defaultTransform = (JsonUnbakedModel) loader.getOrLoadModel(DEFAULT_BLOCK_MODEL);
+        } else {
+            defaultTransform = (JsonUnbakedModel) loader.getOrLoadModel(DEFAULT_ITEM_MODEL);
+        }
+
+        transformation = defaultTransform.getTransformations();
 
         return new BakedDynamicModel();
     }
@@ -100,6 +109,10 @@ public abstract class DynamicModel implements UnbakedModel {
 
             for (DynamicCuboid cuboid : builder.cuboids.get()) {
                 cuboid.create(MESH_BUILDER.get().getEmitter());
+            }
+
+            for (DynamicPlane plane : builder.planes.get()) {
+                plane.create(MESH_BUILDER.get().getEmitter());
             }
 
             context.meshConsumer().accept(MESH_BUILDER.get().build());
@@ -154,15 +167,22 @@ public abstract class DynamicModel implements UnbakedModel {
 
     protected class CuboidBuilder {
         ThreadLocal<Collection<DynamicCuboid>> cuboids = ThreadLocal.withInitial(ArrayList::new);
+        ThreadLocal<Collection<DynamicPlane>> planes = ThreadLocal.withInitial(ArrayList::new);
         ThreadLocal<Map<BakedModel, RenderContext.QuadTransform>> models = ThreadLocal.withInitial(HashMap::new);
 
         public BakedModel getModel(Identifier identifier) {
             return BakedModelManagerHelper.getModel(MinecraftClient.getInstance().getBakedModelManager(), identifier);
         }
 
+        public BakedModel getModelFromItem(Item item) {
+            return MinecraftClient.getInstance().getItemRenderer().getModels().getModel(item);
+        }
+
         public void addCuboid(DynamicCuboid cuboid) {
             cuboids.get().add(cuboid);
         }
+
+        public void addPlane(DynamicPlane plane) {planes.get().add(plane); }
 
         public void addBakedModel(BakedModel model) {
             models.get().put(model, null);

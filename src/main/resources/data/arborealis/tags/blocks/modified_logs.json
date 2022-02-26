@@ -2,6 +2,8 @@
   "replace": false,
   "values": [
     "arborealis:carved_log",
-    "arborealis:carved_nether_log"
+    "arborealis:carved_nether_log",
+    "arborealis:hollowed_log",
+    "arborealis:hollowed_nether_log"
   ]
 }

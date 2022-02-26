@@ -8,10 +8,7 @@ import com.youarethomas.arborealis.blocks.*;
 import com.youarethomas.arborealis.items.*;
 import com.youarethomas.arborealis.mixins.CreateLeavesBlockInvoker;
 import com.youarethomas.arborealis.misc.StencilBagDyeRecipe;
-import com.youarethomas.arborealis.models.CarvedLogDModel;
-import com.youarethomas.arborealis.models.CarvedStencilModel;
-import com.youarethomas.arborealis.models.HollowedLogDModel;
-import com.youarethomas.arborealis.models.WarpCoreDModel;
+import com.youarethomas.arborealis.models.*;
 import com.youarethomas.arborealis.models.model_utils.DynamicModelRegistry;
 import com.youarethomas.arborealis.runes.*;
 import com.youarethomas.arborealis.items.tool_materials.CopperKnifeMaterial;
@@ -205,7 +202,7 @@ public class Arborealis implements ModInitializer {
 		DynamicModelRegistry.register(new HollowedLogDModel(), new Identifier(MOD_ID, "block/hollowed_log"));
 		DynamicModelRegistry.register(new WarpCoreDModel(), new Identifier(MOD_ID, "block/warp_core"));
 		DynamicModelRegistry.register(new WarpCoreDModel(), new Identifier(MOD_ID, "item/warp_core"));
-		DynamicModelRegistry.register(new CarvedStencilModel(), new ModelIdentifier("arborealis:item/stencil_carved#inventory"));
+		DynamicModelRegistry.register(new CarvedStencilDModel(), new ModelIdentifier("arborealis:item/stencil_carved#inventory"));
 
 		// Screen Handler
 		STENCIL_BAG_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(new Identifier(MOD_ID, "stencil_bag"), StencilBagScreenHandler::new);
