@@ -10,11 +10,13 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 import javax.sound.midi.SysexMessage;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.TreeSet;
 
 /**
@@ -24,6 +26,15 @@ import java.util.TreeSet;
 public class TreeManager {
 
     private static final int LIFE_FORCE_MAX = 3;
+
+    private Hashtable<Vec3i, TreeStructure> treeStructureMapping;
+
+    /**
+     * Default constructor of the tree manager.
+     */
+    public TreeManager() {
+        this.treeStructureMapping = new Hashtable<>();
+    }
 
     /**If valid, returns a tree definition with structure and leaves from a given log block.
      */
