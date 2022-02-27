@@ -5,9 +5,11 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,5 +51,23 @@ public class ArborealisNbt {
         }
 
         return runes;
+    }
+
+    public static NbtList serializeBlockPosList(List<BlockPos> blockPosList) {
+        NbtList list = new NbtList();
+
+        for (BlockPos pos : blockPosList)
+            list.add(NbtHelper.fromBlockPos(pos));
+
+        return list;
+    }
+
+    public static List<BlockPos> deserializeBlockPosList(NbtList nbtList) {
+        List<BlockPos> list = new ArrayList<>();
+
+        for (NbtElement nbt : nbtList)
+            list.add(NbtHelper.toBlockPos((NbtCompound)nbt));
+
+        return list;
     }
 }
