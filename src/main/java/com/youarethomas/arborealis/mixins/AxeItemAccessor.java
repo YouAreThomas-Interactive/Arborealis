@@ -13,4 +13,9 @@ public interface AxeItemAccessor {
     static Map<Block, Block> getStrippedBlocks() {
         throw new AssertionError();
     }
+
+    @Accessor("STRIPPED_BLOCKS")
+    static void setStrippedBlocks(Map<Block, Block> blocks) {
+        throw new AssertionError();
+    }
 }

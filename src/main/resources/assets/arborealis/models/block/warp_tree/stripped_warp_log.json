@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "arborealis:block/warp_tree/warp_stripped_top",
+    "side": "arborealis:block/warp_tree/warp_stripped"
+  }
+}

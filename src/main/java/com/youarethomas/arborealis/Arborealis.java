@@ -1,11 +1,13 @@
 package com.youarethomas.arborealis;
 
+import com.google.common.collect.ImmutableMap;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
 import com.youarethomas.arborealis.block_entities.WarpCoreEntity;
 import com.youarethomas.arborealis.block_entities.WoodenBucketEntity;
 import com.youarethomas.arborealis.blocks.*;
 import com.youarethomas.arborealis.items.*;
+import com.youarethomas.arborealis.mixins.AxeItemAccessor;
 import com.youarethomas.arborealis.mixins.CreateLeavesBlockInvoker;
 import com.youarethomas.arborealis.misc.StencilBagDyeRecipe;
 import com.youarethomas.arborealis.models.*;
@@ -39,6 +41,7 @@ import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Map;
 import java.util.Random;
 
 public class Arborealis implements ModInitializer {
@@ -88,6 +91,9 @@ public class Arborealis implements ModInitializer {
 	public static final WarpSapling WARP_SAPLING = new WarpSapling(FabricBlockSettings.of(Material.PLANT));
 	public static final Block WARP_LEAVES = CreateLeavesBlockInvoker.createLeavesBlock(BlockSoundGroup.GRASS);
 	public static final Block WARP_WOOD = new PillarBlock(FabricBlockSettings.of(Material.WOOD).strength(2.0f).sounds(BlockSoundGroup.WOOD));
+	public static final Block WARP_LOG = new PillarBlock(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD));
+	public static final Block STRIPPED_WARP_LOG = new PillarBlock(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD));
+	public static final Block STRIPPED_WARP_WOOD = new PillarBlock(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD));
 	public static final WarpCore WARP_CORE = new WarpCore(FabricBlockSettings.of(Material.WOOD));
 
 	public static final TreeTap TREE_TAP = new TreeTap(FabricBlockSettings.of(Material.METAL));
@@ -128,8 +134,11 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(WARP_GRAFT));
 				stacks.add(new ItemStack(WARP_SAPLING));
 				stacks.add(new ItemStack(WARP_LEAVES));
-				stacks.add(new ItemStack(WARP_WOOD));
 				stacks.add(new ItemStack(WARP_CORE));
+				stacks.add(new ItemStack(WARP_WOOD));
+				stacks.add(new ItemStack(WARP_LOG));
+				stacks.add(new ItemStack(STRIPPED_WARP_LOG));
+				stacks.add(new ItemStack(STRIPPED_WARP_WOOD));
 			})
 			.build();
 
@@ -156,6 +165,9 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "warp_sapling"), WARP_SAPLING);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "warp_leaves"), WARP_LEAVES);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "warp_wood"), WARP_WOOD);
+		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "warp_log"), WARP_LOG);
+		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "stripped_warp_log"), STRIPPED_WARP_LOG);
+		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "stripped_warp_wood"), STRIPPED_WARP_WOOD);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "warp_core"), WARP_CORE);
 
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "tree_tap"), TREE_TAP);
@@ -173,6 +185,9 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_sapling"), new BlockItem(WARP_SAPLING, new FabricItemSettings()));
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_leaves"), new BlockItem(WARP_LEAVES, new FabricItemSettings()));
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_wood"), new BlockItem(WARP_WOOD, new FabricItemSettings()));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_log"), new BlockItem(WARP_LOG, new FabricItemSettings()));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stripped_warp_log"), new BlockItem(STRIPPED_WARP_LOG, new FabricItemSettings()));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stripped_warp_wood"), new BlockItem(STRIPPED_WARP_WOOD, new FabricItemSettings()));
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_core"), new BlockItem(WARP_CORE, new FabricItemSettings()));
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tree_tap"), new BlockItem(TREE_TAP, new FabricItemSettings().maxCount(16)));
@@ -215,6 +230,12 @@ public class Arborealis implements ModInitializer {
 		FlammableBlockRegistry.getDefaultInstance().add(HOLLOWED_LOG, 5, 5);
 		FlammableBlockRegistry.getDefaultInstance().add(WARP_WOOD, 5, 5);
 		FlammableBlockRegistry.getDefaultInstance().add(WARP_LEAVES, 60, 30);
+
+		// Add wood stripping
+		Map<Block, Block> axeStripped = new ImmutableMap.Builder<Block, Block>().putAll(AxeItemAccessor.getStrippedBlocks())
+				.put(WARP_LOG, STRIPPED_WARP_LOG).put(WARP_WOOD, STRIPPED_WARP_WOOD)
+				.build();
+		AxeItemAccessor.setStrippedBlocks(axeStripped);
 
 		LOGGER.info("Arborealis Initialised!");
 	}
