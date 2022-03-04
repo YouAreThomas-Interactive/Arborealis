@@ -58,6 +58,16 @@ public class CarvedLogDModel extends DynamicModel {
                 }
             }
 
+            // Make face blue if it's in the correct position relative to a warp core
+            if (dir.getHorizontal() != -1) {
+                BlockPos warpCorePos = be.getPos().offset(Direction.DOWN, 2).offset(dir, 2);
+
+                if (be.getWorld().getBlockState(warpCorePos).isOf(Arborealis.WARP_CORE)) {
+                    core.applyTexture(dir, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
+                    core.setSideOverlay(dir, 0x64D4CD);
+                }
+            }
+
             // If block has glow ink applied, make the face emissive
             if (be.getFaceGlow(dir)) {
                 core.setEmissive(dir, true);
