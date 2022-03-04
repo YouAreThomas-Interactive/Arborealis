@@ -1,5 +1,6 @@
 package com.youarethomas.arborealis.util;
 
+import com.sun.source.tree.Tree;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
@@ -19,6 +20,7 @@ import net.minecraft.world.World;
 
 import javax.sound.midi.SysexMessage;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -107,6 +109,7 @@ public class TreeManager extends PersistentState {
      */
     public static TreeStructure getTreeStructureFromBlock(BlockPos startingPos, World world) {
         TreeStructure structure = new TreeStructure();
+
         BlockState clickedBlock = world.getBlockState(startingPos);
 
         // Return and empty tree structure if the starting position is not a log
@@ -114,9 +117,30 @@ public class TreeManager extends PersistentState {
             return structure;
         }
 
-        structure.logs.addAll(getTreeLogs(world, startingPos)); // Add all found logs to the TreeStructure
+        if(world instanceof ServerWorld serverWorld) {
+            TreeManager manager = getManager(serverWorld);
 
-        structure.leaves.addAll(getTreeLeaves(world, structure.logs)); // Add all the founded leaves to the TreeStructure
+            if(manager.treeStructureMapping.containsKey(startingPos))
+            {
+                // Get the structure that is stored at that position.
+                structure = manager.treeStructureMapping.get(startingPos);
+            }
+            else
+            {
+                structure.logs.addAll(getTreeLogs(world, startingPos)); // Add all found logs to the TreeStructure
+
+                structure.leaves.addAll(getTreeLeaves(world, structure.logs)); // Add all the founded leaves to the TreeStructure
+
+                // Stores the information of the tree structure found
+                TreeStructure finalStructure = structure;
+                manager.treeStructureMapping.putAll(structure.logs.stream()
+                        .collect(Collectors.toMap(Function.identity(), key -> finalStructure)));
+                manager.treeStructureMapping.putAll(structure.leaves.stream()
+                        .collect(Collectors.toMap(Function.identity(), key -> finalStructure)));
+            }
+
+            return structure;
+        }
 
         return structure;
     }
