@@ -12,6 +12,7 @@ import com.youarethomas.arborealis.mixins.CreateLeavesBlockInvoker;
 import com.youarethomas.arborealis.misc.StencilBagDyeRecipe;
 import com.youarethomas.arborealis.models.*;
 import com.youarethomas.arborealis.models.model_utils.DynamicModelRegistry;
+import com.youarethomas.arborealis.particles.WarpTreeParticle;
 import com.youarethomas.arborealis.runes.*;
 import com.youarethomas.arborealis.items.tool_materials.CopperKnifeMaterial;
 import com.youarethomas.arborealis.items.tool_materials.RegrowthSpoonMaterial;
@@ -23,6 +24,7 @@ import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.fabricmc.fabric.api.tag.TagRegistry;
@@ -30,6 +32,8 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.*;
+import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialRecipeSerializer;
@@ -108,10 +112,15 @@ public class Arborealis implements ModInitializer {
 	// Screen Handlers
 	public static ScreenHandlerType<StencilBagScreenHandler> STENCIL_BAG_SCREEN_HANDLER;
 
+	// Recipe Serializers
 	public static SpecialRecipeSerializer<StencilBagDyeRecipe> STENCIL_BAG_DYE;
+
+	// Particle Types
+	public static DefaultParticleType WARP_TREE_PARTICLE = FabricParticleTypes.simple();
 
 	// Tags
 	public static final Tag<Block> MODIFIED_LOGS = TagRegistry.block(new Identifier(MOD_ID, "modified_logs"));
+	public static final Tag<Block> WARP_LOGS = TagRegistry.block(new Identifier(MOD_ID, "warp_logs"));
 
 	// Item Groups
 	public static final ItemGroup ARBOREALIS_GROUP = FabricItemGroupBuilder.create(
@@ -225,10 +234,17 @@ public class Arborealis implements ModInitializer {
 		// Recipe Serializers
 		STENCIL_BAG_DYE =  RecipeSerializer.register("crafting_special_bag_dye", new SpecialRecipeSerializer<>(StencilBagDyeRecipe::new));
 
+		// Particles
+		Registry.register(Registry.PARTICLE_TYPE, new Identifier(MOD_ID, "warp_tree_particle"), WARP_TREE_PARTICLE);
+
 		// SET IT ON FIRE!
 		FlammableBlockRegistry.getDefaultInstance().add(CARVED_LOG, 5, 5);
 		FlammableBlockRegistry.getDefaultInstance().add(HOLLOWED_LOG, 5, 5);
+
 		FlammableBlockRegistry.getDefaultInstance().add(WARP_WOOD, 5, 5);
+		FlammableBlockRegistry.getDefaultInstance().add(WARP_LOG, 5, 5);
+		FlammableBlockRegistry.getDefaultInstance().add(STRIPPED_WARP_WOOD, 5, 5);
+		FlammableBlockRegistry.getDefaultInstance().add(STRIPPED_WARP_LOG, 5, 5);
 		FlammableBlockRegistry.getDefaultInstance().add(WARP_LEAVES, 60, 30);
 
 		// Add wood stripping

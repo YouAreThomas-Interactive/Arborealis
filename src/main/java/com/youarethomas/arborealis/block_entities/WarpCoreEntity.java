@@ -23,7 +23,7 @@ public class WarpCoreEntity extends BlockEntity {
     private final List<Pair<BlockPos, Direction>> passwordBlockPosList;
 
     private static final float PASSWORD_RADIUS = 0.6f;
-    private static final int PASSWORD_NUM_PARTICLES = 14;
+    private static final int PASSWORD_NUM_PARTICLES = 10;
 
     public WarpCoreEntity(BlockPos pos, BlockState state) {
         super(Arborealis.WARP_CORE_ENTITY, pos, state);
@@ -39,7 +39,8 @@ public class WarpCoreEntity extends BlockEntity {
 
     public static void clientTick(World world, BlockPos pos, BlockState state, WarpCoreEntity be) {
         for(Pair<BlockPos, Direction> passwordPair : be.passwordBlockPosList) {
-            createPasswordParticles(passwordPair.getA(), passwordPair.getB(), world);
+            if (world.getBlockState(passwordPair.getA()).isOf(Arborealis.WARP_WOOD) || world.getBlockState(passwordPair.getA()).isOf(Arborealis.WARP_LOG) || world.getBlockState(passwordPair.getA()).isOf(Arborealis.CARVED_LOG))
+                createPasswordParticles(passwordPair.getA(), passwordPair.getB(), world);
         }
     }
 
@@ -72,7 +73,7 @@ public class WarpCoreEntity extends BlockEntity {
         for (int i = 0; i < PASSWORD_NUM_PARTICLES; ++i) {
             int particleSample = random.nextInt(100);
 
-            if(particleSample == 0) {
+            if(particleSample < 3) {
                 double angle = 2.0f * Math.PI * random.nextDouble();
 
                 Vec2f point = new Vec2f(
@@ -104,7 +105,7 @@ public class WarpCoreEntity extends BlockEntity {
                 Vec3d directionOffset = new Vec3d(direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ()).multiply(0.6);
                 Vec3d particlePos = Vec3d.ofCenter(pos).add(directionOffset).add(rotatedPoint);
 
-                world.addParticle(ParticleTypes.COMPOSTER, particlePos.x, particlePos.y, particlePos.z, velocity.x, velocity.y, velocity.z);
+                world.addParticle(Arborealis.WARP_TREE_PARTICLE, particlePos.x, particlePos.y - 0.1, particlePos.z, velocity.x, velocity.y, velocity.z);
             }
         }
     }
