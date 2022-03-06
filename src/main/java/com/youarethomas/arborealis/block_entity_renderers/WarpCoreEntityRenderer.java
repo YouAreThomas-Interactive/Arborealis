@@ -28,7 +28,7 @@ public class WarpCoreEntityRenderer implements BlockEntityRenderer<WarpCoreEntit
     @Override
     public void render(WarpCoreEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
-        Vec3d thisCorePos = new Vec3d(entity.getPos().getX() + 0.5d, entity.getPos().getY() + 0.5d, entity.getPos().getZ() + 0.5d);
+        Vec3d thisCorePos = Vec3d.ofCenter(entity.getPos());
 
         // If the player is in the warp chamber box
         if (player != null) {
@@ -43,7 +43,7 @@ public class WarpCoreEntityRenderer implements BlockEntityRenderer<WarpCoreEntit
                     float z = 0f;
                     Quaternion angleToPos = Quaternion.fromEulerYxz(-x, y, z);
 
-                    float scaleFactor = (float)coreToOther.length() * 0.002f;
+                    float scaleFactor = (float)coreToOther.length() * 0.004f;
 
                     // Warp Tree Label
                     matrices.push();

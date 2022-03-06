@@ -54,36 +54,44 @@ public class WarpCoreEntity extends BlockEntity {
 
     public static void serverTick(World world, BlockPos pos, BlockState state, WarpCoreEntity be) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        Vec3d thisCore = Vec3d.ofCenter(pos);
 
         if (player != null) {
-            if (player.getBoundingBox().intersects(new Box(new Vec3d(pos.getX() - 1D, pos.getY() + 1D, pos.getZ() - 1D), new Vec3d(pos.getX() + 1D, pos.getY() + 3D, pos.getZ() + 1D)))) {
+            if (player.getBoundingBox().intersects(new Box(new Vec3d(thisCore.getX() - 1D, thisCore.getY() + 1D, thisCore.getZ() - 1D), new Vec3d(thisCore.getX() + 1D, thisCore.getY() + 3D, thisCore.getZ() + 1D)))) {
                 ArborealisPersistentState worldNbt = ((ServerWorld) world).getPersistentStateManager().getOrCreate(ArborealisPersistentState::fromNbt, ArborealisPersistentState::new, "warp_cores");
 
                 List<BlockPos> positions = new ArrayList<>(worldNbt.getWarpCoreList());
                 positions.remove(pos);
                 be.setOtherCorePositions(positions);
 
-                float pitch = player.getPitch();
-                float yaw = player.getHeadYaw();
+                if (positions.size() > 0) {
+                    // Get player look direction
+                    Vec3d playerLookVector = player.getRotationVecClient();
+                    double similarity = -1d;
+                    BlockPos bestPos = null;
+                    for (BlockPos corePos : positions) {
+                        Vec3d playerToBlock = Vec3d.ofCenter(corePos).subtract(player.getEyePos()).normalize();
 
-                Vec3d playerToBlock = Vec3d.ofCenter(pos).subtract(player.getEyePos());
+                        double dot = playerToBlock.dotProduct(playerLookVector);
+                        if (dot > 0.99 && dot > similarity) {
+                            similarity = playerToBlock.dotProduct(playerLookVector);
+                            bestPos = corePos;
+                        }
+                    }
 
-                if (player.isSneaking()) {
-                    if (positions.size() > 0) {
-                        BlockPos randomPos = positions.get(Arborealis.RANDOM.nextInt(positions.size())).up();
-
-                        System.out.println("teleported");
+                    if (player.isSneaking()) {
                         // Get the server player and teleport
                         ServerPlayerEntity serverPlayer = ArborealisUtil.getServerPlayer(world);
-                        if (allowPlayerTeleport.get(player.getEntityName()) != null && allowPlayerTeleport.get(player.getEntityName())) {
-                            serverPlayer.teleport(randomPos.getX() + 0.5D, randomPos.getY(), randomPos.getZ() + 0.5D);
+                        if (bestPos != null && allowPlayerTeleport.get(player.getEntityName()) != null && allowPlayerTeleport.get(player.getEntityName())) {
+                            serverPlayer.teleport(bestPos.getX() + 0.5D, bestPos.up().getY(), bestPos.getZ() + 0.5D);
                             allowPlayerTeleport.put(player.getEntityName(), false);
                         }
-
+                    } else {
+                        allowPlayerTeleport.put(player.getEntityName(), true);
                     }
-                } else {
-                    allowPlayerTeleport.put(player.getEntityName(), true);
                 }
+            } else {
+                allowPlayerTeleport.put(player.getEntityName(), true);
             }
         }
     }
