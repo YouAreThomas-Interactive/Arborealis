@@ -2,14 +2,21 @@ package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.misc.ArborealisPersistentState;
+import com.youarethomas.arborealis.util.ArborealisNbt;
+import com.youarethomas.arborealis.util.ArborealisUtil;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityTicker;
-import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.ParticleTypes;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.LiteralText;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import oshi.util.tuples.Pair;
@@ -17,13 +24,14 @@ import oshi.util.tuples.Pair;
 import java.util.*;
 
 public class WarpCoreEntity extends BlockEntity {
-
-    private static boolean allowTeleport = true; // This likely won't work for multiplayer
-
     private final List<Pair<BlockPos, Direction>> passwordBlockPosList;
 
     private static final float PASSWORD_RADIUS = 0.6f;
     private static final int PASSWORD_NUM_PARTICLES = 10;
+
+    private List<BlockPos> warpCorePositions = new ArrayList<>();
+
+    private static HashMap<String, Boolean> allowPlayerTeleport = new HashMap<>();
 
     public WarpCoreEntity(BlockPos pos, BlockState state) {
         super(Arborealis.WARP_CORE_ENTITY, pos, state);
@@ -45,36 +53,95 @@ public class WarpCoreEntity extends BlockEntity {
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, WarpCoreEntity be) {
-        List<PlayerEntity> players = (List<PlayerEntity>) world.getPlayers();
+        ClientPlayerEntity player = MinecraftClient.getInstance().player;
 
-        for (PlayerEntity player : players) {
-            if (world.getBlockState(player.getBlockPos().down()).isOf(Arborealis.WARP_CORE) && player.getBlockPos().down().equals(pos) && player.isSneaking() && allowTeleport) {
-                ArborealisPersistentState worldNbt = ((ServerWorld)world).getPersistentStateManager().getOrCreate(ArborealisPersistentState::fromNbt, ArborealisPersistentState::new, "warp_cores");
+        if (player != null) {
+            if (player.getBoundingBox().intersects(new Box(new Vec3d(pos.getX() - 1D, pos.getY() + 1D, pos.getZ() - 1D), new Vec3d(pos.getX() + 1D, pos.getY() + 3D, pos.getZ() + 1D)))) {
+                ArborealisPersistentState worldNbt = ((ServerWorld) world).getPersistentStateManager().getOrCreate(ArborealisPersistentState::fromNbt, ArborealisPersistentState::new, "warp_cores");
 
-                List<BlockPos> corePositions = new ArrayList<>(worldNbt.getWarpCoreList());
-                if (corePositions.size() > 1) {
-                    corePositions.remove(pos);
-                    BlockPos randomPos = corePositions.get(Arborealis.RANDOM.nextInt(corePositions.size())).up();
+                List<BlockPos> positions = new ArrayList<>(worldNbt.getWarpCoreList());
+                positions.remove(pos);
+                be.setOtherCorePositions(positions);
 
-                    player.teleport(randomPos.getX() + 0.5D, randomPos.getY(), randomPos.getZ() + 0.5D);
+                float pitch = player.getPitch();
+                float yaw = player.getHeadYaw();
+
+                Vec3d playerToBlock = Vec3d.ofCenter(pos).subtract(player.getEyePos());
+
+                if (player.isSneaking()) {
+                    if (positions.size() > 0) {
+                        BlockPos randomPos = positions.get(Arborealis.RANDOM.nextInt(positions.size())).up();
+
+                        System.out.println("teleported");
+                        // Get the server player and teleport
+                        ServerPlayerEntity serverPlayer = ArborealisUtil.getServerPlayer(world);
+                        if (allowPlayerTeleport.get(player.getEntityName()) != null && allowPlayerTeleport.get(player.getEntityName())) {
+                            serverPlayer.teleport(randomPos.getX() + 0.5D, randomPos.getY(), randomPos.getZ() + 0.5D);
+                            allowPlayerTeleport.put(player.getEntityName(), false);
+                        }
+
+                    }
+                } else {
+                    allowPlayerTeleport.put(player.getEntityName(), true);
                 }
-
-                allowTeleport = false;
-            } else if (world.getBlockState(player.getBlockPos().down()).isOf(Arborealis.WARP_CORE) && !player.isSneaking()) {
-                allowTeleport = true;
             }
         }
     }
 
-    public static void createPasswordParticles(BlockPos pos, Direction direction, World world) {
-        Random random = Arborealis.RANDOM;
+    public void setOtherCorePositions(List<BlockPos> positions) {
+        this.warpCorePositions = positions;
+        this.markDirty();
+    }
 
+    public List<BlockPos> getOtherCorePositions() {
+        return warpCorePositions;
+    }
+
+    @Override
+    public void writeNbt(NbtCompound tag) {
+        super.writeNbt(tag);
+
+        tag.put("warp_cores", ArborealisNbt.serializeBlockPosList(warpCorePositions));
+    }
+
+    @Override
+    public void readNbt(NbtCompound tag) {
+        super.readNbt(tag);
+
+        warpCorePositions = ArborealisNbt.deserializeBlockPosList(tag.getList("warp_cores", NbtElement.COMPOUND_TYPE));
+
+        this.markDirty();
+    }
+
+    @Override
+    public void markDirty() {
+        super.markDirty();
+
+        if (this.getWorld() != null) {
+            if (!this.getWorld().isClient())
+                ((ServerWorld) world).getChunkManager().markForUpdate(getPos());
+            else
+                world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.REDRAW_ON_MAIN_THREAD);
+        }
+    }
+
+    @Override
+    public BlockEntityUpdateS2CPacket toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
+    }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt() {
+        return this.createNbt();
+    }
+
+    public static void createPasswordParticles(BlockPos pos, Direction direction, World world) {
         // Create points randomly on the circumference of the circle.
         for (int i = 0; i < PASSWORD_NUM_PARTICLES; ++i) {
-            int particleSample = random.nextInt(100);
+            int particleSample = Arborealis.RANDOM.nextInt(100);
 
             if(particleSample < 3) {
-                double angle = 2.0f * Math.PI * random.nextDouble();
+                double angle = 2.0f * Math.PI * Arborealis.RANDOM.nextDouble();
 
                 Vec2f point = new Vec2f(
                         (float) Math.cos(angle) * (PASSWORD_RADIUS),
