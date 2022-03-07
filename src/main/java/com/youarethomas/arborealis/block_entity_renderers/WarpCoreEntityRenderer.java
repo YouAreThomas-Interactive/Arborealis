@@ -3,17 +3,16 @@ package com.youarethomas.arborealis.block_entity_renderers;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.WarpCoreEntity;
-import com.youarethomas.arborealis.misc.ArborealisPersistentState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
@@ -32,7 +31,14 @@ public class WarpCoreEntityRenderer implements BlockEntityRenderer<WarpCoreEntit
 
         // If the player is in the warp chamber box
         if (player != null) {
+
             if (player.getBoundingBox().intersects(new Box(new Vec3d(thisCorePos.getX() - 1D, thisCorePos.getY() + 1D, thisCorePos.getZ() - 1D), new Vec3d(thisCorePos.getX() + 1D, thisCorePos.getY() + 3D, thisCorePos.getZ() + 1D)))) {
+                entity.fadeAmount = Math.min(100, entity.fadeAmount + 5);
+            } else {
+                entity.fadeAmount = Math.max(0, entity.fadeAmount - 5);
+            }
+
+            if (entity.fadeAmount > 0f) {
                 for (BlockPos corePos : entity.getOtherCorePositions()) {
                     Vec3d otherCorePos = new Vec3d(corePos.getX() + 0.5d, corePos.getY() + 0.5d, corePos.getZ() + 0.5d);
                     Vec3d coreToOther = otherCorePos.subtract(thisCorePos);
@@ -53,7 +59,8 @@ public class WarpCoreEntityRenderer implements BlockEntityRenderer<WarpCoreEntit
                     matrices.scale(-scaleFactor, -scaleFactor, scaleFactor);
 
                     TextRenderer textRenderer = this.textRenderer;
-                    textRenderer.draw("Warp Tree", -(textRenderer.getWidth("Warp Tree") / 2f), 0, 0xFFFFFF, false, matrices.peek().getPositionMatrix(), vertexConsumers, true, 0, light);
+                    int colourWithFade = (int)toHex((int)(255.0f * (entity.fadeAmount / 100f)), 255, 255, 255);
+                    textRenderer.draw("Warp Tree", -(textRenderer.getWidth("Warp Tree") / 2f), 0, colourWithFade, false, matrices.peek().getPositionMatrix(), vertexConsumers, true, 0, light);
 
                     matrices.pop();
 
@@ -66,12 +73,19 @@ public class WarpCoreEntityRenderer implements BlockEntityRenderer<WarpCoreEntit
                     matrices.translate(0f, -20f, 0f);
 
                     RenderSystem.setShaderTexture(0, new Identifier(Arborealis.MOD_ID, "textures/item/warp_sapling.png"));
+                    RenderSystem.enableBlend();
+                    RenderSystem.defaultBlendFunc();
+                    RenderSystem.setShaderColor(entity.fadeAmount / 100f, entity.fadeAmount / 100f, entity.fadeAmount / 100f, entity.fadeAmount / 100f);
                     DrawableHelper.drawTexture(matrices, -8, 0, 0, 16, 16, 16, 16, 16);
 
                     matrices.pop();
                 }
             }
         }
+    }
 
+    protected long toHex(int a, int r, int g, int b) {
+        String hex = String.format("%02X%02X%02X%02X", a, r, b, b);
+        return Long.parseLong(hex, 16);
     }
 }

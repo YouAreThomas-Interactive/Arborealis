@@ -2,6 +2,7 @@ package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.misc.ArborealisPersistentState;
+import com.youarethomas.arborealis.mixin_access.CameraMixinAccess;
 import com.youarethomas.arborealis.util.ArborealisNbt;
 import com.youarethomas.arborealis.util.ArborealisUtil;
 import net.minecraft.block.Block;
@@ -9,11 +10,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -24,14 +25,15 @@ import oshi.util.tuples.Pair;
 import java.util.*;
 
 public class WarpCoreEntity extends BlockEntity {
-    private final List<Pair<BlockPos, Direction>> passwordBlockPosList;
 
     private static final float PASSWORD_RADIUS = 0.6f;
     private static final int PASSWORD_NUM_PARTICLES = 10;
 
     private List<BlockPos> warpCorePositions = new ArrayList<>();
-
+    private final List<Pair<BlockPos, Direction>> passwordBlockPosList;
     private static HashMap<String, Boolean> allowPlayerTeleport = new HashMap<>();
+    public int fadeAmount = 0;
+    private static BlockPos currentlyTeleportingTo = null;
 
     public WarpCoreEntity(BlockPos pos, BlockState state) {
         super(Arborealis.WARP_CORE_ENTITY, pos, state);
@@ -55,6 +57,10 @@ public class WarpCoreEntity extends BlockEntity {
     public static void serverTick(World world, BlockPos pos, BlockState state, WarpCoreEntity be) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         Vec3d thisCore = Vec3d.ofCenter(pos);
+
+        CameraMixinAccess cameraAccess = (CameraMixinAccess)MinecraftClient.getInstance().gameRenderer.getCamera();
+
+        System.out.println(cameraAccess.getCameraOffset());
 
         if (player != null) {
             if (player.getBoundingBox().intersects(new Box(new Vec3d(thisCore.getX() - 1D, thisCore.getY() + 1D, thisCore.getZ() - 1D), new Vec3d(thisCore.getX() + 1D, thisCore.getY() + 3D, thisCore.getZ() + 1D)))) {
@@ -80,15 +86,28 @@ public class WarpCoreEntity extends BlockEntity {
                     }
 
                     if (player.isSneaking()) {
-                        // Get the server player and teleport
-                        ServerPlayerEntity serverPlayer = ArborealisUtil.getServerPlayer(world);
                         if (bestPos != null && allowPlayerTeleport.get(player.getEntityName()) != null && allowPlayerTeleport.get(player.getEntityName())) {
-                            serverPlayer.teleport(bestPos.getX() + 0.5D, bestPos.up().getY(), bestPos.getZ() + 0.5D);
-                            allowPlayerTeleport.put(player.getEntityName(), false);
+                            currentlyTeleportingTo = bestPos;
                         }
                     } else {
                         allowPlayerTeleport.put(player.getEntityName(), true);
+                        currentlyTeleportingTo = null;
                     }
+                }
+
+                if (currentlyTeleportingTo != null) {
+                    ServerPlayerEntity serverPlayer = ArborealisUtil.getServerPlayer(world);
+                    if (cameraAccess.getCameraOffset() > -1f) {
+                        serverPlayer.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 30, 30, false, false, false));
+                        cameraAccess.setCameraOffset(cameraAccess.getCameraOffset() - 0.1f);
+                    } else {
+                        allowPlayerTeleport.put(player.getEntityName(), false);
+                        serverPlayer.teleport(currentlyTeleportingTo.getX() + 0.5D, currentlyTeleportingTo.up().getY(), currentlyTeleportingTo.getZ() + 0.5D);
+                        currentlyTeleportingTo = null;
+                    }
+                } else {
+                    if (cameraAccess.getCameraOffset() < 0f)
+                        cameraAccess.setCameraOffset(cameraAccess.getCameraOffset() + 0.05f);
                 }
             } else {
                 allowPlayerTeleport.put(player.getEntityName(), true);
