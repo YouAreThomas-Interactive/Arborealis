@@ -49,20 +49,14 @@ public class WarpCoreEntityRenderer implements BlockEntityRenderer<WarpCoreEntit
                     float z = 0f;
                     Quaternion angleToPos = Quaternion.fromEulerYxz(-x, y, z);
 
-                    float scaleFactor = (float)coreToOther.length() * 0.004f;
+                    float hoverScaleMultiplier = 1f;
+                    boolean showText = false;
+                    if (entity.getSelectedWarpCore() != null && corePos.equals(entity.getSelectedWarpCore()) ) {
+                        hoverScaleMultiplier = 1.2f;
+                        showText = true;
+                    }
 
-                    // Warp Tree Label
-                    matrices.push();
-                    matrices.translate(0.5f, 1.5f, 0.5f);
-                    matrices.translate(coreToOther.x, coreToOther.y, coreToOther.z);
-                    matrices.multiply(angleToPos);
-                    matrices.scale(-scaleFactor, -scaleFactor, scaleFactor);
-
-                    TextRenderer textRenderer = this.textRenderer;
-                    int colourWithFade = (int)toHex((int)(255.0f * (entity.fadeAmount / 100f)), 255, 255, 255);
-                    textRenderer.draw("Warp Tree", -(textRenderer.getWidth("Warp Tree") / 2f), 0, colourWithFade, false, matrices.peek().getPositionMatrix(), vertexConsumers, true, 0, light);
-
-                    matrices.pop();
+                    float scaleFactor = (float)coreToOther.length() * 0.004f * hoverScaleMultiplier;
 
                     // Warp Tree Icon
                     matrices.push();
@@ -79,6 +73,21 @@ public class WarpCoreEntityRenderer implements BlockEntityRenderer<WarpCoreEntit
                     DrawableHelper.drawTexture(matrices, -8, 0, 0, 16, 16, 16, 16, 16);
 
                     matrices.pop();
+
+                    // Warp Tree Label
+                    if (showText) {
+                        matrices.push();
+                        matrices.translate(0.5f, 1.5f, 0.5f);
+                        matrices.translate(coreToOther.x, coreToOther.y, coreToOther.z);
+                        matrices.multiply(angleToPos);
+                        matrices.scale(-scaleFactor, -scaleFactor, scaleFactor);
+
+                        TextRenderer textRenderer = this.textRenderer;
+                        int colourWithFade = (int)toHex((int)(255.0f * (entity.fadeAmount / 100f)), 255, 255, 255);
+                        textRenderer.draw("Warp Tree", -(textRenderer.getWidth("Warp Tree") / 2f), 0, colourWithFade, false, matrices.peek().getPositionMatrix(), vertexConsumers, true, 0, light);
+
+                        matrices.pop();
+                    }
                 }
             }
         }
