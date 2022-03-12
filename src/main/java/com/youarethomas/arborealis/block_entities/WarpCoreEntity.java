@@ -39,6 +39,8 @@ public class WarpCoreEntity extends BlockEntity {
     private BlockPos selectedWarpCore = BlockPos.ORIGIN;
     private static BlockPos currentlyTeleportingTo = null;
 
+    private static boolean playTeleportSound = false;
+
     public WarpCoreEntity(BlockPos pos, BlockState state) {
         super(Arborealis.WARP_CORE_ENTITY, pos, state);
 
@@ -55,6 +57,11 @@ public class WarpCoreEntity extends BlockEntity {
         for(Pair<BlockPos, Direction> passwordPair : be.passwordBlockPosList) {
             if (world.getBlockState(passwordPair.getA()).isOf(Arborealis.WARP_WOOD) || world.getBlockState(passwordPair.getA()).isOf(Arborealis.WARP_LOG) || world.getBlockState(passwordPair.getA()).isOf(Arborealis.CARVED_LOG))
                 createPasswordParticles(passwordPair.getA(), passwordPair.getB(), world);
+        }
+
+        if (playTeleportSound) {
+            world.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.BLOCKS, 1f, 0.5f, false);
+            playTeleportSound = false;
         }
     }
 
@@ -105,8 +112,8 @@ public class WarpCoreEntity extends BlockEntity {
                         cameraAccess.setCameraOffset(cameraAccess.getCameraOffset() - 0.1f);
                     } else {
                         allowPlayerTeleport.put(player.getEntityName(), false);
+                        playTeleportSound = true;
                         serverPlayer.teleport(currentlyTeleportingTo.getX() + 0.5D, currentlyTeleportingTo.up().getY(), currentlyTeleportingTo.getZ() + 0.5D);
-                        MinecraftClient.getInstance().world.playSound(pos, SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.BLOCKS, 1.0f, 0.5f, false);
                         currentlyTeleportingTo = null;
                     }
                 } else {

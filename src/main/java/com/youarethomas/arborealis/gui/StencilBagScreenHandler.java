@@ -1,4 +1,4 @@
-package gui;
+package com.youarethomas.arborealis.gui;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.items.StencilBag;
@@ -9,9 +9,6 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 
 public class StencilBagScreenHandler extends ScreenHandler {
     private final Inventory inventory;
