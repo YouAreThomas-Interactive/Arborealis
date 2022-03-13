@@ -19,7 +19,6 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
@@ -32,14 +31,12 @@ public class WarpCoreEntity extends BlockEntity {
     private static final float PASSWORD_RADIUS = 0.6f;
     private static final int PASSWORD_NUM_PARTICLES = 10;
 
-    private List<BlockPos> warpCorePositions = new ArrayList<>();
+    private Map<BlockPos, String> otherWarpCores = new HashMap<>();
     private final List<Pair<BlockPos, Direction>> passwordBlockPosList;
     private static HashMap<String, Boolean> allowPlayerTeleport = new HashMap<>();
     public int fadeAmount = 0;
     private BlockPos selectedWarpCore = BlockPos.ORIGIN;
     private static BlockPos currentlyTeleportingTo = null;
-
-    private static boolean playTeleportSound = false;
 
     public WarpCoreEntity(BlockPos pos, BlockState state) {
         super(Arborealis.WARP_CORE_ENTITY, pos, state);
@@ -58,11 +55,6 @@ public class WarpCoreEntity extends BlockEntity {
             if (world.getBlockState(passwordPair.getA()).isOf(Arborealis.WARP_WOOD) || world.getBlockState(passwordPair.getA()).isOf(Arborealis.WARP_LOG) || world.getBlockState(passwordPair.getA()).isOf(Arborealis.CARVED_LOG))
                 createPasswordParticles(passwordPair.getA(), passwordPair.getB(), world);
         }
-
-        if (playTeleportSound) {
-            world.playSound(pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_ENDERMAN_TELEPORT, SoundCategory.BLOCKS, 1f, 0.5f, false);
-            playTeleportSound = false;
-        }
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, WarpCoreEntity be) {
@@ -75,7 +67,7 @@ public class WarpCoreEntity extends BlockEntity {
             if (player.getBoundingBox().intersects(new Box(new Vec3d(thisCore.getX() - 1D, thisCore.getY() + 1D, thisCore.getZ() - 1D), new Vec3d(thisCore.getX() + 1D, thisCore.getY() + 3D, thisCore.getZ() + 1D)))) {
                 ArborealisPersistentState worldNbt = ((ServerWorld) world).getPersistentStateManager().getOrCreate(ArborealisPersistentState::fromNbt, ArborealisPersistentState::new, "warp_cores");
 
-                List<BlockPos> positions = new ArrayList<>(worldNbt.getWarpCoreList());
+                Map<BlockPos, String> positions = new HashMap<>(worldNbt.getWarpCoreList());
                 positions.remove(pos);
                 be.setOtherCorePositions(positions);
 
@@ -85,7 +77,8 @@ public class WarpCoreEntity extends BlockEntity {
                     double similarity = -1d;
                     be.setSelectedWarpCore(BlockPos.ORIGIN);
 
-                    for (BlockPos corePos : positions) {
+                    for (Map.Entry<BlockPos, String> entry : positions.entrySet()) {
+                        BlockPos corePos = entry.getKey();
                         Vec3d playerToBlock = Vec3d.ofCenter(corePos).subtract(player.getEyePos()).normalize();
 
                         double dot = playerToBlock.dotProduct(playerLookVector);
@@ -112,8 +105,8 @@ public class WarpCoreEntity extends BlockEntity {
                         cameraAccess.setCameraOffset(cameraAccess.getCameraOffset() - 0.1f);
                     } else {
                         allowPlayerTeleport.put(player.getEntityName(), false);
-                        playTeleportSound = true;
                         serverPlayer.teleport(currentlyTeleportingTo.getX() + 0.5D, currentlyTeleportingTo.up().getY(), currentlyTeleportingTo.getZ() + 0.5D);
+                        world.playSound(player, currentlyTeleportingTo, SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.BLOCKS, 0.6f, 0.7f);
                         currentlyTeleportingTo = null;
                     }
                 } else {
@@ -126,13 +119,13 @@ public class WarpCoreEntity extends BlockEntity {
         }
     }
 
-    public void setOtherCorePositions(List<BlockPos> positions) {
-        this.warpCorePositions = positions;
+    public void setOtherCorePositions(Map<BlockPos, String> positions) {
+        this.otherWarpCores = positions;
         this.markDirty();
     }
 
-    public List<BlockPos> getOtherCorePositions() {
-        return warpCorePositions;
+    public Map<BlockPos, String>getOtherCorePositions() {
+        return otherWarpCores;
     }
 
     public void setSelectedWarpCore(BlockPos pos) {
@@ -148,7 +141,7 @@ public class WarpCoreEntity extends BlockEntity {
     public void writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
 
-        tag.put("warp_cores", ArborealisNbt.serializeBlockPosList(warpCorePositions));
+        tag.put("warp_cores", ArborealisNbt.serializeBlockPosList(otherWarpCores));
         tag.put("selected_core", NbtHelper.fromBlockPos(selectedWarpCore));
     }
 
@@ -156,7 +149,7 @@ public class WarpCoreEntity extends BlockEntity {
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
 
-        warpCorePositions = ArborealisNbt.deserializeBlockPosList(tag.getList("warp_cores", NbtElement.COMPOUND_TYPE));
+        otherWarpCores = ArborealisNbt.deserializeBlockPosList(tag.getList("warp_cores", NbtElement.COMPOUND_TYPE));
         selectedWarpCore = NbtHelper.toBlockPos(tag.getCompound("selected_core"));
 
         this.markDirty();

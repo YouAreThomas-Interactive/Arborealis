@@ -11,10 +11,16 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Map;
 
 public class WarpCore extends BlockWithEntity implements BlockEntityProvider {
 
@@ -29,10 +35,34 @@ public class WarpCore extends BlockWithEntity implements BlockEntityProvider {
     }
 
     @Override
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
+        ItemStack stack = player.getStackInHand(hand);
+
+        if (stack.isOf(Items.NAME_TAG) && stack.hasCustomName()) {
+            if (world.getBlockEntity(pos) instanceof WarpCoreEntity be && !world.isClient) {
+                ArborealisPersistentState worldNbt = ((ServerWorld) world).getPersistentStateManager().getOrCreate(ArborealisPersistentState::fromNbt, ArborealisPersistentState::new, "warp_cores");
+                Map<BlockPos, String> warpCores = worldNbt.getWarpCoreList();
+
+                for (Map.Entry<BlockPos, String> entry : warpCores.entrySet()) {
+                    if (entry.getKey().equals(pos)) {
+                        warpCores.replace(pos, stack.getName().asString());
+                        worldNbt.setWarpCoreList(warpCores);
+                        stack.decrement(1);
+                        return ActionResult.SUCCESS;
+
+                    }
+                }
+            }
+        }
+
+        return ActionResult.PASS;
+    }
+
+    @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
         if (world instanceof ServerWorld serverWorld) {
             ArborealisPersistentState worldNbt = serverWorld.getPersistentStateManager().getOrCreate(ArborealisPersistentState::fromNbt, ArborealisPersistentState::new, "warp_cores");
-            worldNbt.addWarpCore(pos);
+            worldNbt.addWarpCore(pos, "Warp Tree");
 
             System.out.println("Warp core placed. Count now at: " + worldNbt.getWarpCoreList().size());
         }

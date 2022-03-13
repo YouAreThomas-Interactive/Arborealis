@@ -61,7 +61,7 @@ public class WarpSapling extends Block {
         // Add core to the list
         if (world.getBlockState(pos).isOf(Arborealis.WARP_CORE)) {
             ArborealisPersistentState worldNbt = world.getPersistentStateManager().getOrCreate(ArborealisPersistentState::fromNbt, ArborealisPersistentState::new, "warp_cores");
-            worldNbt.addWarpCore(pos);
+            worldNbt.addWarpCore(pos, "Warp Tree");
         }
         return true;
     }

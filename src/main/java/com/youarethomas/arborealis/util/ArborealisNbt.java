@@ -12,7 +12,9 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ArborealisNbt {
     public static NbtCompound serializeRune(AbstractRune rune) {
@@ -53,21 +55,27 @@ public class ArborealisNbt {
         return runes;
     }
 
-    public static NbtList serializeBlockPosList(List<BlockPos> blockPosList) {
+    public static NbtList serializeBlockPosList(Map<BlockPos, String> blockPosList) {
         NbtList list = new NbtList();
 
-        for (BlockPos pos : blockPosList)
-            list.add(NbtHelper.fromBlockPos(pos));
+        for (Map.Entry<BlockPos, String> entry : blockPosList.entrySet()) {
+            NbtCompound nbt = new NbtCompound();
+            nbt.put("position", NbtHelper.fromBlockPos(entry.getKey()));
+            nbt.putString("name", entry.getValue());
+            list.add(nbt);
+        }
 
         return list;
     }
 
-    public static List<BlockPos> deserializeBlockPosList(NbtList nbtList) {
-        List<BlockPos> list = new ArrayList<>();
+    public static Map<BlockPos, String> deserializeBlockPosList(NbtList nbtList) {
+        Map<BlockPos, String> map = new HashMap<>();
 
-        for (NbtElement nbt : nbtList)
-            list.add(NbtHelper.toBlockPos((NbtCompound)nbt));
+        for (NbtElement nbt : nbtList) {
+            NbtCompound nbtc = (NbtCompound)nbt;
+            map.put(NbtHelper.toBlockPos(nbtc.getCompound("position")), nbtc.getString("name"));
+        }
 
-        return list;
+        return map;
     }
 }

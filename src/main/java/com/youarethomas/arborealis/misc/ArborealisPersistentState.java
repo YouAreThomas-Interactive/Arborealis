@@ -7,11 +7,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.PersistentState;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ArborealisPersistentState extends PersistentState {
 
-    private List<BlockPos> warpCores = new ArrayList<>();
+    private Map<BlockPos, String> warpCores = new HashMap<>();
 
     @Override
     public NbtCompound writeNbt(NbtCompound nbt) {
@@ -26,17 +28,17 @@ public class ArborealisPersistentState extends PersistentState {
         return state;
     }
 
-    public List<BlockPos> getWarpCoreList() {
+    public Map<BlockPos, String> getWarpCoreList() {
         return warpCores;
     }
 
-    public void setWarpCoreList(List<BlockPos> blockPosList) {
+    public void setWarpCoreList(Map<BlockPos, String> blockPosList) {
         warpCores = blockPosList;
     }
 
-    public void addWarpCore(BlockPos pos) {
-        if (!warpCores.contains(pos))
-            warpCores.add(pos);
+    public void addWarpCore(BlockPos pos, String name) {
+        if (!warpCores.containsKey(pos))
+            warpCores.put(pos, name);
         markDirty();
     }
 

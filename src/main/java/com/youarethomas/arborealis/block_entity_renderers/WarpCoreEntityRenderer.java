@@ -16,6 +16,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
+import java.util.Map;
+
 public class WarpCoreEntityRenderer implements BlockEntityRenderer<WarpCoreEntity> {
 
     TextRenderer textRenderer;
@@ -39,7 +41,8 @@ public class WarpCoreEntityRenderer implements BlockEntityRenderer<WarpCoreEntit
             }
 
             if (entity.fadeAmount > 0f) {
-                for (BlockPos corePos : entity.getOtherCorePositions()) {
+                for (Map.Entry<BlockPos, String> entry : entity.getOtherCorePositions().entrySet()) {
+                    BlockPos corePos = entry.getKey();
                     Vec3d otherCorePos = new Vec3d(corePos.getX() + 0.5d, corePos.getY() + 0.5d, corePos.getZ() + 0.5d);
                     Vec3d coreToOther = otherCorePos.subtract(thisCorePos);
 
@@ -84,7 +87,7 @@ public class WarpCoreEntityRenderer implements BlockEntityRenderer<WarpCoreEntit
 
                         TextRenderer textRenderer = this.textRenderer;
                         int colourWithFade = (int)toHex((int)(255.0f * (entity.fadeAmount / 100f)), 255, 255, 255);
-                        textRenderer.draw("Warp Tree", -(textRenderer.getWidth("Warp Tree") / 2f), 0, colourWithFade, false, matrices.peek().getPositionMatrix(), vertexConsumers, true, 0, light);
+                        textRenderer.draw(entry.getValue(), -(textRenderer.getWidth(entry.getValue()) / 2f), 0, colourWithFade, false, matrices.peek().getPositionMatrix(), vertexConsumers, true, 0, light);
 
                         matrices.pop();
                     }
