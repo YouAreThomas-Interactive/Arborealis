@@ -10,6 +10,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +56,7 @@ public class ArborealisNbt {
         return runes;
     }
 
-    public static NbtList serializeBlockPosList(Map<BlockPos, String> blockPosList) {
+    public static NbtList serializeCorePosList(Map<BlockPos, String> blockPosList) {
         NbtList list = new NbtList();
 
         for (Map.Entry<BlockPos, String> entry : blockPosList.entrySet()) {
@@ -68,12 +69,36 @@ public class ArborealisNbt {
         return list;
     }
 
-    public static Map<BlockPos, String> deserializeBlockPosList(NbtList nbtList) {
+    public static Map<BlockPos, String> deserializeCorePosList(NbtList nbtList) {
         Map<BlockPos, String> map = new HashMap<>();
 
         for (NbtElement nbt : nbtList) {
             NbtCompound nbtc = (NbtCompound)nbt;
             map.put(NbtHelper.toBlockPos(nbtc.getCompound("position")), nbtc.getString("name"));
+        }
+
+        return map;
+    }
+
+    public static NbtList serializePasswordPosList(Map<BlockPos, Direction> blockPosList) {
+        NbtList list = new NbtList();
+
+        for (Map.Entry<BlockPos, Direction> entry : blockPosList.entrySet()) {
+            NbtCompound nbt = new NbtCompound();
+            nbt.put("position", NbtHelper.fromBlockPos(entry.getKey()));
+            nbt.putInt("direction", entry.getValue().getId());
+            list.add(nbt);
+        }
+
+        return list;
+    }
+
+    public static Map<BlockPos, Direction> deserializePasswordPosList(NbtList nbtList) {
+        Map<BlockPos, Direction> map = new HashMap<>();
+
+        for (NbtElement nbt : nbtList) {
+            NbtCompound nbtc = (NbtCompound)nbt;
+            map.put(NbtHelper.toBlockPos(nbtc.getCompound("position")), Direction.byId(nbtc.getInt("direction")));
         }
 
         return map;

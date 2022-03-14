@@ -22,7 +22,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
-import oshi.util.tuples.Pair;
 
 import java.util.*;
 
@@ -32,7 +31,7 @@ public class WarpCoreEntity extends BlockEntity {
     private static final int PASSWORD_NUM_PARTICLES = 10;
 
     private Map<BlockPos, String> otherWarpCores = new HashMap<>();
-    private final List<Pair<BlockPos, Direction>> passwordBlockPosList;
+    private final Map<BlockPos, Direction> corePassPosList;
     private static HashMap<String, Boolean> allowPlayerTeleport = new HashMap<>();
     public int fadeAmount = 0;
     private BlockPos selectedWarpCore = BlockPos.ORIGIN;
@@ -41,43 +40,95 @@ public class WarpCoreEntity extends BlockEntity {
     public WarpCoreEntity(BlockPos pos, BlockState state) {
         super(Arborealis.WARP_CORE_ENTITY, pos, state);
 
-        passwordBlockPosList = new ArrayList<>();
+        corePassPosList = new HashMap<>();
 
         for(Direction dir : new Direction[]{ Direction.SOUTH, Direction.NORTH, Direction.EAST, Direction.WEST }) {
             Vec3i dirVec = dir.getVector().multiply(2).add(Direction.UP.getVector().multiply(2));
 
-            passwordBlockPosList.add(new Pair<>(pos.add(dirVec), dir.getOpposite()));
+            corePassPosList.put(pos.add(dirVec), dir.getOpposite());
         }
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState state, WarpCoreEntity be) {
-        for(Pair<BlockPos, Direction> passwordPair : be.passwordBlockPosList) {
-            if (world.getBlockState(passwordPair.getA()).isOf(Arborealis.WARP_WOOD) || world.getBlockState(passwordPair.getA()).isOf(Arborealis.WARP_LOG) || world.getBlockState(passwordPair.getA()).isOf(Arborealis.CARVED_LOG))
-                createPasswordParticles(passwordPair.getA(), passwordPair.getB(), world);
+        for(Map.Entry<BlockPos, Direction> passwordBlock : be.corePassPosList.entrySet()) {
+            if (world.getBlockState(passwordBlock.getKey()).isOf(Arborealis.WARP_WOOD) || world.getBlockState(passwordBlock.getKey()).isOf(Arborealis.WARP_LOG) || world.getBlockState(passwordBlock.getKey()).isOf(Arborealis.CARVED_LOG))
+                createPasswordParticles(passwordBlock.getKey(), passwordBlock.getValue(), world);
         }
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, WarpCoreEntity be) {
+        // Get some userful shit
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         Vec3d thisCore = Vec3d.ofCenter(pos);
-
         CameraMixinAccess cameraAccess = (CameraMixinAccess)MinecraftClient.getInstance().gameRenderer.getCamera();
 
         if (player != null) {
+            // If the player is within the warp chamber...
             if (player.getBoundingBox().intersects(new Box(new Vec3d(thisCore.getX() - 1D, thisCore.getY() + 1D, thisCore.getZ() - 1D), new Vec3d(thisCore.getX() + 1D, thisCore.getY() + 3D, thisCore.getZ() + 1D)))) {
+                // Warp core list stored in world nbt
                 ArborealisPersistentState worldNbt = ((ServerWorld) world).getPersistentStateManager().getOrCreate(ArborealisPersistentState::fromNbt, ArborealisPersistentState::new, "warp_cores");
 
-                Map<BlockPos, String> positions = new HashMap<>(worldNbt.getWarpCoreList());
-                positions.remove(pos);
-                be.setOtherCorePositions(positions);
+                // Get all warp cores
+                Map<BlockPos, String> otherCorePositions = new HashMap<>(worldNbt.getWarpCoreList());
+                otherCorePositions.remove(pos); // remove this core
 
-                if (positions.size() > 0) {
+                // Get a list of this warp core's password blocks
+                Map<Direction, int[]> thisCorePasses = new HashMap<>();
+                for (Map.Entry<BlockPos, Direction> thisCorePass : be.corePassPosList.entrySet()) {
+                    if (world.getBlockState(thisCorePass.getKey()).isOf(Arborealis.CARVED_LOG)) {
+                        CarvedLogEntity carvedLog = (CarvedLogEntity) world.getBlockEntity(thisCorePass.getKey());
+                        thisCorePasses.put(thisCorePass.getValue(), carvedLog.getFaceArray(thisCorePass.getValue()));
+                    }
+                }
+
+                // Filter to only show cores that contain a matching symbol
+                for (int corePosIdx = otherCorePositions.size() - 1; corePosIdx >= 0; corePosIdx--) {
+                    // Get index because Java
+                    List<BlockPos> corePosList = new ArrayList<>(otherCorePositions.keySet());
+                    BlockPos corePos = corePosList.get(corePosIdx);
+
+                    boolean otherCoreSharesNetwork = false;
+                    WarpCoreEntity otherCoreEntity = (WarpCoreEntity)world.getBlockEntity(corePos);
+
+                    if (otherCoreEntity != null) {
+                        // Get all password blocks from the other boyo
+                        Map<BlockPos, Direction> otherCorePasses = otherCoreEntity.corePassPosList;
+
+                        Map<Direction, int[]> otherCorePassRunes = new HashMap<>();
+                        for (Map.Entry<BlockPos, Direction> thisCorePass : otherCorePasses.entrySet()) {
+                            if (world.getBlockState(thisCorePass.getKey()).isOf(Arborealis.CARVED_LOG)) {
+                                CarvedLogEntity carvedLog = (CarvedLogEntity) world.getBlockEntity(thisCorePass.getKey());
+                                otherCorePassRunes.put(thisCorePass.getValue(), carvedLog.getFaceArray(thisCorePass.getValue()));
+                            }
+                        }
+
+                        if (!otherCorePassRunes.values().stream().allMatch(ints -> Arrays.equals(ints, new int[49]))) {
+                            // Check all blocks to see if any of our current tree's cores are found
+                            for (Map.Entry<BlockPos, Direction> otherCorePass : otherCorePasses.entrySet()) {
+                                if (world.getBlockState(otherCorePass.getKey()).isOf(Arborealis.CARVED_LOG)) {
+                                    CarvedLogEntity carvedLog = (CarvedLogEntity) world.getBlockEntity(otherCorePass.getKey());
+                                    if (thisCorePasses.values().stream().anyMatch(ints -> Arrays.equals(ints, carvedLog.getFaceArray(otherCorePass.getValue())))) {
+                                        otherCoreSharesNetwork = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (!otherCoreSharesNetwork)
+                                otherCorePositions.remove(corePos);
+                        }
+                    }
+                }
+
+                be.setOtherCorePositions(otherCorePositions);
+
+                if (otherCorePositions.size() > 0) {
                     // Get player look direction
                     Vec3d playerLookVector = player.getRotationVecClient();
                     double similarity = -1d;
                     be.setSelectedWarpCore(BlockPos.ORIGIN);
 
-                    for (Map.Entry<BlockPos, String> entry : positions.entrySet()) {
+                    for (Map.Entry<BlockPos, String> entry : otherCorePositions.entrySet()) {
                         BlockPos corePos = entry.getKey();
                         Vec3d playerToBlock = Vec3d.ofCenter(corePos).subtract(player.getEyePos()).normalize();
 
@@ -141,7 +192,7 @@ public class WarpCoreEntity extends BlockEntity {
     public void writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
 
-        tag.put("warp_cores", ArborealisNbt.serializeBlockPosList(otherWarpCores));
+        tag.put("warp_cores", ArborealisNbt.serializeCorePosList(otherWarpCores));
         tag.put("selected_core", NbtHelper.fromBlockPos(selectedWarpCore));
     }
 
@@ -149,7 +200,7 @@ public class WarpCoreEntity extends BlockEntity {
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
 
-        otherWarpCores = ArborealisNbt.deserializeBlockPosList(tag.getList("warp_cores", NbtElement.COMPOUND_TYPE));
+        otherWarpCores = ArborealisNbt.deserializeCorePosList(tag.getList("warp_cores", NbtElement.COMPOUND_TYPE));
         selectedWarpCore = NbtHelper.toBlockPos(tag.getCompound("selected_core"));
 
         this.markDirty();

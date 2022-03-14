@@ -6,9 +6,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.PersistentState;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ArborealisPersistentState extends PersistentState {
@@ -17,13 +15,13 @@ public class ArborealisPersistentState extends PersistentState {
 
     @Override
     public NbtCompound writeNbt(NbtCompound nbt) {
-        nbt.put("warp_cores", ArborealisNbt.serializeBlockPosList(warpCores));
+        nbt.put("warp_cores", ArborealisNbt.serializeCorePosList(warpCores));
         return nbt;
     }
 
     public static ArborealisPersistentState fromNbt(NbtCompound nbt) {
         ArborealisPersistentState state = new ArborealisPersistentState();
-        state.setWarpCoreList(ArborealisNbt.deserializeBlockPosList(nbt.getList("warp_cores", NbtElement.COMPOUND_TYPE)));
+        state.setWarpCoreList(ArborealisNbt.deserializeCorePosList(nbt.getList("warp_cores", NbtElement.COMPOUND_TYPE)));
 
         return state;
     }
