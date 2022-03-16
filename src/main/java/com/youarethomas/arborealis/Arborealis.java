@@ -145,7 +145,7 @@ public class Arborealis implements ModInitializer {
 		RuneManager.register(new Identifier(MOD_ID, "harvest"), HARVEST);
 		RuneManager.register(new Identifier(MOD_ID, "plant_crops"), PLANT_CROPS);
 
-		RuneManager.initializeRunes();
+		RuneManager.initializeRunes(new Identifier(MOD_ID, "runes"));
 
 		// Block registration
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "carved_log"), CARVED_LOG);

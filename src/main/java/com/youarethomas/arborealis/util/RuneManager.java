@@ -28,11 +28,11 @@ public class RuneManager {
     private static List<AbstractRune> Runes = new ArrayList<>();
     private static final Gson GSON = new Gson();
 
-    public static void initializeRunes() {
+    public static void initializeRunes(Identifier runesPath) {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
             @Override
             public Identifier getFabricId() {
-                return new Identifier(Arborealis.MOD_ID, "runes");
+                return runesPath;
             }
 
             @Override
