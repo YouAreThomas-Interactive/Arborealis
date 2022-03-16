@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "id": "therotwithin",
+  "version": "${version}",
+
+  "name": "Arborealis: The Rot Within",
+  "description": "A dangerous addon for Arborealis...",
+  "authors": [
+    "Anemony",
+    "YourPalSteve",
+    "FishTreeMan",
+    "All the lovely folks on the Fabric Discord!"
+  ],
+  "contact": {
+    "homepage": "https://github.com/Anemony22/Arborealis",
+    "issues": "https://github.com/Anemony22/Arborealis/issues"
+  },
+
+  "license": "CC0-1.0",
+  "icon": "assets/therotwithin/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.youarethomas.therotwithin.TheRotWithin"
+    ],
+    "client": [
+      {
+        "value": "com.youarethomas.therotwithin.TheRotWithinClient"
+      }
+    ]
+  },
+  "mixins": [
+    "therotwithin.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.12.8",
+    "fabric": "*",
+    "minecraft": "1.18.1",
+    "java": ">=17"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}
