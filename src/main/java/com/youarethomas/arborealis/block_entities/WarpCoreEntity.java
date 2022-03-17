@@ -81,12 +81,19 @@ public class WarpCoreEntity extends BlockEntity {
                     }
                 }
 
-                // Filter to only show cores that contain a matching symbol
-                for (int corePosIdx = otherCorePositions.size() - 1; corePosIdx >= 0; corePosIdx--) {
-                    // Get index because Java
-                    List<BlockPos> corePosList = new ArrayList<>(otherCorePositions.keySet());
-                    BlockPos corePos = corePosList.get(corePosIdx);
+                List<BlockPos> corePosList = new ArrayList<>(otherCorePositions.keySet());
 
+//                corePosList.sort((pos1, pos2) -> {
+//                    Double mag1 = Vec3d.ofCenter(pos1).squaredDistanceTo(player.getEyePos());
+//                    Double mag2 = Vec3d.ofCenter(pos2).squaredDistanceTo(player.getEyePos());
+//                    return mag1.compareTo(mag2);
+//                });
+
+                List<BlockPos> passedCorePosList = new ArrayList<>();
+
+                // Filter to only show cores that contain a matching symbol
+                // Also filter out all cores that would appear clumped up (take the closest one in the clump).
+                for (BlockPos corePos : corePosList) {
                     boolean otherCoreSharesNetwork = false;
                     WarpCoreEntity otherCoreEntity = (WarpCoreEntity)world.getBlockEntity(corePos);
 
@@ -116,6 +123,32 @@ public class WarpCoreEntity extends BlockEntity {
 
                             if (!otherCoreSharesNetwork)
                                 otherCorePositions.remove(corePos);
+                        }
+
+                        // Only check if it is clumped up if it has the same password.
+                        if(otherCorePositions.containsKey(corePos)) {
+                            for(BlockPos passedCorePos : new ArrayList<>(passedCorePosList)) {
+                                Vec3d playerToPassed = Vec3d.ofCenter(passedCorePos).subtract(player.getEyePos());
+                                Vec3d playerToOther = Vec3d.ofCenter(corePos).subtract(player.getEyePos());
+                                double dot = playerToPassed.normalize().dotProduct(playerToOther.normalize());
+
+                                if(dot > 0.99) {
+                                    // Keep the element that closer, remove the further one.
+                                    if(playerToPassed.lengthSquared() > playerToOther.lengthSquared()) {
+                                        // Keeping the other core (the one being filtered).
+                                        passedCorePosList.remove(passedCorePos);
+                                        otherCorePositions.remove(passedCorePos);
+                                    } else {
+                                        // Keeping the one that is passed.
+                                        otherCorePositions.remove(corePos);
+                                    }
+                                }
+                            }
+                        }
+
+                        // Keep track of the cores that pass the filter.
+                        if(otherCorePositions.containsKey(corePos)) {
+                            passedCorePosList.add(corePos.mutableCopy());
                         }
                     }
                 }
@@ -165,7 +198,8 @@ public class WarpCoreEntity extends BlockEntity {
                         cameraAccess.setCameraOffset(cameraAccess.getCameraOffset() + 0.05f);
                 }
             } else {
-                allowPlayerTeleport.put(player.getEntityName(), true);
+                if (cameraAccess.getCameraOffset() >= 0f)
+                    allowPlayerTeleport.put(player.getEntityName(), true);
             }
         }
     }
