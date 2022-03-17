@@ -12,7 +12,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class StencilBagScreen extends HandledScreen<StencilBagScreenHandler> {
-    private static final Identifier TEXTURE = new Identifier(Arborealis.MOD_ID, "textures/com.youarethomas.arborealis.gui/stencil_bag.png");
+    private static final Identifier TEXTURE = new Identifier(Arborealis.MOD_ID, "textures/gui/stencil_bag.png");
 
     public StencilBagScreen(StencilBagScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, StencilBag.openBag.getName());

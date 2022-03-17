@@ -12,6 +12,7 @@
   "rune.arborealis.plant_trees": "§ePlant Trees",
   "rune.arborealis.plant_crops": "§ePlant Crops",
   "rune.arborealis.harvest": "§eHarvest",
+  "rune.arborealis.extinguish": "§eExtinguish",
 
   "item.arborealis.carving_knife": "Carving Knife",
   "item.arborealis.carving_knife.tooltip1": "§7Used for carving runes on trees.",
