@@ -63,6 +63,7 @@ public class Arborealis implements ModInitializer {
 	public static final Harvest HARVEST = new Harvest();
 	public static final PlantCrops PLANT_CROPS = new PlantCrops();
 	public static final Extinguish EXTINGUISH = new Extinguish();
+	public static final Grow GROW = new Grow();
 
 	// Tool Items
 	public static final CarvingKnife CARVING_KNIFE = new CarvingKnife(CopperKnifeMaterial.INSTANCE, new FabricItemSettings());
@@ -162,6 +163,7 @@ public class Arborealis implements ModInitializer {
 		RuneManager.register(new Identifier(MOD_ID, "harvest"), HARVEST);
 		RuneManager.register(new Identifier(MOD_ID, "plant_crops"), PLANT_CROPS);
 		RuneManager.register(new Identifier(MOD_ID, "extinguish"), EXTINGUISH);
+		RuneManager.register(new Identifier(MOD_ID, "grow"), GROW);
 
 		RuneManager.initializeRunes();
 
