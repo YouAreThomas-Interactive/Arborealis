@@ -1,9 +1,8 @@
-package gui;
+package com.youarethomas.arborealis.gui;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.items.StencilBag;
-import com.youarethomas.arborealis.items.StencilCarved;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;

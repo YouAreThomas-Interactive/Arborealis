@@ -27,7 +27,7 @@ import java.util.Arrays;
 public class MouseMixin {
 
     @Inject(method = "onMouseScroll(JDD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;scrollInHotbar(D)V"), cancellable = true)
-    private void onMouseScroll(long window, double horizontal, double vertical, CallbackInfo info) {
+    private void abrOnMouseScroll(long window, double horizontal, double vertical, CallbackInfo info) {
         PlayerEntity player = MinecraftClient.getInstance().player;
         PlayerEntity serverPlayer = MinecraftClient.getInstance().getServer().getPlayerManager().getPlayer(player.getEntityName());
 

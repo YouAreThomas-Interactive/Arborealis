@@ -1,15 +1,15 @@
 {
   "variants": {
     "axis=x": {
-      "model": "arborealis:block/warp_wood",
+      "model": "arborealis:block/warp_tree/warp_wood",
       "x": 90,
       "y": 90
     },
     "axis=y": {
-      "model": "arborealis:block/warp_wood"
+      "model": "arborealis:block/warp_tree/warp_wood"
     },
     "axis=z": {
-      "model": "arborealis:block/warp_wood",
+      "model": "arborealis:block/warp_tree/warp_wood",
       "x": 90
     }
   }

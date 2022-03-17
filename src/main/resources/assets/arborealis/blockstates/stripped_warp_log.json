@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "arborealis:block/warp_tree/stripped_warp_log",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "arborealis:block/warp_tree/stripped_warp_log"
+    },
+    "axis=z": {
+      "model": "arborealis:block/warp_tree/stripped_warp_log",
+      "x": 90
+    }
+  }
+}

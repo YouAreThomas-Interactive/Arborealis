@@ -1,7 +1,7 @@
 {
   "variants": {
     "": {
-      "model": "arborealis:block/warp_leaves"
+      "model": "arborealis:block/warp_tree/warp_leaves"
     }
   }
 }

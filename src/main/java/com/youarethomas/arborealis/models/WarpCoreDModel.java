@@ -42,6 +42,6 @@ public class WarpCoreDModel extends DynamicModel {
 
     @Override
     public SpriteIdentifier getParticleSpriteId() {
-        return new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(Arborealis.MOD_ID, "block/warp_log"));
+        return new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(Arborealis.MOD_ID, "block/warp_tree/warp_log"));
     }
 }

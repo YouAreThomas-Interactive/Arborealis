@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cross",
   "textures": {
-    "cross": "arborealis:block/warp_sapling"
+    "cross": "arborealis:block/warp_tree/warp_sapling"
   }
 }

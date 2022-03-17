@@ -12,6 +12,8 @@
   "rune.arborealis.plant_trees": "§ePlant Trees",
   "rune.arborealis.plant_crops": "§ePlant Crops",
   "rune.arborealis.harvest": "§eHarvest",
+  "rune.arborealis.extinguish": "§eExtinguish",
+  "rune.arborealis.grow": "§eGrow",
 
   "item.arborealis.carving_knife": "Carving Knife",
   "item.arborealis.carving_knife.tooltip1": "§7Used for carving runes on trees.",
@@ -55,7 +57,10 @@
 
   "block.arborealis.warp_sapling": "Warp Sapling",
   "block.arborealis.warp_leaves": "Warp Leaves",
-  "block.arborealis.warp_wood": "Warp Log",
+  "block.arborealis.warp_wood": "Warp Wood",
+  "block.arborealis.warp_log": "Warp Log",
+  "block.arborealis.stripped_warp_wood": "Stripped Warp Wood",
+  "block.arborealis.stripped_warp_log": "Stripped Warp Log",
   "block.arborealis.warp_core": "Warp Core",
   "item.arborealis.warp_graft": "Warp Graft",
 

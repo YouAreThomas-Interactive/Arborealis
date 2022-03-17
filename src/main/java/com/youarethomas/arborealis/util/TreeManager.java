@@ -71,7 +71,7 @@ public class TreeManager {
             }
 
             logsCounted++;
-        } while (logsCounted < 100 && !visited.contains(currentPos)); // While there are blocks left to visit, keep going
+        } while (logsCounted < 300 && !visited.contains(currentPos)); // While there are blocks left to visit, keep going
         //TODO: Add log count cap to config
 
         return visited;
@@ -158,7 +158,7 @@ public class TreeManager {
                 }
             } else if (be instanceof HollowedLogEntity hollowEntity) {
                 if (hollowEntity.getItemID().equals(Registry.ITEM.getId(Arborealis.TREE_CORE))) {
-                    lifeForceTotal -= 4;
+                    lifeForceTotal -= 5;
                 }
             }
         }

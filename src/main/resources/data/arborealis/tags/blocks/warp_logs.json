@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "arborealis:warp_log",
+    "arborealis:warp_wood",
+    "arborealis:stripped_warp_log",
+    "arborealis:stripped_warp_wood"
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/leaves",
   "textures": {
-    "all": "arborealis:block/warp_leaves"
+    "all": "arborealis:block/warp_tree/warp_leaves"
   }
 }

@@ -1,10 +1,13 @@
 package com.youarethomas.arborealis.util;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
@@ -31,6 +34,14 @@ public class ArborealisUtil {
         double distance = x * x + z * z;
 
         return distance < radius * radius;
+    }
+
+    public static ServerPlayerEntity getServerPlayer(World world) {
+        if (!world.isClient) {
+            return world.getServer().getPlayerManager().getPlayer(MinecraftClient.getInstance().player.getEntityName());
+        }
+
+        return null;
     }
 
     public static List<Entity> getEntitiesInRadius(World world, Vec3i pos, int radius, boolean onlyPlayers) {

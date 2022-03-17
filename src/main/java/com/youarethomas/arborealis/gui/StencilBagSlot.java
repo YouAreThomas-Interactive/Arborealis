@@ -1,4 +1,4 @@
-package gui;
+package com.youarethomas.arborealis.gui;
 
 import com.youarethomas.arborealis.Arborealis;
 import net.minecraft.inventory.Inventory;
