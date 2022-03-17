@@ -112,10 +112,10 @@ public class WarpSapling extends Block {
     public boolean place(ServerWorld world, BlockPos pos, Structure structure) {
         // Get size and rotation
         Vec3i structureSize = structure.getSize();
-        StructurePlacementData placementData = (new StructurePlacementData()).setRotation(BlockRotation.NONE); // TODO: Random rotation
+        StructurePlacementData placementData = (new StructurePlacementData()).setPosition(new BlockPos(structureSize.getX() / 2, 0, structureSize.getZ() / 2)).setRotation(BlockRotation.random(Arborealis.RANDOM));
 
         // Place tree at centred position
-        BlockPos placementPos = new BlockPos(pos.getX() - (structureSize.getX() / 2), pos.getY(), pos.getZ() - (structureSize.getZ() / 2));
+        BlockPos placementPos = new BlockPos(pos.getX() - structureSize.getX() / 2, pos.getY(), pos.getZ() - structureSize.getZ() / 2);
         structure.place(world, placementPos, placementPos, placementData, Arborealis.RANDOM, 2);
 
         // Add core to the list

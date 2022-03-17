@@ -23,6 +23,8 @@ public class TreeStructure {
      * Returns true if a tree is deemed to be suitably natural;
      */
     public boolean isNatural() {
+        System.out.println("Logs: " + logs.size());
+        System.out.println("Leaves: " + leaves.size());
         return leaves.size() >= NAT_LEAVES_MIN && logCount() >= LOGS_MIN;
     }
 
@@ -32,14 +34,12 @@ public class TreeStructure {
 
     public void replaceLogStructure(World world) {
         for (BlockPos pos : logs) {
-            //world.setBlockState(pos, replacementBlock.getDefaultState());
             world.breakBlock(pos, true);
         }
     }
 
     public void replaceLeafStructure(World world) {
         for (BlockPos pos : leaves) {
-            //world.setBlockState(pos, replacementBlock.getDefaultState());
             world.breakBlock(pos, true);
         }
     }
