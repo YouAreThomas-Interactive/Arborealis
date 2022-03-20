@@ -120,26 +120,32 @@ public class TreeManager extends PersistentState {
         if(world instanceof ServerWorld serverWorld) {
             TreeManager manager = getManager(serverWorld);
 
-            if(manager.treeStructureMapping.containsKey(startingPos))
-            {
-                // Get the structure that is stored at that position.
-                structure = manager.treeStructureMapping.get(startingPos);
-            }
-            else
-            {
-                structure.logs.addAll(getTreeLogs(world, startingPos)); // Add all found logs to the TreeStructure
+            structure = manager.getTreeStructure(startingPos, world);
+        }
 
-                structure.leaves.addAll(getTreeLeaves(world, structure.logs)); // Add all the founded leaves to the TreeStructure
+        return structure;
+    }
 
-                // Stores the information of the tree structure found
-                TreeStructure finalStructure = structure;
-                manager.treeStructureMapping.putAll(structure.logs.stream()
-                        .collect(Collectors.toMap(Function.identity(), key -> finalStructure)));
-                manager.treeStructureMapping.putAll(structure.leaves.stream()
-                        .collect(Collectors.toMap(Function.identity(), key -> finalStructure)));
-            }
+    public TreeStructure getTreeStructure(BlockPos startingPos, World world) {
+        TreeStructure structure = new TreeStructure();
 
-            return structure;
+        if(this.treeStructureMapping.containsKey(startingPos))
+        {
+            // Get the structure that is stored at that position.
+            structure = this.treeStructureMapping.get(startingPos);
+        }
+        else
+        {
+            structure.logs.addAll(getTreeLogs(world, startingPos)); // Add all found logs to the TreeStructure
+
+            structure.leaves.addAll(getTreeLeaves(world, structure.logs)); // Add all the founded leaves to the TreeStructure
+
+            // Stores the information of the tree structure found
+            TreeStructure finalStructure = structure;
+            this.treeStructureMapping.putAll(structure.logs.stream()
+                    .collect(Collectors.toMap(Function.identity(), key -> finalStructure)));
+            this.treeStructureMapping.putAll(structure.leaves.stream()
+                    .collect(Collectors.toMap(Function.identity(), key -> finalStructure)));
         }
 
         return structure;

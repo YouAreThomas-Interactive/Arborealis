@@ -1,10 +1,7 @@
 package com.youarethomas.arborealis;
 
 import com.google.common.collect.ImmutableMap;
-import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
-import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
-import com.youarethomas.arborealis.block_entities.WarpCoreEntity;
-import com.youarethomas.arborealis.block_entities.WoodenBucketEntity;
+import com.youarethomas.arborealis.block_entities.*;
 import com.youarethomas.arborealis.blocks.*;
 import com.youarethomas.arborealis.items.*;
 import com.youarethomas.arborealis.mixins.AxeItemAccessor;
@@ -86,6 +83,7 @@ public class Arborealis implements ModInitializer {
 
 	// Blocks
 	public static final TestBlock TEST_BLOCK = new TestBlock(FabricBlockSettings.of(Material.STONE));
+	public static final TreeStructureViewer TREE_STRUCTURE_VIEWER = new TreeStructureViewer(FabricBlockSettings.of(Material.STONE));
 
 	public static final CarvedLog CARVED_LOG = new CarvedLog(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD));
 	public static final CarvedLog CARVED_NETHER_LOG = new CarvedLog(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD));
@@ -108,6 +106,7 @@ public class Arborealis implements ModInitializer {
 	public static BlockEntityType<HollowedLogEntity> HOLLOWED_LOG_ENTITY;
 	public static BlockEntityType<WoodenBucketEntity> WOODEN_BUCKET_ENTITY;
 	public static BlockEntityType<WarpCoreEntity> WARP_CORE_ENTITY;
+	public static BlockEntityType<TreeStructureViewerEntity> TREE_STRUCTURE_VIEWER_ENTITY;
 
 	// Screen Handlers
 	public static ScreenHandlerType<StencilBagScreenHandler> STENCIL_BAG_SCREEN_HANDLER;
@@ -148,6 +147,8 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(WARP_LOG));
 				stacks.add(new ItemStack(STRIPPED_WARP_LOG));
 				stacks.add(new ItemStack(STRIPPED_WARP_WOOD));
+
+				stacks.add(new ItemStack(TREE_STRUCTURE_VIEWER));
 			})
 			.build();
 
@@ -184,14 +185,18 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "tree_tap"), TREE_TAP);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "wooden_bucket"), WOODEN_BUCKET);
 
+		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "tree_structure_viewer"), TREE_STRUCTURE_VIEWER);
+
 		// Block entity registration
 		CARVED_LOG_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "carved_log_entity"), FabricBlockEntityTypeBuilder.create(CarvedLogEntity::new, CARVED_LOG).build(null));
 		HOLLOWED_LOG_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "hollowed_log_entity"), FabricBlockEntityTypeBuilder.create(HollowedLogEntity::new, HOLLOWED_LOG).build(null));
 		WOODEN_BUCKET_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "wooden_bucket_entity"), FabricBlockEntityTypeBuilder.create(WoodenBucketEntity::new, WOODEN_BUCKET).build(null));
 		WARP_CORE_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "warp_core_entity"), FabricBlockEntityTypeBuilder.create(WarpCoreEntity::new, WARP_CORE).build(null));
+		TREE_STRUCTURE_VIEWER_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "tree_structure_viewer_entity"), FabricBlockEntityTypeBuilder.create(TreeStructureViewerEntity::new, TREE_STRUCTURE_VIEWER).build(null));
 
 		// Block item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "test_block"), new BlockItem(TEST_BLOCK, new FabricItemSettings()));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tree_structure_viewer"), new BlockItem(TREE_STRUCTURE_VIEWER, new FabricItemSettings()));
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_sapling"), new BlockItem(WARP_SAPLING, new FabricItemSettings()));
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_leaves"), new BlockItem(WARP_LEAVES, new FabricItemSettings()));
