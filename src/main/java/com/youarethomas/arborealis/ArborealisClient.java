@@ -5,7 +5,7 @@ import com.youarethomas.arborealis.block_entity_renderers.WarpCoreEntityRenderer
 import com.youarethomas.arborealis.models.model_utils.DynamicModelRegistry;
 import com.youarethomas.arborealis.particles.WarpTreeParticle;
 import com.youarethomas.arborealis.gui.StencilBagScreen;
-import com.youarethomas.arborealis.block_entity_renderers.TreeStructureViewerEntityRenderer;;
+;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -54,7 +54,6 @@ public class ArborealisClient implements ClientModInitializer {
         // Block Entity Renderers
         BlockEntityRendererRegistry.register(Arborealis.HOLLOWED_LOG_ENTITY, HollowedLogEntityRenderer::new);
         BlockEntityRendererRegistry.register(Arborealis.WARP_CORE_ENTITY, WarpCoreEntityRenderer::new);
-        BlockEntityRendererRegistry.register(Arborealis.TREE_STRUCTURE_VIEWER_ENTITY, TreeStructureViewerEntityRenderer::new);
 
         // Colour providers
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> tintIndex > 0 ? -1 : ((DyeableItem)stack.getItem()).getColor(stack), Arborealis.STENCIL_BAG);

@@ -8,7 +8,10 @@
     "CreateLeavesBlockInvoker",
     "AxeItemAccessor",
     "MouseMixin",
-    "CameraMixin"
+    "CameraMixin",
+    "KeyboardMixin",
+    "ServerWorldMixin",
+    "WorldRendererMixin"
   ],
   "client": [],
   "server": [],

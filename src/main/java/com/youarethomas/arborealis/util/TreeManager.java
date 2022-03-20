@@ -54,6 +54,10 @@ public class TreeManager extends PersistentState {
         this.treeStructureMapping = treeStructureMapping;
     }
 
+    public HashSet<TreeStructure> getTreeStructures() {
+        return new HashSet<>(treeStructureMapping.values());
+    }
+
     @Override
     public NbtCompound writeNbt(NbtCompound nbt) {
         // Handles the encoding of the block positions in the tree structure mapping.
