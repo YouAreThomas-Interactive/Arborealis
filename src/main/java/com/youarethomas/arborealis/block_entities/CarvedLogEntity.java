@@ -1,6 +1,7 @@
 package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.mixin_access.ServerWorldMixinAccess;
 import com.youarethomas.arborealis.runes.AbstractRune;
 import com.youarethomas.arborealis.util.*;
 import net.minecraft.block.Block;
@@ -352,33 +353,36 @@ public class CarvedLogEntity extends BlockEntity {
      * All the logic for each rune if detected. Called randomly every 2 seconds or so.
      */
     public void checkForRunes() {
-        List<AbstractRune> foundRunes = new ArrayList<>();
-        TreeStructure tree = TreeManager.getTreeStructureFromBlock(pos, world);
+        if (world instanceof ServerWorld serverWorld) {
+            List<AbstractRune> foundRunes = new ArrayList<>();
+            TreeManager treeManager = ((ServerWorldMixinAccess)serverWorld).getTreeManager();
+            TreeStructure tree = treeManager.getTreeStructureFromBlock(pos, world);
 
-        for (Direction dir : Direction.values()) {
-            if (getFaceCatalysed(dir) && getRunesActive()) {
-                int[] faceArray = getFaceArray(dir);
+            for (Direction dir : Direction.values()) {
+                if (getFaceCatalysed(dir) && getRunesActive()) {
+                    int[] faceArray = getFaceArray(dir);
 
-                AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
+                    AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
 
-                if (rune != null && tree.isNatural()) {
-                    if (!runesPresentLastCheck.contains(rune)) {
-                        rune.onRuneFound(world, pos, this); // If rune appears for the first time, execute onRuneFound(...)
+                    if (rune != null && tree.isNatural()) {
+                        if (!runesPresentLastCheck.contains(rune)) {
+                            rune.onRuneFound(serverWorld, pos, this); // If rune appears for the first time, execute onRuneFound(...)
+                        }
+
+                        foundRunes.add(rune);
                     }
-
-                    foundRunes.add(rune);
                 }
             }
-        }
 
-        for (AbstractRune rune : runesPresentLastCheck) {
-            if (!foundRunes.contains(rune)) {
-                rune.onRuneLost(world, pos, this);
+            for (AbstractRune rune : runesPresentLastCheck) {
+                if (!foundRunes.contains(rune)) {
+                    rune.onRuneLost(world, pos, this);
+                }
             }
-        }
 
-        runesPresentLastCheck = foundRunes;
-        this.markDirty();
+            runesPresentLastCheck = foundRunes;
+            this.markDirty();
+        }
     }
 
     private static void createParticleRadiusBorder(World world, BlockPos pos, float radius, int numberOfPoints) {

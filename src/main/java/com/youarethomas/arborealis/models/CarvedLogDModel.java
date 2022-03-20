@@ -44,7 +44,7 @@ public class CarvedLogDModel extends DynamicModel {
             int[] faceArray = be.getFaceArray(dir);
 
             // Check if rune is valid and tree is natural
-            if (be.getFaceCatalysed(dir) && RuneManager.isValidRune(faceArray) && TreeManager.getTreeStructureFromBlock(pos, MinecraftClient.getInstance().world).isNatural()) {
+            if (be.getFaceCatalysed(dir) && RuneManager.isValidRune(faceArray)) {
                 AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
                 if (rune != null) {
                     if (be.getRunesActive()) {

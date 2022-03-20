@@ -2,6 +2,7 @@ package com.youarethomas.arborealis.blocks;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
+import com.youarethomas.arborealis.mixin_access.ServerWorldMixinAccess;
 import com.youarethomas.arborealis.util.RuneManager;
 import com.youarethomas.arborealis.util.TreeManager;
 import net.minecraft.block.*;
@@ -10,6 +11,7 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
@@ -56,20 +58,26 @@ public class CarvedLog extends BlockWithEntity implements BlockEntityProvider {
         Direction hitSide = hit.getSide();
         int[] faceArray = be.getFaceArray(hitSide);
 
-        if (RuneManager.isValidRune(faceArray) && TreeManager.getTreeStructureFromBlock(pos, world).isNatural()) {
-            if (player.isHolding(RuneManager.getRuneCatalyst(faceArray)) && !be.getFaceCatalysed(hitSide)) {
-                if (world.isClient) {
-                    if (!player.isCreative()) {
-                        player.getStackInHand(hand).decrement(1);
+        if (world instanceof ServerWorld serverWorld) {
+            TreeManager treeManager = ((ServerWorldMixinAccess)serverWorld).getTreeManager();
+
+            if (RuneManager.isValidRune(faceArray) && treeManager.getTreeStructureFromBlock(pos, world).isNatural()) {
+                if (player.isHolding(RuneManager.getRuneCatalyst(faceArray)) && !be.getFaceCatalysed(hitSide)) {
+                    if (world.isClient) {
+                        if (!player.isCreative()) {
+                            player.getStackInHand(hand).decrement(1);
+                        }
+                        world.playSound(player, pos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, 0.5F);
+                    } else {
+                        be.setFaceCatalysed(hitSide, true);
+                        TreeManager.checkLifeForce(world, pos);
                     }
-                    world.playSound(player, pos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, 0.5F);
-                } else {
-                    be.setFaceCatalysed(hitSide, true);
-                    TreeManager.checkLifeForce(world, pos);
+                    return ActionResult.SUCCESS;
                 }
-                return ActionResult.SUCCESS;
             }
         }
+
+
         if (player.isHolding(Items.GLOW_INK_SAC)) {
             be.setFaceGlow(hitSide, true);
             if (!player.isCreative()) {

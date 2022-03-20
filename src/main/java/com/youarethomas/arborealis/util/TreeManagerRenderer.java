@@ -6,42 +6,39 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
 
-import java.util.HashSet;
-import java.util.Hashtable;
+import java.rmi.registry.Registry;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 @Environment(EnvType.CLIENT)
 public class TreeManagerRenderer {
 
+    private static Map<RegistryKey<World>, Collection<BlockPos>> treeBlockPositions = new HashMap<>();
     private final static double PADDING = 0.01;
 
-    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Camera camera) {
-        Hashtable<BlockPos, TreeStructure> testTree = new Hashtable<>();
-        TreeStructure struct = new TreeStructure();
-        struct.logs.add(new BlockPos(162, 112, -170));
-        testTree.put(new BlockPos(162, 112, -170), struct);
+    public static void setBlockPositions(RegistryKey<World> worldKey, Collection<BlockPos> positions) {
+        treeBlockPositions.put(worldKey, positions);
+        System.out.println("Set positions to be: " + positions.size());
+    }
 
-        TreeManager manager = new TreeManager(testTree); // Need to get this somehow
+    public static Collection<BlockPos> getBlockPositions(RegistryKey<World> worldKey) {
+        return treeBlockPositions.get(worldKey);
+    }
 
-        for (TreeStructure tree: manager.getTreeStructures()) {
-            for (BlockPos logPos : tree.logs) {
-                matrices.push();
-                drawBorderBlock(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), logPos, camera);
-                matrices.pop();
-            }
-
-            for (BlockPos leafPos : tree.leaves) {
-                matrices.push();
-                drawBorderBlock(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), leafPos, camera);
-                matrices.pop();
-            }
+    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Camera camera, World world) {
+        for (BlockPos blockToHighlight: treeBlockPositions.get(world.getRegistryKey())) {
+            matrices.push();
+            drawBorderBlock(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), blockToHighlight, camera);
+            matrices.pop();
         }
-
     }
 
     private void drawBorderBlock(MatrixStack matrices, VertexConsumer vertices, BlockPos pos, Camera camera) {
-        System.out.println(camera.getPos());
-
         WorldRenderer.drawBox(
                 matrices,
                 vertices,
