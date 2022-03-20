@@ -1,6 +1,5 @@
 package com.youarethomas.arborealis.util;
 
-import com.sun.source.tree.Tree;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
@@ -14,22 +13,16 @@ import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.*;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
-import org.lwjgl.opengl.ARBConditionalRenderInverted;
 
-import javax.sound.midi.SysexMessage;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -44,16 +37,20 @@ public class TreeManager extends PersistentState {
     private static final String TREE_MANAGER_NBT = "arborealis.treemanager";
     private static final String TREE_STRUCTURE_MAPPING_KEYS_NBT = "arborealis.treemanager.treestructuremapping.keys";
     private static final String TREE_STRUCTURE_MAPPING_VALUES_NBT = "arborealis.treemanager.treestructuremapping.values";
+    private static final String TREE_STRUCTURE_REGISTRY_IDS_NBT = "arborealis.treemanager.treestructureregistry.keys";
+    private static final String TREE_STRUCTURE_REGISTRY_VALUES_NBT = "arborealis.treemanager.treestructureregistry.values";
 
     private static final int LIFE_FORCE_MAX = 3;
 
-    private Hashtable<BlockPos, TreeStructure> treeStructureMapping;
+    private Hashtable<BlockPos, String> treeStructureMapping;
+    private Hashtable<String, TreeStructure> treeStructureRegistry;
 
     /**
      * Default constructor of the tree manager.
      */
     public TreeManager() {
         this.treeStructureMapping = new Hashtable<>();
+        this.treeStructureRegistry = new Hashtable<>();
     }
 
     /**
@@ -61,59 +58,95 @@ public class TreeManager extends PersistentState {
      *
      * @param treeStructureMapping The generated tree structure mapping.
      */
-    public TreeManager(Hashtable<BlockPos, TreeStructure> treeStructureMapping) {
+    public TreeManager(Hashtable<BlockPos, String> treeStructureMapping, Hashtable<String, TreeStructure> treeStructureRegistery) {
         this.treeStructureMapping = treeStructureMapping;
+        this.treeStructureRegistry = treeStructureRegistery;
     }
 
     public HashSet<TreeStructure> getTreeStructures() {
-        return new HashSet<>(treeStructureMapping.values());
+        return new HashSet<>(treeStructureRegistry.values());
     }
 
     @Override
     public NbtCompound writeNbt(NbtCompound nbt) {
         // Handles the encoding of the block positions in the tree structure mapping.
-        NbtList nbtPositionKeys = new NbtList();
+        NbtList nbtMappingKeys = new NbtList();
 
         for(BlockPos pos : this.treeStructureMapping.keySet()) {
-            nbtPositionKeys.add(NbtHelper.fromBlockPos(pos));
+            nbtMappingKeys.add(NbtHelper.fromBlockPos(pos));
         }
 
-        nbt.put(TREE_STRUCTURE_MAPPING_KEYS_NBT, nbtPositionKeys);
+        nbt.put(TREE_STRUCTURE_MAPPING_KEYS_NBT, nbtMappingKeys);
 
-        // Handles the encoding of the tree structures in the tree structure mapping.
-        NbtList nbtTreeStructureValues = new NbtList();
+        // Handles the encoding of the tree structure IDs in the tree structure mapping.
+        NbtList nbtMappingValues = new NbtList();
 
-        for(TreeStructure structure : this.treeStructureMapping.values()) {
-            nbtTreeStructureValues.add(TreeStructure.toNbt(structure));
+        for(String structureID : this.treeStructureMapping.values()) {
+            nbtMappingValues.add(NbtString.of(structureID));
         }
 
-        nbt.put(TREE_STRUCTURE_MAPPING_VALUES_NBT, nbtTreeStructureValues);
+        nbt.put(TREE_STRUCTURE_MAPPING_VALUES_NBT, nbtMappingValues);
+
+        // Handles the encoding of the tree structure IDs in the registry.
+        NbtList nbtRegistryKeys = new NbtList();
+
+        for(String structureID : this.treeStructureRegistry.keySet()) {
+            nbtRegistryKeys.add(NbtString.of(structureID));
+        }
+
+        nbt.put(TREE_STRUCTURE_REGISTRY_IDS_NBT, nbtRegistryKeys);
+
+        // Handles the encoding of the tree structure objects in the registry.
+        NbtList nbtRegistryValues = new NbtList();
+
+        for(TreeStructure structure : this.treeStructureRegistry.values()) {
+            nbtRegistryValues.add(TreeStructure.toNbt(structure));
+        }
+
+        nbt.put(TREE_STRUCTURE_REGISTRY_VALUES_NBT, nbtRegistryValues);
 
         return nbt;
     }
 
     public static TreeManager fromNbt(NbtCompound nbt) {
-        Hashtable<BlockPos, TreeStructure> treeStructureMapping = new Hashtable<>();
+        Hashtable<BlockPos, String> treeStructureMapping = new Hashtable<>();
+        Hashtable<String, TreeStructure> treeStructureRegistry = new Hashtable<>();
 
         if(nbt.contains(TREE_STRUCTURE_MAPPING_KEYS_NBT) && nbt.contains(TREE_STRUCTURE_MAPPING_VALUES_NBT)) {
-            // Generates the position keys.
+            // Generates the position keys for the mapping.
             NbtList nbtPositionKeys = nbt.getList(TREE_STRUCTURE_MAPPING_KEYS_NBT, NbtElement.COMPOUND_TYPE);
 
             List<BlockPos> positionKeys = nbtPositionKeys.stream()
                     .map(element -> NbtHelper.toBlockPos((NbtCompound) element)).toList();
 
-            // Generates the tree structure keys.
-            NbtList nbtTreeStructureValues = nbt.getList(TREE_STRUCTURE_MAPPING_VALUES_NBT, NbtElement.COMPOUND_TYPE);
+            // Generates the structure ID values for the mapping.
+            NbtList nbtMappingValues = nbt.getList(TREE_STRUCTURE_MAPPING_VALUES_NBT, NbtElement.STRING_TYPE);
+
+            List<String> mappingValues = nbtMappingValues.stream()
+                    .map(element -> ((NbtString) element).asString()).toList();
+
+            // Generates the mapping hashmap from the keys and values.
+            treeStructureMapping.putAll(IntStream.range(0, positionKeys.size()).boxed()
+                    .collect(Collectors.toMap(positionKeys::get, mappingValues::get)));
+
+            // Generates the structure ID values for the mapping.
+            NbtList nbtRegistryKeys = nbt.getList(TREE_STRUCTURE_REGISTRY_IDS_NBT, NbtElement.STRING_TYPE);
+
+            List<String> registryKeys = nbtRegistryKeys.stream()
+                    .map(element -> ((NbtString) element).asString()).toList();
+
+            // Generates the tree structure values in the registry.
+            NbtList nbtTreeStructureValues = nbt.getList(TREE_STRUCTURE_REGISTRY_VALUES_NBT, NbtElement.COMPOUND_TYPE);
 
             List<TreeStructure> treeStructureValues = nbtTreeStructureValues.stream()
                     .map(element -> TreeStructure.fromNbt((NbtCompound) element)).toList();
 
-            // Generates the hashmap from the keys and values.
-            treeStructureMapping.putAll(IntStream.range(0, positionKeys.size()).boxed()
-                    .collect(Collectors.toMap(positionKeys::get, treeStructureValues::get)));
+            // Generates the registry hashmap from the keys and values.
+            treeStructureRegistry.putAll(IntStream.range(0, registryKeys.size()).boxed()
+                    .collect(Collectors.toMap(registryKeys::get, treeStructureValues::get)));
         }
 
-        return new TreeManager(treeStructureMapping);
+        return new TreeManager(treeStructureMapping, treeStructureRegistry);
     }
 
     public static TreeManager getManager(ServerWorld serverWorld) {
@@ -138,7 +171,7 @@ public class TreeManager extends PersistentState {
 
         if(this.treeStructureMapping.containsKey(pos)) {
             // Get the structure that is stored at that position.
-            structure = this.treeStructureMapping.get(pos);
+            structure = this.treeStructureRegistry.get(this.treeStructureMapping.get(pos));
         }
 
         return structure;
@@ -150,11 +183,15 @@ public class TreeManager extends PersistentState {
 
         structure.leaves.addAll(getTreeLeaves(world, structure.logs)); // Add all the founded leaves to the TreeStructure
 
+        // Create a new ID for the tree structure.
+        String structureID = UUID.randomUUID().toString();
+
         // Stores the information of the tree structure found
         this.treeStructureMapping.putAll(structure.logs.stream()
-                .collect(Collectors.toMap(Function.identity(), key -> structure)));
+                .collect(Collectors.toMap(Function.identity(), key -> structureID)));
         this.treeStructureMapping.putAll(structure.leaves.stream()
-                .collect(Collectors.toMap(Function.identity(), key -> structure)));
+                .collect(Collectors.toMap(Function.identity(), key -> structureID)));
+        this.treeStructureRegistry.put(structureID, structure);
 
         updateAllPlayers(world, world.getRegistryKey());
         markDirty();
@@ -165,12 +202,15 @@ public class TreeManager extends PersistentState {
     }
 
     public void removeTreeStructureFromBlock(BlockPos startingPos, ServerWorld world) {
-        TreeStructure structure = getTreeStructureFromBlock(startingPos, world);
+        String structureID = this.treeStructureMapping.get(startingPos);
 
-        treeStructureMapping.values().removeAll(Collections.singleton(structure));
+        if(structureID != null) {
+            treeStructureMapping.values().removeAll(Collections.singleton(structureID));
+            treeStructureRegistry.remove(structureID);
 
-        updateAllPlayers(world, world.getRegistryKey());
-        markDirty();
+            updateAllPlayers(world, world.getRegistryKey());
+            markDirty();
+        }
     }
 
     public void updateAllPlayers(ServerWorld world, RegistryKey<World> worldKey) {
