@@ -4,7 +4,7 @@
   "version": "${version}",
 
   "name": "Arborealis: The Rot Within",
-  "description": "A dangerous addon for Arborealis...",
+  "description": "Weaponised trees...\nAn official addon for Arborealis that adds in another branch: The Rot Within.\nThe Rot Within adds in all the dangerous (but oh so fun) goodies we wanted to include in the base mod, but weren't sure if everyone would enjoy. However, we do recommend playing with The Rot Within installed for the full experience.\nEnjoy!",
   "authors": [
     "Anemony",
     "YourPalSteve",
@@ -41,5 +41,11 @@
   },
   "suggests": {
     "another-mod": "*"
+  },
+
+  "custom": {
+    "modmenu": {
+      "parent": "arborealis"
+    }
   }
 }
