@@ -153,8 +153,6 @@ public class RuneManager {
                 System.arraycopy(faceArray, 0, newFaceArray, 1, faceArray.length);
                 faceArray = Arrays.copyOf(newFaceArray, trimmedLength);
 
-                printRune(faceArray);
-
                 // A bit of a hack to make it so that parts of a rune done count, and then see if our array (that's been altered a lot) is actually in the master runeShape array
                 if (countOccurrences(runeShape, 1) == countOccurrences(faceArray, 1) && containsRune(runeShape, faceArray)) {
                     return true;

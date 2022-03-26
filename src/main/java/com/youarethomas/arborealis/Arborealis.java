@@ -40,8 +40,10 @@ import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
+import org.apache.commons.lang3.builder.Diff;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.system.CallbackI;
 
 import java.util.Map;
 import java.util.Random;
@@ -64,6 +66,7 @@ public class Arborealis implements ModInitializer {
 	public static final PlantCrops PLANT_CROPS = new PlantCrops();
 	public static final Extinguish EXTINGUISH = new Extinguish();
 	public static final Grow GROW = new Grow();
+	public static final Diffuse DIFFUSE = new Diffuse();
 
 	// Tool Items
 	public static final CarvingKnife CARVING_KNIFE = new CarvingKnife(CopperKnifeMaterial.INSTANCE, new FabricItemSettings());
@@ -164,6 +167,7 @@ public class Arborealis implements ModInitializer {
 		RuneManager.register(new Identifier(MOD_ID, "plant_crops"), PLANT_CROPS);
 		RuneManager.register(new Identifier(MOD_ID, "extinguish"), EXTINGUISH);
 		RuneManager.register(new Identifier(MOD_ID, "grow"), GROW);
+		RuneManager.register(new Identifier(MOD_ID, "diffuse"), DIFFUSE);
 
 		RuneManager.initializeRunes(new Identifier(MOD_ID, "runes"));
 

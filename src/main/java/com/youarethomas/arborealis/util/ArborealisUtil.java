@@ -1,9 +1,7 @@
 package com.youarethomas.arborealis.util;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,7 +25,7 @@ public class ArborealisUtil {
      * @param radiusPos The position the radius emanates from.
      * @param radius Radius of the test, defined as a cylinder.
      */
-    public static boolean isWithinEffectRadius(Vec3i posToCheck, Vec3i radiusPos, int radius) {
+    public static boolean isWithinRadius(Vec3i posToCheck, Vec3i radiusPos, int radius) {
         double x = (double)posToCheck.getX() + 0.5D - (double)radiusPos.getX();
         double z = (double)posToCheck.getZ() + 0.5D - (double)radiusPos.getZ();
 
@@ -50,7 +48,7 @@ public class ArborealisUtil {
         List<Entity> entities = new ArrayList<>();
 
         for (Entity entity : world.getNonSpectatingEntities(Entity.class, box)) {
-            if (ArborealisUtil.isWithinEffectRadius(entity.getBlockPos(), pos, radius)) {
+            if (ArborealisUtil.isWithinRadius(entity.getBlockPos(), pos, radius)) {
                 if (onlyPlayers) {
                     if (entity instanceof PlayerEntity) {
                         entities.add(entity);

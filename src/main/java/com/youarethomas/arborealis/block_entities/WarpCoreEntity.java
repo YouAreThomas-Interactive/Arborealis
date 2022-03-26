@@ -83,12 +83,6 @@ public class WarpCoreEntity extends BlockEntity {
 
                 List<BlockPos> corePosList = new ArrayList<>(otherCorePositions.keySet());
 
-//                corePosList.sort((pos1, pos2) -> {
-//                    Double mag1 = Vec3d.ofCenter(pos1).squaredDistanceTo(player.getEyePos());
-//                    Double mag2 = Vec3d.ofCenter(pos2).squaredDistanceTo(player.getEyePos());
-//                    return mag1.compareTo(mag2);
-//                });
-
                 List<BlockPos> passedCorePosList = new ArrayList<>();
 
                 // Filter to only show cores that contain a matching symbol

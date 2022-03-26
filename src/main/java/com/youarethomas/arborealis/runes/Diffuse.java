@@ -1,0 +1,87 @@
+package com.youarethomas.arborealis.runes;
+
+import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
+import com.youarethomas.arborealis.util.ArborealisUtil;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.TntEntity;
+import net.minecraft.entity.mob.CreeperEntity;
+import net.minecraft.item.Items;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Diffuse extends AbstractRune {
+    List<CreeperEntity> diffusedCreepers = new ArrayList<>();
+
+    boolean runeFound = false;
+
+    @Override
+    public boolean showRadiusEffect() {
+        return true;
+    }
+
+    @Override
+    public void onRuneFound(World world, BlockPos pos, CarvedLogEntity be) {
+        runeFound = true;
+    }
+
+    @Override
+    public void onRuneLost(World world, BlockPos pos, CarvedLogEntity be) {
+        runeFound = false;
+    }
+
+    @Override
+    public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {
+        List<Entity> entities = ArborealisUtil.getEntitiesInRadius(world, pos, be.radius, false);
+        ClientPlayerEntity clientPlayer = MinecraftClient.getInstance().player;
+
+        for (Entity entity : entities) {
+            if (entity instanceof CreeperEntity creeper) {
+                if (!diffusedCreepers.contains(creeper)) {
+                    diffusedCreepers.add(creeper);
+                    System.out.println("Creepers diffused: " + diffusedCreepers.size());
+                }
+            } else if (entity instanceof TntEntity tntEntity) {
+                // Get data from the Tnt entity
+                Vec3d tntPos = tntEntity.getPos();
+                Vec3d tntVelocity = tntEntity.getVelocity();
+
+                // Remove it and replace with the item
+                tntEntity.discard();
+                world.spawnEntity(new ItemEntity(world, tntPos.x, tntPos.y, tntPos.z, Items.TNT.getDefaultStack(), tntVelocity.x, tntVelocity.y, tntVelocity.z));
+
+                // Make sound
+                world.playSound(clientPlayer, new BlockPos(tntPos.x, tntPos.y, tntPos.z), SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 1f, 1f);
+            }
+        }
+
+        for (int i = diffusedCreepers.size() - 1; i >= 0; i--) {
+            CreeperEntity creeper = diffusedCreepers.get(i);
+
+            if (ArborealisUtil.isWithinRadius(new Vec3i(creeper.getPos().x, creeper.getPos().y, creeper.getPos().z), pos, be.radius)) {
+                if (creeper.isAlive()) {
+                    creeper.setFuseSpeed(-1);
+                } else {
+                    diffusedCreepers.remove(creeper);
+                }
+            } else {
+                diffusedCreepers.remove(creeper);
+            }
+        }
+    }
+
+    @Override
+    public void onClientTick(World world, BlockPos pos, CarvedLogEntity be) {
+
+    }
+}
