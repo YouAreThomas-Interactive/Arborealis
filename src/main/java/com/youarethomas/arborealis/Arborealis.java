@@ -1,10 +1,7 @@
 package com.youarethomas.arborealis;
 
 import com.google.common.collect.ImmutableMap;
-import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
-import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
-import com.youarethomas.arborealis.block_entities.WarpCoreEntity;
-import com.youarethomas.arborealis.block_entities.WoodenBucketEntity;
+import com.youarethomas.arborealis.block_entities.*;
 import com.youarethomas.arborealis.blocks.*;
 import com.youarethomas.arborealis.items.*;
 import com.youarethomas.arborealis.mixins.AxeItemAccessor;
@@ -91,7 +88,7 @@ public class Arborealis implements ModInitializer {
 	public static final TestBlock TEST_BLOCK = new TestBlock(FabricBlockSettings.of(Material.STONE));
 
 	public static final CarvedLog CARVED_LOG = new CarvedLog(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD));
-	public static final CarvedLog CARVED_NETHER_LOG = new CarvedLog(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD));
+	public static final CarvedNetherLog CARVED_NETHER_LOG = new CarvedNetherLog(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD));
 	public static final HollowedLog HOLLOWED_LOG = new HollowedLog(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD));
 	public static final HollowedLog HOLLOWED_NETHER_LOG = new HollowedLog(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD));
 
@@ -108,6 +105,7 @@ public class Arborealis implements ModInitializer {
 
 	// Block Entities
 	public static BlockEntityType<CarvedLogEntity> CARVED_LOG_ENTITY;
+	public static BlockEntityType<CarvedNetherLogEntity> CARVED_NETHER_LOG_ENTITY;
 	public static BlockEntityType<HollowedLogEntity> HOLLOWED_LOG_ENTITY;
 	public static BlockEntityType<WoodenBucketEntity> WOODEN_BUCKET_ENTITY;
 	public static BlockEntityType<WarpCoreEntity> WARP_CORE_ENTITY;
@@ -190,6 +188,7 @@ public class Arborealis implements ModInitializer {
 
 		// Block entity registration
 		CARVED_LOG_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "carved_log_entity"), FabricBlockEntityTypeBuilder.create(CarvedLogEntity::new, CARVED_LOG).build(null));
+		CARVED_NETHER_LOG_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "carved_nether_log_entity"), FabricBlockEntityTypeBuilder.create(CarvedNetherLogEntity::new, CARVED_NETHER_LOG).build(null));
 		HOLLOWED_LOG_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "hollowed_log_entity"), FabricBlockEntityTypeBuilder.create(HollowedLogEntity::new, HOLLOWED_LOG).build(null));
 		WOODEN_BUCKET_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "wooden_bucket_entity"), FabricBlockEntityTypeBuilder.create(WoodenBucketEntity::new, WOODEN_BUCKET).build(null));
 		WARP_CORE_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "warp_core_entity"), FabricBlockEntityTypeBuilder.create(WarpCoreEntity::new, WARP_CORE).build(null));
@@ -227,12 +226,6 @@ public class Arborealis implements ModInitializer {
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_graft"), WARP_GRAFT);
 
-		// Model registration
-		DynamicModelRegistry.register(new CarvedLogDModel(), new Identifier(MOD_ID, "block/carved_log"));
-		DynamicModelRegistry.register(new HollowedLogDModel(), new Identifier(MOD_ID, "block/hollowed_log"));
-		DynamicModelRegistry.register(new WarpCoreDModel(), new Identifier(MOD_ID, "block/warp_core"));
-		DynamicModelRegistry.register(new WarpCoreDModel(), new Identifier(MOD_ID, "item/warp_core"));
-		DynamicModelRegistry.register(new CarvedStencilDModel(), new ModelIdentifier("arborealis:item/stencil_carved#inventory"));
 
 		// Screen Handler
 		STENCIL_BAG_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(new Identifier(MOD_ID, "stencil_bag"), StencilBagScreenHandler::new);

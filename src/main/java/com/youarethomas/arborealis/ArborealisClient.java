@@ -2,6 +2,10 @@ package com.youarethomas.arborealis;
 
 import com.youarethomas.arborealis.block_entity_renderers.HollowedLogEntityRenderer;
 import com.youarethomas.arborealis.block_entity_renderers.WarpCoreEntityRenderer;
+import com.youarethomas.arborealis.models.CarvedLogDModel;
+import com.youarethomas.arborealis.models.CarvedStencilDModel;
+import com.youarethomas.arborealis.models.HollowedLogDModel;
+import com.youarethomas.arborealis.models.WarpCoreDModel;
 import com.youarethomas.arborealis.models.model_utils.DynamicModelRegistry;
 import com.youarethomas.arborealis.particles.WarpTreeParticle;
 import com.youarethomas.arborealis.gui.StencilBagScreen;
@@ -17,6 +21,7 @@ import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.DyeableItem;
 import net.minecraft.util.Identifier;
 
@@ -44,6 +49,14 @@ public class ArborealisClient implements ClientModInitializer {
         ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/hollowed_log/hollowed_log_inside"))));
         ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/hollowed_log/tree_core"))));
         ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/hollowed_log/core_tether"))));
+
+
+        // Model registration
+        DynamicModelRegistry.register(new CarvedLogDModel(), new Identifier(Arborealis.MOD_ID, "block/carved_log"));
+        DynamicModelRegistry.register(new HollowedLogDModel(), new Identifier(Arborealis.MOD_ID, "block/hollowed_log"));
+        DynamicModelRegistry.register(new WarpCoreDModel(), new Identifier(Arborealis.MOD_ID, "block/warp_core"));
+        DynamicModelRegistry.register(new WarpCoreDModel(), new Identifier(Arborealis.MOD_ID, "item/warp_core"));
+        DynamicModelRegistry.register(new CarvedStencilDModel(), new ModelIdentifier("arborealis:item/stencil_carved#inventory"));
 
         DynamicModelRegistry.registerModels();
 

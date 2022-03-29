@@ -4,6 +4,8 @@ import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.util.RuneManager;
 import com.youarethomas.arborealis.util.TreeManager;
+import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
+import net.fabricmc.fabric.impl.content.registry.FlammableBlockRegistryImpl;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
@@ -56,21 +58,23 @@ public class CarvedLog extends BlockWithEntity implements BlockEntityProvider {
         Direction hitSide = hit.getSide();
         int[] faceArray = be.getFaceArray(hitSide);
 
-        if (RuneManager.isValidRune(faceArray) && TreeManager.getTreeStructureFromBlock(pos, world).isNatural()) {
-            if (player.isHolding(RuneManager.getRuneCatalyst(faceArray)) && !be.getFaceCatalysed(hitSide)) {
-                if (world.isClient) {
-                    if (!player.isCreative()) {
-                        player.getStackInHand(hand).decrement(1);
+        if (RuneManager.isValidRune(faceArray)) {
+            if (TreeManager.getTreeStructureFromBlock(pos, world).isNatural()) {
+                if (player.isHolding(RuneManager.getRuneCatalyst(faceArray)) && !be.getFaceCatalysed(hitSide)) {
+                    if (world.isClient) {
+                        if (!player.isCreative()) {
+                            player.getStackInHand(hand).decrement(1);
+                        }
+                        world.playSound(player, pos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, 0.5F);
+                    } else {
+                        be.setFaceCatalysed(hitSide, true);
+                        TreeManager.checkLifeForce(world, pos);
                     }
-                    world.playSound(player, pos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, 0.5F);
-                } else {
-                    be.setFaceCatalysed(hitSide, true);
-                    TreeManager.checkLifeForce(world, pos);
+                    return ActionResult.SUCCESS;
                 }
-                return ActionResult.SUCCESS;
             }
         }
-        if (player.isHolding(Items.GLOW_INK_SAC)) {
+        else if (player.isHolding(Items.GLOW_INK_SAC)) {
             be.setFaceGlow(hitSide, true);
             if (!player.isCreative()) {
                 player.getStackInHand(hand).decrement(1);

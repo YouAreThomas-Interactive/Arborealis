@@ -22,6 +22,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockRenderView;
 
+import java.util.Objects;
+
 public class CarvedLogDModel extends DynamicModel {
 
     @Override
@@ -35,11 +37,17 @@ public class CarvedLogDModel extends DynamicModel {
 
         // Core
         DynamicCuboid core = new DynamicCuboid(1, 1, 1, 14, 14, 14);
-        Block strippedLog = AxeItemAccessor.getStrippedBlocks().get(logState.getBlock());
-        if (strippedLog != null)
-            core.applyTexturesFromBlock(strippedLog.getStateWithProperties(logState));
+        if (be.getLogState().isOf(Blocks.PUMPKIN)) {
+            core.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(Arborealis.MOD_ID, "block/pumpkin_side_carved")));
+        } else {
+            Block strippedLog = AxeItemAccessor.getStrippedBlocks().get(logState.getBlock());
+            if (strippedLog != null)
+                core.applyTexturesFromBlock(strippedLog.getStateWithProperties(logState));
+        }
+
 
         // If the face has a rune, make it glow
+        boolean hasLightRune = false;
         for (Direction dir : Direction.values()) {
             int[] faceArray = be.getFaceArray(dir);
 
@@ -47,6 +55,9 @@ public class CarvedLogDModel extends DynamicModel {
             if (be.getFaceCatalysed(dir) && RuneManager.isValidRune(faceArray) && TreeManager.getTreeStructureFromBlock(pos, MinecraftClient.getInstance().world).isNatural()) {
                 AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
                 if (rune != null) {
+                    if (Objects.equals(rune.name, "light"))
+                        hasLightRune = true;
+
                     if (be.getRunesActive()) {
                         core.setSideOverlay(dir, rune.getIntColour());
                     } else {
@@ -73,6 +84,12 @@ public class CarvedLogDModel extends DynamicModel {
                 core.setEmissive(dir, true);
             }
         }
+
+        if (be.getLogState().isOf(Blocks.PUMPKIN) && hasLightRune) {
+            core.applyTextureToAll(new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(Arborealis.MOD_ID, "block/pumpkin_side_lit")));
+            core.setAllSideOverlays(-1);
+        }
+
         builder.addCuboid(core);
 
         //region Carved Face Rendering

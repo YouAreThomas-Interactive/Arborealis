@@ -1,8 +1,6 @@
 package com.youarethomas.arborealis.models.model_utils;
 
 import com.youarethomas.arborealis.Arborealis;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.renderer.v1.Renderer;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.material.MaterialFinder;
@@ -28,7 +26,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
 
-@Environment(EnvType.CLIENT)
 public class DynamicCuboid {
     private static final float PIXEL_SIZE = 0.0625f; // Which is 1/16
 
@@ -62,6 +59,12 @@ public class DynamicCuboid {
         if (overlays.containsKey(direction)) {
             overlays.replace(direction, colour);
         } else {
+            overlays.put(direction, colour);
+        }
+    }
+
+    public void setAllSideOverlays(int colour) {
+        for (Direction direction : Direction.values()) {
             overlays.put(direction, colour);
         }
     }

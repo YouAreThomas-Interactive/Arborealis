@@ -13,6 +13,8 @@ public class TreeStructure {
     public static final int NAT_LEAVES_MIN = 12;
     public static final int LOGS_MIN = 2;
 
+    public boolean isPumpkin = false;
+
     public HashSet<BlockPos> leaves = new HashSet<>();
     public HashSet<BlockPos> logs = new HashSet<>();
     public int logCount() {
@@ -23,9 +25,8 @@ public class TreeStructure {
      * Returns true if a tree is deemed to be suitably natural;
      */
     public boolean isNatural() {
-        //System.out.println("Logs: " + logs.size());
-        //System.out.println("Leaves: " + leaves.size());
-        return leaves.size() >= NAT_LEAVES_MIN && logCount() >= LOGS_MIN;
+        // Pumpkin always natural :P
+        return isPumpkin || (leaves.size() >= NAT_LEAVES_MIN && logCount() >= LOGS_MIN);
     }
 
     public boolean isEmpty() {

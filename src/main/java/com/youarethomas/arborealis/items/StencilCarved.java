@@ -5,6 +5,7 @@ import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.runes.AbstractRune;
 import com.youarethomas.arborealis.util.RuneManager;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -50,7 +51,7 @@ public class StencilCarved extends Item {
                 be.checkForRunes();
 
                 return ActionResult.SUCCESS;
-            } else if (world.getBlockState(pos).isIn(BlockTags.LOGS)) {
+            } else if (world.getBlockState(pos).isIn(BlockTags.LOGS) || world.getBlockState(pos).isOf(Blocks.PUMPKIN)) {
                 if (blockState.isIn(BlockTags.LOGS_THAT_BURN)) {
                     world.setBlockState(pos, Arborealis.CARVED_LOG.getDefaultState());
                 } else {

@@ -1,5 +1,6 @@
 package com.youarethomas.arborealis.runes;
 
+import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.util.ArborealisUtil;
 import net.minecraft.client.MinecraftClient;
@@ -8,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.mob.CreeperEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -43,7 +45,7 @@ public class Diffuse extends AbstractRune {
     @Override
     public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {
         List<Entity> entities = ArborealisUtil.getEntitiesInRadius(world, pos, be.radius, false);
-        ClientPlayerEntity clientPlayer = MinecraftClient.getInstance().player;
+        PlayerEntity clientPlayer = ArborealisUtil.getServerPlayer(world);
 
         for (Entity entity : entities) {
             if (entity instanceof CreeperEntity creeper) {
@@ -61,7 +63,7 @@ public class Diffuse extends AbstractRune {
                 world.spawnEntity(new ItemEntity(world, tntPos.x, tntPos.y, tntPos.z, Items.TNT.getDefaultStack(), tntVelocity.x, tntVelocity.y, tntVelocity.z));
 
                 // Make sound
-                world.playSound(clientPlayer, new BlockPos(tntPos.x, tntPos.y, tntPos.z), SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 1f, 1f);
+                //world.playSound(clientPlayer, new BlockPos(tntPos.x, tntPos.y, tntPos.z), SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 1f, 1f);
             }
         }
 

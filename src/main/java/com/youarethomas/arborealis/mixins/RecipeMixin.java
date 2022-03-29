@@ -1,26 +1,25 @@
 package com.youarethomas.arborealis.mixins;
 
 import com.youarethomas.arborealis.Arborealis;
-import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.recipe.RecipeType;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
-import org.apache.logging.log4j.core.appender.rolling.action.IfAll;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Objects;
-import java.util.Random;
+import java.util.Optional;
 
 @Mixin(Recipe.class)
 public interface RecipeMixin {

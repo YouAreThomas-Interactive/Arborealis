@@ -58,7 +58,7 @@ public class WarpCoreEntity extends BlockEntity {
 
     public static void serverTick(World world, BlockPos pos, BlockState state, WarpCoreEntity be) {
         // Get some userful shit
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        ServerPlayerEntity player = ArborealisUtil.getServerPlayer(world);
         Vec3d thisCore = Vec3d.ofCenter(pos);
         CameraMixinAccess cameraAccess = (CameraMixinAccess)MinecraftClient.getInstance().gameRenderer.getCamera();
 

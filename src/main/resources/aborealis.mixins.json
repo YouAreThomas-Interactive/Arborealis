@@ -7,10 +7,11 @@
     "RecipeMixin",
     "CreateLeavesBlockInvoker",
     "AxeItemAccessor",
-    "MouseMixin",
     "CameraMixin"
   ],
-  "client": [],
+  "client": [
+    "MouseMixin"
+  ],
   "server": [],
   "injectors": {
     "defaultRequire": 1

@@ -6,8 +6,11 @@ import net.minecraft.block.*;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.entity.InteractionObserver;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
+import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
@@ -18,6 +21,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,7 +58,7 @@ public class CarvingKnife extends ToolItem {
                 if (be != null)
                     be.setLogState(blockState);
 
-                return drawCarvePlan(be, context.getSide(), world, playerEntity); // Draw rune after creating the block
+                return drawCarvePlan(be, context.getSide(), context.getHitPos(), world); // Draw rune after creating the block
             }
 
             // If shift-right click on a carved wood block, turn all carving plans into actual carvings
@@ -63,15 +67,13 @@ public class CarvingKnife extends ToolItem {
                     carve(world, (CarvedLogEntity) world.getBlockEntity(blockPos), context.getSide(), playerEntity, knifeStack, blockPos, context.getHand());
                     return ActionResult.SUCCESS;
                 } else {
-                    return drawCarvePlan((CarvedLogEntity) world.getBlockEntity(blockPos), context.getSide(), world, playerEntity);
+                    return drawCarvePlan((CarvedLogEntity) world.getBlockEntity(blockPos), context.getSide(), context.getHitPos(), world);
                 }
             }
         }
 
         return ActionResult.PASS;
     }
-
-    //carve(world, be, context.getSide(), playerEntity, knifeStack, blockPos, context.getHand());
 
     public static void carve(World world, CarvedLogEntity be, Direction side, PlayerEntity player, ItemStack knifeStack, BlockPos pos, Hand hand) {
         if (!world.isClient()) {
@@ -83,17 +85,16 @@ public class CarvingKnife extends ToolItem {
         }
     }
 
-    public static ActionResult drawCarvePlan(CarvedLogEntity carvedWoodEntity, Direction side, World world, PlayerEntity player) {
+    public static ActionResult drawCarvePlan(CarvedLogEntity carvedWoodEntity, Direction side, Vec3d hitPos, World world) {
         // Get the raytrace hit
-        MinecraftClient client = MinecraftClient.getInstance();
-        HitResult pixelHit = client.crosshairTarget;
         double pixelSize = 1.0D / 16.0D;
 
-        if (!world.isClient && pixelHit != null) {
+        if (!world.isClient && hitPos != null) {
+
             // Grab the decimal part of the block hit
-            double x = pixelHit.getPos().x % 1;
-            double y = pixelHit.getPos().y % 1;
-            double z = pixelHit.getPos().z % 1;
+            double x = hitPos.x % 1;
+            double y = hitPos.y % 1;
+            double z = hitPos.z % 1;
 
             // Turn negative numbers into non-negatives and uniform
             if (x < 0) x = 1 - Math.abs(x);

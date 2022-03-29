@@ -1,6 +1,8 @@
 package com.youarethomas.arborealis.mixins;
 
 import com.youarethomas.arborealis.mixin_access.CameraMixinAccess;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.render.Camera;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

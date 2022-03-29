@@ -5,6 +5,8 @@ import com.youarethomas.arborealis.items.StencilBag;
 import com.youarethomas.arborealis.items.StencilCarved;
 import com.youarethomas.arborealis.runes.AbstractRune;
 import com.youarethomas.arborealis.util.RuneManager;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -23,16 +25,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Arrays;
 
+@Environment(EnvType.CLIENT)
 @Mixin(Mouse.class)
 public class MouseMixin {
 
     @Inject(method = "onMouseScroll(JDD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;scrollInHotbar(D)V"), cancellable = true)
     private void abrOnMouseScroll(long window, double horizontal, double vertical, CallbackInfo info) {
         PlayerEntity player = MinecraftClient.getInstance().player;
-        PlayerEntity serverPlayer = MinecraftClient.getInstance().getServer().getPlayerManager().getPlayer(player.getEntityName());
 
-        if (serverPlayer != null && player.isSneaking()) {
-            ItemStack itemInHand = serverPlayer.getStackInHand(Hand.MAIN_HAND);
+        if (player != null && player.isSneaking()) {
+            ItemStack itemInHand = player.getStackInHand(Hand.MAIN_HAND);
 
             // If player is holding shift and holding a stencil bag, cancel the normal hotbar scroll and instead...
             if (itemInHand.isOf(Arborealis.STENCIL_BAG)) {

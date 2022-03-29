@@ -2,11 +2,13 @@ package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.runes.AbstractRune;
+import com.youarethomas.arborealis.runes.AreaChop;
 import com.youarethomas.arborealis.util.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.*;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -56,11 +58,18 @@ public class CarvedLogEntity extends BlockEntity {
 
     public CarvedLogEntity(BlockPos pos, BlockState state) {
         super(Arborealis.CARVED_LOG_ENTITY, pos, state);
+        checkForRunes();
+    }
+
+    public CarvedLogEntity(BlockEntityType type, BlockPos pos, BlockState state) {
+        super(type, pos, state);
+        checkForRunes();
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState state, CarvedLogEntity be) {
         for (AbstractRune rune : be.runesPresentLastCheck) {
-            rune.onClientTick(world, pos, be);
+            if (rune != null)
+                rune.onClientTick(world, pos, be);
         }
 
         if (be.showRadius) {
@@ -86,6 +95,7 @@ public class CarvedLogEntity extends BlockEntity {
 
         boolean showRuneRadius = false;
         for (AbstractRune rune : be.runesPresentLastCheck) {
+            //System.out.println(be.runesPresentLastCheck);
             rune.onServerTick(world, pos, be);
 
             if (rune.showRadiusEffect()) {
@@ -352,6 +362,9 @@ public class CarvedLogEntity extends BlockEntity {
      * All the logic for each rune if detected. Called randomly every 2 seconds or so.
      */
     public void checkForRunes() {
+        if (world == null)
+            return;
+
         List<AbstractRune> foundRunes = new ArrayList<>();
         TreeStructure tree = TreeManager.getTreeStructureFromBlock(pos, world);
 

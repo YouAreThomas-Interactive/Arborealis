@@ -5,6 +5,7 @@ import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
 import com.youarethomas.arborealis.runes.AbstractRune;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.tag.BlockTags;
@@ -36,8 +37,16 @@ public class TreeManager {
             return structure;
         }
 
-        structure.logs.addAll(getTreeLogs(world, startingPos)); // Add all found logs to the TreeStructure
+        CarvedLogEntity be = (CarvedLogEntity) world.getBlockEntity(startingPos);
 
+        // Pumpkin is tree structure
+        if (be != null && be.getLogState().isOf(Blocks.PUMPKIN)) {
+            structure.logs.add(startingPos);
+            structure.isPumpkin = true;
+            return structure;
+        }
+
+        structure.logs.addAll(getTreeLogs(world, startingPos)); // Add all found logs to the TreeStructure
         structure.leaves.addAll(getTreeLeaves(world, structure.logs)); // Add all the founded leaves to the TreeStructure
 
         return structure;
@@ -166,9 +175,13 @@ public class TreeManager {
         // Deactivate every rune in tree if over life force limit
         for (BlockPos pos : tree.logs) {
             BlockEntity be = world.getBlockEntity(pos);
-            if (be instanceof CarvedLogEntity) {
-                ((CarvedLogEntity) be).setRunesActive(lifeForceTotal <= LIFE_FORCE_MAX);
-                ((CarvedLogEntity) be).checkForRunes();
+            if (be instanceof CarvedLogEntity carvedLogEntity) {
+                if (carvedLogEntity.getLogState().isOf(Blocks.PUMPKIN))
+                    carvedLogEntity.setRunesActive(lifeForceTotal <= 1);
+                else
+                    carvedLogEntity.setRunesActive(lifeForceTotal <= LIFE_FORCE_MAX);
+
+                carvedLogEntity.checkForRunes();
             }
         }
     }
