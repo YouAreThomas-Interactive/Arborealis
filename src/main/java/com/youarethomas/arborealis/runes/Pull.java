@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class Pull extends AbstractRune{
+public class Pull extends Rune {
 
     boolean applyEffect = false;
     final double MULTIPLIER = 0.1D;

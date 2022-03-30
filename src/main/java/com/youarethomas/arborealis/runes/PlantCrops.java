@@ -8,7 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class PlantCrops extends AbstractRune{
+public class PlantCrops extends Rune {
 
     boolean runeActive = false;
     final int SPEED = 20;

@@ -34,14 +34,6 @@ public class ArborealisUtil {
         return distance < radius * radius;
     }
 
-    public static ServerPlayerEntity getServerPlayer(World world) {
-        if (!world.isClient) {
-            return world.getServer().getPlayerManager().getPlayer(MinecraftClient.getInstance().player.getEntityName());
-        }
-
-        return null;
-    }
-
     public static List<Entity> getEntitiesInRadius(World world, Vec3i pos, int radius, boolean onlyPlayers) {
         Box box = Box.from(new Vec3d(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D)).expand(radius + 1);
 

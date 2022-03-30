@@ -2,19 +2,16 @@ package com.youarethomas.arborealis.mixins;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.items.StencilBag;
-import com.youarethomas.arborealis.items.StencilCarved;
-import com.youarethomas.arborealis.runes.AbstractRune;
+import com.youarethomas.arborealis.runes.Rune;
 import com.youarethomas.arborealis.util.RuneManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.Mouse;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
@@ -95,7 +92,7 @@ public class MouseMixin {
                             pattern = Arrays.stream(pattern).map(i -> i == 2 ? 1 : i).toArray();
 
                             if (RuneManager.isValidRune(pattern)) {
-                                AbstractRune rune = RuneManager.getRuneFromArray(pattern);
+                                Rune rune = RuneManager.getRuneFromArray(pattern);
 
                                 selectedMsg = new TranslatableText("rune.arborealis." + rune.name).getString(); // Set to the rune name (retains colour too)
                             }

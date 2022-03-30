@@ -7,7 +7,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class Extinguish extends AbstractRune{
+public class Extinguish extends Rune {
 
     boolean runeActive = false;
     final int SPEED = 500;

@@ -1,14 +1,10 @@
 package com.youarethomas.arborealis.util;
 
-import com.youarethomas.arborealis.runes.AbstractRune;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
+import com.youarethomas.arborealis.runes.Rune;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.util.ItemScatterer;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
@@ -18,36 +14,40 @@ import java.util.List;
 import java.util.Map;
 
 public class ArborealisNbt {
-    public static NbtCompound serializeRune(AbstractRune rune) {
+    public static NbtCompound serializeRune(Rune rune) {
         NbtCompound nbt = new NbtCompound();
 
-        nbt.putString("rune_id", rune.settings.id);
+        nbt.putString("name", rune.name);
+        nbt.putString("colour", rune.colour);
+        nbt.putString("catalyst", rune.catalyst.toString());
+        nbt.putInt("life_force", rune.lifeForce);
+        nbt.putIntArray("shape", rune.shape);
 
         return nbt;
     }
 
-    public static AbstractRune deserializeRune(NbtCompound nbt) {
-        if (nbt.contains("rune_id")) {
-            String id = nbt.getString("rune_id");
+    public static Rune deserializeRune(NbtCompound nbt) {
+        String name = nbt.getString("name");
+        String colour = nbt.getString("colour");
+        String catalyst = nbt.getString("catalyst");
+        int lifeForce = nbt.getInt("life_force");
+        int[] shape = nbt.getIntArray("shape");
 
-            return RuneManager.getRuneFromID(id);
-        }
-
-        return null;
+        return new Rune().fromValues(name, colour, catalyst, lifeForce, shape);
     }
 
-    public static NbtList serializeRuneList(List<AbstractRune> runeList) {
+    public static NbtList serializeRuneList(List<Rune> runeList) {
         NbtList list = new NbtList();
 
-        for (AbstractRune rune : runeList) {
+        for (Rune rune : runeList) {
             list.add(serializeRune(rune));
         }
 
         return list;
     }
 
-    public static List<AbstractRune> deserializeRuneList(NbtList nbtList) {
-        List<AbstractRune> runes = new ArrayList<>();
+    public static List<Rune> deserializeRuneList(NbtList nbtList) {
+        List<Rune> runes = new ArrayList<>();
 
         for (NbtElement nbt : nbtList) {
              runes.add(deserializeRune((NbtCompound)nbt));

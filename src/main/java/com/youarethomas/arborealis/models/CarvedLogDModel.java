@@ -5,14 +5,13 @@ import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.mixins.AxeItemAccessor;
 import com.youarethomas.arborealis.models.model_utils.DynamicCuboid;
 import com.youarethomas.arborealis.models.model_utils.DynamicModel;
-import com.youarethomas.arborealis.runes.AbstractRune;
+import com.youarethomas.arborealis.runes.Rune;
 import com.youarethomas.arborealis.util.RuneManager;
-import com.youarethomas.arborealis.util.TreeManager;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
@@ -24,11 +23,18 @@ import net.minecraft.world.BlockRenderView;
 
 import java.util.Objects;
 
+@Environment(EnvType.CLIENT)
 public class CarvedLogDModel extends DynamicModel {
 
     @Override
     public void createBlockQuads(CuboidBuilder builder, BlockRenderView renderView, BlockPos pos) {
         CarvedLogEntity be = (CarvedLogEntity)renderView.getBlockEntity(pos);
+
+        if (be == null) {
+            System.out.println("CarvedLogEntity was null");
+            return;
+        }
+
         BlockState logState = be.getLogState();
 
         // Frame
@@ -45,20 +51,18 @@ public class CarvedLogDModel extends DynamicModel {
                 core.applyTexturesFromBlock(strippedLog.getStateWithProperties(logState));
         }
 
-
         // If the face has a rune, make it glow
         boolean hasLightRune = false;
         for (Direction dir : Direction.values()) {
-            int[] faceArray = be.getFaceArray(dir);
-
             // Check if rune is valid and tree is natural
-            if (be.getFaceCatalysed(dir) && RuneManager.isValidRune(faceArray) && TreeManager.getTreeStructureFromBlock(pos, MinecraftClient.getInstance().world).isNatural()) {
-                AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
+            if (be.isFaceCatalysed(dir)) {
+                Rune rune = be.getFaceRune(dir);
+
                 if (rune != null) {
                     if (Objects.equals(rune.name, "light"))
                         hasLightRune = true;
 
-                    if (be.getRunesActive()) {
+                    if (be.areRunesActive()) {
                         core.setSideOverlay(dir, rune.getIntColour());
                     } else {
                         core.setSideOverlay(dir, 0x545454);
@@ -80,7 +84,7 @@ public class CarvedLogDModel extends DynamicModel {
             }
 
             // If block has glow ink applied, make the face emissive
-            if (be.getFaceGlow(dir)) {
+            if (be.isFaceEmissive(dir)) {
                 core.setEmissive(dir, true);
             }
         }

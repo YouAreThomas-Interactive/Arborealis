@@ -5,7 +5,7 @@ import com.youarethomas.arborealis.blocks.CarvedLog;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class Light extends AbstractRune {
+public class Light extends Rune {
 
     @Override
     public void onRuneFound(World world, BlockPos pos, CarvedLogEntity be) {

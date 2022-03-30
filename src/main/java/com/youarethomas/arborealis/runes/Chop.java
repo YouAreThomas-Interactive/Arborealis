@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 
 import java.util.TimerTask;
 
-public class Chop extends AbstractRune{
+public class Chop extends Rune {
 
     @Override
     public void onRuneFound(World world, BlockPos pos, CarvedLogEntity be) {

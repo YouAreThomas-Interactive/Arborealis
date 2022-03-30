@@ -6,11 +6,11 @@
   "mixins": [
     "RecipeMixin",
     "CreateLeavesBlockInvoker",
-    "AxeItemAccessor",
-    "CameraMixin"
+    "AxeItemAccessor"
   ],
   "client": [
-    "MouseMixin"
+    "MouseMixin",
+    "CameraMixin"
   ],
   "server": [],
   "injectors": {

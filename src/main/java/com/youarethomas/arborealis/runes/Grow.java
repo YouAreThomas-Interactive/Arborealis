@@ -7,7 +7,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class Grow extends AbstractRune{
+public class Grow extends Rune {
 
     boolean runeActive = false;
     final int SPEED = 100;

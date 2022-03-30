@@ -1,15 +1,11 @@
 package com.youarethomas.arborealis.runes;
 
-import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.util.ArborealisUtil;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.mob.CreeperEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -17,12 +13,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldEvents;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Diffuse extends AbstractRune {
+public class Diffuse extends Rune {
     List<CreeperEntity> diffusedCreepers = new ArrayList<>();
 
     boolean runeFound = false;
@@ -45,7 +40,6 @@ public class Diffuse extends AbstractRune {
     @Override
     public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {
         List<Entity> entities = ArborealisUtil.getEntitiesInRadius(world, pos, be.radius, false);
-        PlayerEntity clientPlayer = ArborealisUtil.getServerPlayer(world);
 
         for (Entity entity : entities) {
             if (entity instanceof CreeperEntity creeper) {
@@ -58,12 +52,12 @@ public class Diffuse extends AbstractRune {
                 Vec3d tntPos = tntEntity.getPos();
                 Vec3d tntVelocity = tntEntity.getVelocity();
 
+                // Make sound
+                world.playSound(tntPos.x, tntPos.y, tntPos.z, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 1f, 1f, false);
+
                 // Remove it and replace with the item
                 tntEntity.discard();
                 world.spawnEntity(new ItemEntity(world, tntPos.x, tntPos.y, tntPos.z, Items.TNT.getDefaultStack(), tntVelocity.x, tntVelocity.y, tntVelocity.z));
-
-                // Make sound
-                //world.playSound(clientPlayer, new BlockPos(tntPos.x, tntPos.y, tntPos.z), SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 1f, 1f);
             }
         }
 

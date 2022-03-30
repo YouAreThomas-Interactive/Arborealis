@@ -2,7 +2,7 @@ package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
-import com.youarethomas.arborealis.runes.AbstractRune;
+import com.youarethomas.arborealis.runes.Rune;
 import com.youarethomas.arborealis.util.ImplementedInventory;
 import com.youarethomas.arborealis.util.RuneManager;
 import com.youarethomas.arborealis.gui.StencilBagScreenHandler;
@@ -127,7 +127,7 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
                             pattern = Arrays.stream(pattern).map(i -> i == 2 ? 1 : i).toArray();
 
                             if (RuneManager.isValidRune(pattern)) {
-                                AbstractRune rune = RuneManager.getRuneFromArray(pattern);
+                                Rune rune = RuneManager.getRuneFromArray(pattern);
 
                                 selectedRuneName = new TranslatableText("rune.arborealis." + rune.name).getString(); // Set to the rune name (retains colour too)
                             } else {

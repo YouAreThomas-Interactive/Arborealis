@@ -2,6 +2,7 @@ package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
+import com.youarethomas.arborealis.block_entities.CarvedNetherLogEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
 import com.youarethomas.arborealis.blocks.HollowedLog;
 import net.minecraft.block.BlockState;
@@ -44,8 +45,8 @@ public class LogDrill extends ToolItem {
         ItemStack itemStack = context.getStack();
 
         // If the block is a log block
-        if (blockState.isIn(BlockTags.LOGS) || blockState.isOf(Arborealis.CARVED_LOG) || blockState.isOf(Arborealis.CARVED_NETHER_LOG)) {
-            if (context.getSide() != Direction.UP && context.getSide() != Direction.DOWN) {
+        if (context.getSide() != Direction.UP && context.getSide() != Direction.DOWN) {
+            if (blockState.isIn(BlockTags.LOGS)) {
                 if (world.isClient) {
                     world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
                 }
@@ -56,11 +57,32 @@ public class LogDrill extends ToolItem {
                     world.setBlockState(blockPos, Arborealis.HOLLOWED_NETHER_LOG.getDefaultState().with(Properties.HORIZONTAL_FACING, context.getSide()));
                 }
 
-                HollowedLogEntity be = (HollowedLogEntity)world.getBlockEntity(blockPos);
+                HollowedLogEntity be = (HollowedLogEntity) world.getBlockEntity(blockPos);
                 be.setLogState(blockState);
+                be.markDirty();
 
                 itemStack.damage(1, playerEntity, (p) -> p.sendToolBreakStatus(context.getHand()));
 
+                return ActionResult.SUCCESS;
+            } else if (blockState.isOf(Arborealis.CARVED_LOG) || blockState.isOf(Arborealis.CARVED_NETHER_LOG)) {
+                if (world.isClient) {
+                    world.playSound(playerEntity, blockPos, SoundEvents.ITEM_AXE_STRIP, SoundCategory.BLOCKS, 1.0F, 1.0F);
+                }
+
+                BlockState logState;
+                if (blockState.isOf(Arborealis.CARVED_LOG)) {
+                    CarvedLogEntity carvedLogEntity = (CarvedLogEntity) world.getBlockEntity(blockPos);
+                    logState = carvedLogEntity.getLogState();
+                    world.setBlockState(blockPos, Arborealis.HOLLOWED_LOG.getDefaultState().with(Properties.HORIZONTAL_FACING, context.getSide()));
+                } else {
+                    CarvedNetherLogEntity carvedLogEntity = (CarvedNetherLogEntity) world.getBlockEntity(blockPos);
+                    logState = carvedLogEntity.getLogState();
+                    world.setBlockState(blockPos, Arborealis.HOLLOWED_NETHER_LOG.getDefaultState().with(Properties.HORIZONTAL_FACING, context.getSide()));
+                }
+
+                HollowedLogEntity be = (HollowedLogEntity) world.getBlockEntity(blockPos);
+                be.setLogState(logState);
+                be.markDirty();
 
                 return ActionResult.SUCCESS;
             }

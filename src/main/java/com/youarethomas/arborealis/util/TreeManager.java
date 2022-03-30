@@ -3,7 +3,7 @@ package com.youarethomas.arborealis.util;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
-import com.youarethomas.arborealis.runes.AbstractRune;
+import com.youarethomas.arborealis.runes.Rune;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
@@ -14,7 +14,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
-import javax.sound.midi.SysexMessage;
 import java.util.HashSet;
 import java.util.TreeSet;
 
@@ -37,13 +36,13 @@ public class TreeManager {
             return structure;
         }
 
-        CarvedLogEntity be = (CarvedLogEntity) world.getBlockEntity(startingPos);
-
-        // Pumpkin is tree structure
-        if (be != null && be.getLogState().isOf(Blocks.PUMPKIN)) {
-            structure.logs.add(startingPos);
-            structure.isPumpkin = true;
-            return structure;
+        if (world.getBlockEntity(startingPos) instanceof CarvedLogEntity be) {
+            // Pumpkin is tree structure
+            if (be != null && be.getLogState().isOf(Blocks.PUMPKIN)) {
+                structure.logs.add(startingPos);
+                structure.isPumpkin = true;
+                return structure;
+            }
         }
 
         structure.logs.addAll(getTreeLogs(world, startingPos)); // Add all found logs to the TreeStructure
@@ -159,9 +158,9 @@ public class TreeManager {
                 for (Direction dir : Direction.values()) {
                     int[] faceArray = carvedEntity.getFaceArray(dir);
 
-                    AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
+                    Rune rune = RuneManager.getRuneFromArray(faceArray);
 
-                    if (rune != null && tree.isNatural() && carvedEntity.getFaceCatalysed(dir)) {
+                    if (rune != null && tree.isNatural() && carvedEntity.isFaceCatalysed(dir)) {
                         lifeForceTotal += rune.lifeForce;
                     }
                 }

@@ -57,8 +57,7 @@ public class WarpCoreEntity extends BlockEntity {
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, WarpCoreEntity be) {
-        // Get some userful shit
-        ServerPlayerEntity player = ArborealisUtil.getServerPlayer(world);
+       /* // Get some userful shit
         Vec3d thisCore = Vec3d.ofCenter(pos);
         CameraMixinAccess cameraAccess = (CameraMixinAccess)MinecraftClient.getInstance().gameRenderer.getCamera();
 
@@ -177,7 +176,6 @@ public class WarpCoreEntity extends BlockEntity {
                 }
 
                 if (currentlyTeleportingTo != null) {
-                    ServerPlayerEntity serverPlayer = ArborealisUtil.getServerPlayer(world);
                     if (cameraAccess.getCameraOffset() > -1f) {
                         serverPlayer.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 30, 30, false, false, false));
                         cameraAccess.setCameraOffset(cameraAccess.getCameraOffset() - 0.1f);
@@ -195,7 +193,7 @@ public class WarpCoreEntity extends BlockEntity {
                 if (cameraAccess.getCameraOffset() >= 0f)
                     allowPlayerTeleport.put(player.getEntityName(), true);
             }
-        }
+        }*/
     }
 
     public void setOtherCorePositions(Map<BlockPos, String> positions) {

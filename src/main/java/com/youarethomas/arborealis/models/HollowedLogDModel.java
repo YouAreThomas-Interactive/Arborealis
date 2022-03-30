@@ -5,6 +5,7 @@ import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
 import com.youarethomas.arborealis.mixins.AxeItemAccessor;
 import com.youarethomas.arborealis.models.model_utils.DynamicModel;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
@@ -22,7 +23,9 @@ public class HollowedLogDModel extends DynamicModel {
 
         // Get blocks to texture rip
         BlockState logState = be.getLogState();
-        BlockState strippedState = AxeItemAccessor.getStrippedBlocks().get(logState.getBlock()).getStateWithProperties(logState);
+        BlockState strippedState = Blocks.STRIPPED_OAK_LOG.getDefaultState();
+        if (AxeItemAccessor.getStrippedBlocks().containsKey(logState.getBlock()))
+            strippedState = AxeItemAccessor.getStrippedBlocks().get(logState.getBlock()).getStateWithProperties(logState);
 
         // Fetch the models pre-loaded in the client and retexture them
         BakedModel logOutside = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/hollowed_log/hollowed_log_outside"));

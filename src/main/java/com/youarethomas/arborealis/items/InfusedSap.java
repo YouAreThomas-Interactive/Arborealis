@@ -19,11 +19,12 @@ public class InfusedSap extends Item {
     // Test Method
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
-        if (!context.getWorld().isClient) {
-            BlockEntity be = context.getWorld().getBlockEntity(context.getBlockPos());
-            if (be instanceof CarvedLogEntity) {
-                System.out.println(((CarvedLogEntity) be).getRunesActive());
-            }
+        BlockEntity be = context.getWorld().getBlockEntity(context.getBlockPos());
+        if (be instanceof CarvedLogEntity) {
+            System.out.printf("== %s ==%n", context.getWorld().isClient() ? "Client" : "Server");
+            System.out.println(" Active: " + ((CarvedLogEntity) be).areRunesActive());
+            System.out.println(" Catalysed: " + ((CarvedLogEntity) be).isFaceCatalysed(context.getSide()));
+            System.out.println(" Glowing: " + ((CarvedLogEntity) be).isFaceEmissive(context.getSide()));
         }
 
         return ActionResult.PASS;

@@ -55,8 +55,9 @@ public class CarvingKnife extends ToolItem {
                 CarvedLogEntity be = (CarvedLogEntity) world.getBlockEntity(blockPos);
 
                 // ... and assign relevant NBT data
-                if (be != null)
+                if (be != null) {
                     be.setLogState(blockState);
+                }
 
                 return drawCarvePlan(be, context.getSide(), context.getHitPos(), world); // Draw rune after creating the block
             }

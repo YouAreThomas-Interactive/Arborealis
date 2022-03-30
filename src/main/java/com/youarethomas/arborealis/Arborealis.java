@@ -7,8 +7,6 @@ import com.youarethomas.arborealis.items.*;
 import com.youarethomas.arborealis.mixins.AxeItemAccessor;
 import com.youarethomas.arborealis.mixins.CreateLeavesBlockInvoker;
 import com.youarethomas.arborealis.misc.StencilBagDyeRecipe;
-import com.youarethomas.arborealis.models.*;
-import com.youarethomas.arborealis.models.model_utils.DynamicModelRegistry;
 import com.youarethomas.arborealis.runes.*;
 import com.youarethomas.arborealis.items.tool_materials.CopperKnifeMaterial;
 import com.youarethomas.arborealis.items.tool_materials.RegrowthSpoonMaterial;
@@ -26,7 +24,6 @@ import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.*;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.sound.BlockSoundGroup;
@@ -37,10 +34,8 @@ import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
-import org.apache.commons.lang3.builder.Diff;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.system.CallbackI;
 
 import java.util.Map;
 import java.util.Random;
@@ -141,14 +136,14 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(WOODEN_BUCKET));
 				stacks.add(new ItemStack(BLANK_STENCIL));
 				stacks.add(new ItemStack(STENCIL_BAG));
-				stacks.add(new ItemStack(WARP_GRAFT));
-				stacks.add(new ItemStack(WARP_SAPLING));
-				stacks.add(new ItemStack(WARP_LEAVES));
-				stacks.add(new ItemStack(WARP_CORE));
-				stacks.add(new ItemStack(WARP_WOOD));
-				stacks.add(new ItemStack(WARP_LOG));
-				stacks.add(new ItemStack(STRIPPED_WARP_LOG));
-				stacks.add(new ItemStack(STRIPPED_WARP_WOOD));
+				//stacks.add(new ItemStack(WARP_GRAFT));
+				//stacks.add(new ItemStack(WARP_SAPLING));
+				//stacks.add(new ItemStack(WARP_LEAVES));
+				//stacks.add(new ItemStack(WARP_CORE));
+				//stacks.add(new ItemStack(WARP_WOOD));
+				//stacks.add(new ItemStack(WARP_LOG));
+				//stacks.add(new ItemStack(STRIPPED_WARP_LOG));
+				//stacks.add(new ItemStack(STRIPPED_WARP_WOOD));
 			})
 			.build();
 
@@ -225,7 +220,6 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stencil_bag"), STENCIL_BAG);
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_graft"), WARP_GRAFT);
-
 
 		// Screen Handler
 		STENCIL_BAG_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(new Identifier(MOD_ID, "stencil_bag"), StencilBagScreenHandler::new);

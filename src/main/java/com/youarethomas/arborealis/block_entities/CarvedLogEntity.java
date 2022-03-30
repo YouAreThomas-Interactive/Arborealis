@@ -1,8 +1,7 @@
 package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.runes.AbstractRune;
-import com.youarethomas.arborealis.runes.AreaChop;
+import com.youarethomas.arborealis.runes.Rune;
 import com.youarethomas.arborealis.util.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -22,39 +21,24 @@ import java.util.*;
 public class CarvedLogEntity extends BlockEntity {
 
     private BlockState logState = Blocks.OAK_LOG.getDefaultState();
-
-    private int[] faceNorth = new int[49];
-    private int[] faceEast = new int[49];
-    private int[] faceSouth = new int[49];
-    private int[] faceWest = new int[49];
-    private int[] faceTop = new int[49];
-    private int[] faceBottom = new int[49];
-
     private boolean runesActive = false;
 
-    private boolean northCatalysed = false;
-    private boolean eastCatalysed = false;
-    private boolean southCatalysed = false;
-    private boolean westCatalysed = false;
-    private boolean topCatalysed = false;
-    private boolean bottomCatalysed = false;
-
-    private boolean northGlow = false;
-    private boolean eastGlow = false;
-    private boolean southGlow = false;
-    private boolean westGlow = false;
-    private boolean topGlow = false;
-    private boolean bottomGlow = false;
-
-    // Radius
     private final int BASE_RADIUS = 10;
     public int radius = 10;
     private boolean showRadius;
     private boolean reload = true;
 
-    private List<AbstractRune> runesPresentLastCheck = new ArrayList<>();
-
+    private List<Rune> runesPresentLastCheck = new ArrayList<>();
     public Timer chopTimer = new Timer();
+
+    public Map<Direction, CarvedLogEntityFace> carvedFaces = new HashMap<>() {{
+        put(Direction.UP, new CarvedLogEntityFace());
+        put(Direction.DOWN, new CarvedLogEntityFace());
+        put(Direction.NORTH, new CarvedLogEntityFace());
+        put(Direction.EAST, new CarvedLogEntityFace());
+        put(Direction.SOUTH, new CarvedLogEntityFace());
+        put(Direction.WEST, new CarvedLogEntityFace());
+    }};
 
     public CarvedLogEntity(BlockPos pos, BlockState state) {
         super(Arborealis.CARVED_LOG_ENTITY, pos, state);
@@ -67,7 +51,7 @@ public class CarvedLogEntity extends BlockEntity {
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState state, CarvedLogEntity be) {
-        for (AbstractRune rune : be.runesPresentLastCheck) {
+        for (Rune rune : be.runesPresentLastCheck) {
             if (rune != null)
                 rune.onClientTick(world, pos, be);
         }
@@ -85,17 +69,8 @@ public class CarvedLogEntity extends BlockEntity {
             be.reload = false;
         }
 
-        int randomCheck = Arborealis.RANDOM.nextInt(40);
-        if (randomCheck == 1) {
-            if (be.hasWorld()) {
-                TreeManager.checkLifeForce(world, pos);
-                be.checkForRunes();
-            }
-        }
-
         boolean showRuneRadius = false;
-        for (AbstractRune rune : be.runesPresentLastCheck) {
-            //System.out.println(be.runesPresentLastCheck);
+        for (Rune rune : be.runesPresentLastCheck) {
             rune.onServerTick(world, pos, be);
 
             if (rune.showRadiusEffect()) {
@@ -130,139 +105,61 @@ public class CarvedLogEntity extends BlockEntity {
     }
 
     //region NBT Shenanigans
+    public BlockState getLogState() {
+        return logState;
+    }
     public void setLogState(BlockState logState) {
         this.logState = logState;
         this.markDirty();
     }
 
-    public BlockState getLogState() {
-        return logState;
+    public boolean areRunesActive() {
+        return runesActive;
     }
-
-    public void setFaceArray(Direction direction, int[] array) {
-        switch (direction) {
-            case NORTH -> this.faceNorth = array;
-            case EAST -> this.faceEast = array;
-            case SOUTH -> this.faceSouth = array;
-            case WEST -> this.faceWest = array;
-            case UP -> this.faceTop = array;
-            case DOWN -> this.faceBottom = array;
-        }
-
-        this.markDirty();
-    }
-
-    public int[] getFaceArray(Direction direction) {
-        switch (direction) {
-            case NORTH -> {
-                return faceNorth;
-            }
-            case EAST -> {
-                return faceEast;
-            }
-            case SOUTH -> {
-                return faceSouth;
-            }
-            case WEST -> {
-                return faceWest;
-            }
-            case UP -> {
-                return faceTop;
-            }
-            case DOWN -> {
-                return faceBottom;
-            }
-            default -> {
-                return null;
-            }
-        }
-    }
-
     public void setRunesActive(boolean active) {
         runesActive = active;
         this.markDirty();
     }
 
-    public boolean getRunesActive() {
-        return runesActive;
+    public int[] getFaceArray(Direction direction) {
+        return carvedFaces.get(direction).getFaceArray();
     }
-
-    public void setFaceCatalysed(Direction direction, boolean active) {
-        switch (direction) {
-            case NORTH -> this.northCatalysed = active;
-            case EAST -> this.eastCatalysed = active;
-            case SOUTH -> this.southCatalysed = active;
-            case WEST -> this.westCatalysed = active;
-            case UP -> this.topCatalysed = active;
-            case DOWN -> this.bottomCatalysed = active;
-        }
-
+    public void setFaceArray(Direction direction, int[] array) {
+        CarvedLogEntityFace face = carvedFaces.get(direction);
+        face.setFaceArray(array);
+        carvedFaces.replace(direction, face);
         this.markDirty();
     }
 
-    public boolean getFaceCatalysed(Direction direction) {
-        switch (direction) {
-            case NORTH -> {
-                return northCatalysed;
-            }
-            case EAST -> {
-                return eastCatalysed;
-            }
-            case SOUTH -> {
-                return southCatalysed;
-            }
-            case WEST -> {
-                return westCatalysed;
-            }
-            case UP -> {
-                return topCatalysed;
-            }
-            case DOWN -> {
-                return bottomCatalysed;
-            }
-            default -> {
-                return false;
-            }
-        }
+    public boolean isFaceCatalysed(Direction direction) {
+        return carvedFaces.get(direction).isCatalysed();
     }
-
-    public void setFaceGlow(Direction direction, boolean active) {
-        switch (direction) {
-            case NORTH -> this.northGlow = active;
-            case EAST -> this.eastGlow = active;
-            case SOUTH -> this.southGlow = active;
-            case WEST -> this.westGlow = active;
-            case UP -> this.topGlow = active;
-            case DOWN -> this.bottomGlow = active;
-        }
-
+    public void setFaceCatalysed(Direction direction, boolean catalysed) {
+        CarvedLogEntityFace face = carvedFaces.get(direction);
+        face.setCatalysed(catalysed);
+        carvedFaces.replace(direction, face);
         this.markDirty();
     }
 
-    public boolean getFaceGlow(Direction direction) {
-        switch (direction) {
-            case NORTH -> {
-                return northGlow;
-            }
-            case EAST -> {
-                return eastGlow;
-            }
-            case SOUTH -> {
-                return southGlow;
-            }
-            case WEST -> {
-                return westGlow;
-            }
-            case UP -> {
-                return topGlow;
-            }
-            case DOWN -> {
-                return bottomGlow;
-            }
-            default -> {
-                return false;
-            }
-        }
+    public boolean isFaceEmissive(Direction direction) {
+        return carvedFaces.get(direction).isEmissive();
+    }
+    public void setFaceEmissive(Direction direction, boolean emissive) {
+        CarvedLogEntityFace face = carvedFaces.get(direction);
+        face.setEmissive(emissive);
+        carvedFaces.replace(direction, face);
+        this.markDirty();
+    }
+
+    public Rune getFaceRune(Direction direction) {
+        return carvedFaces.get(direction).getFaceRune();
+    }
+    public void setFaceRune(Direction direction, Rune rune) {
+        CarvedLogEntityFace face = carvedFaces.get(direction);
+        face.setFaceRune(rune);
+        carvedFaces.replace(direction, face);
+        System.out.println("Rune set");
+        this.markDirty();
     }
 
     // Serialize the BlockEntity - storing data
@@ -271,32 +168,13 @@ public class CarvedLogEntity extends BlockEntity {
         super.writeNbt(tag);
 
         tag.put("log_state", NbtHelper.fromBlockState(logState));
-
-        tag.putIntArray("face_north", faceNorth);
-        tag.putIntArray("face_east", faceEast);
-        tag.putIntArray("face_south", faceSouth);
-        tag.putIntArray("face_west", faceWest);
-        tag.putIntArray("face_top", faceTop);
-        tag.putIntArray("face_bottom", faceBottom);
-
-        tag.putBoolean("north_catalysed", northCatalysed);
-        tag.putBoolean("east_catalysed", eastCatalysed);
-        tag.putBoolean("south_catalysed", southCatalysed);
-        tag.putBoolean("west_catalysed", westCatalysed);
-        tag.putBoolean("top_catalysed", topCatalysed);
-        tag.putBoolean("bottom_catalysed", bottomCatalysed);
-
         tag.putBoolean("runes_active", runesActive);
         tag.putBoolean("show_radius", showRadius);
-
-        tag.putBoolean("north_glow", northGlow);
-        tag.putBoolean("east_glow", eastGlow);
-        tag.putBoolean("south_glow", southGlow);
-        tag.putBoolean("west_glow", westGlow);
-        tag.putBoolean("top_glow", topGlow);
-        tag.putBoolean("bottom_glow", bottomGlow);
-
         tag.put("runes_list", ArborealisNbt.serializeRuneList(runesPresentLastCheck));
+
+        for (Map.Entry<Direction, CarvedLogEntityFace> face : carvedFaces.entrySet()) {
+            tag.put(face.getKey().getName(), face.getValue().serialize());
+        }
     }
 
     // Deserialize the BlockEntity - retrieving data
@@ -305,32 +183,13 @@ public class CarvedLogEntity extends BlockEntity {
         super.readNbt(tag);
 
         logState = NbtHelper.toBlockState(tag.getCompound("log_state"));
-
-        faceNorth = tag.getIntArray("face_north");
-        faceEast = tag.getIntArray("face_east");
-        faceSouth = tag.getIntArray("face_south");
-        faceWest = tag.getIntArray("face_west");
-        faceTop = tag.getIntArray("face_top");
-        faceBottom = tag.getIntArray("face_bottom");
-
-        northCatalysed = tag.getBoolean("north_catalysed");
-        eastCatalysed = tag.getBoolean("east_catalysed");
-        southCatalysed = tag.getBoolean("south_catalysed");
-        westCatalysed = tag.getBoolean("west_catalysed");
-        topCatalysed = tag.getBoolean("top_catalysed");
-        bottomCatalysed = tag.getBoolean("bottom_catalysed");
-
         runesActive = tag.getBoolean("runes_active");
         showRadius = tag.getBoolean("show_radius");
-
-        northGlow = tag.getBoolean("north_glow");
-        eastGlow = tag.getBoolean("east_glow");
-        southGlow = tag.getBoolean("south_glow");
-        westGlow = tag.getBoolean("west_glow");
-        topGlow = tag.getBoolean("top_glow");
-        bottomGlow = tag.getBoolean("bottom_glow");
-
         runesPresentLastCheck = ArborealisNbt.deserializeRuneList(tag.getList("runes_list", NbtElement.COMPOUND_TYPE));
+
+        for (Direction face : Direction.values()) {
+            carvedFaces.replace(face, new CarvedLogEntityFace(tag, face));
+        }
 
         this.markDirty();
     }
@@ -362,29 +221,33 @@ public class CarvedLogEntity extends BlockEntity {
      * All the logic for each rune if detected. Called randomly every 2 seconds or so.
      */
     public void checkForRunes() {
-        if (world == null)
+        if (world == null || world.isClient())
             return;
 
-        List<AbstractRune> foundRunes = new ArrayList<>();
+        List<Rune> foundRunes = new ArrayList<>();
         TreeStructure tree = TreeManager.getTreeStructureFromBlock(pos, world);
 
         for (Direction dir : Direction.values()) {
-            if (getFaceCatalysed(dir) && getRunesActive()) {
+            if (isFaceCatalysed(dir) && areRunesActive()) {
                 int[] faceArray = getFaceArray(dir);
 
-                AbstractRune rune = RuneManager.getRuneFromArray(faceArray);
+                Rune rune = RuneManager.getRuneFromArray(faceArray);
 
                 if (rune != null && tree.isNatural()) {
+                    setFaceRune(dir, rune); // Save rune to BlockEntity
+
                     if (!runesPresentLastCheck.contains(rune)) {
                         rune.onRuneFound(world, pos, this); // If rune appears for the first time, execute onRuneFound(...)
                     }
 
                     foundRunes.add(rune);
+                } else {
+                    setFaceRune(dir, null); // Clear rune if not recognised
                 }
             }
         }
 
-        for (AbstractRune rune : runesPresentLastCheck) {
+        for (Rune rune : runesPresentLastCheck) {
             if (!foundRunes.contains(rune)) {
                 rune.onRuneLost(world, pos, this);
             }

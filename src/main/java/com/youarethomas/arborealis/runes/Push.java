@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class Push extends AbstractRune{
+public class Push extends Rune {
 
     boolean applyEffect = false;
     final double MULTIPLIER = 0.1D;

@@ -2,12 +2,11 @@ package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
-import com.youarethomas.arborealis.runes.AbstractRune;
+import com.youarethomas.arborealis.runes.Rune;
 import com.youarethomas.arborealis.util.RuneManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
@@ -83,7 +82,7 @@ public class StencilCarved extends Item {
             pattern = Arrays.stream(pattern).map(i -> i == 2 ? 1 : i).toArray();
 
             if (RuneManager.isValidRune(pattern)) {
-                AbstractRune rune = RuneManager.getRuneFromArray(pattern);
+                Rune rune = RuneManager.getRuneFromArray(pattern);
 
                 tooltip.add(new TranslatableText("rune.arborealis." + rune.name));
             } else {

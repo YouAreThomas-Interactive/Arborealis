@@ -3,7 +3,6 @@ package com.youarethomas.arborealis.runes;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.LeavesBlock;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -16,7 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class PlantTrees extends AbstractRune{
+public class PlantTrees extends Rune {
 
     private enum TreePosition {
         NORTH (1, 0),

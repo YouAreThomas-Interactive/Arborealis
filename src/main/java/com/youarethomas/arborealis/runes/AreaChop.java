@@ -8,7 +8,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class AreaChop extends AbstractRune{
+public class AreaChop extends Rune {
 
     boolean runeActive = false;
     final int SPEED = 2;

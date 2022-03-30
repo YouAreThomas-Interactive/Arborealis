@@ -46,12 +46,12 @@ public class RegrowthSpoon extends ToolItem {
                     for (Direction dir : Direction.values()) {
                         be.setFaceArray(dir, new int[49]); // reset side of face
                         be.setFaceCatalysed(dir, false);
-                        be.setFaceGlow(dir, false);
+                        be.setFaceEmissive(dir, false);
                     }
                 } else {
                     be.setFaceArray(context.getSide(), new int[49]); // reset side of face
                     be.setFaceCatalysed(context.getSide(), false);
-                    be.setFaceGlow(context.getSide(), false);
+                    be.setFaceEmissive(context.getSide(), false);
                 }
 
                 // Check to see if any sides are carved
