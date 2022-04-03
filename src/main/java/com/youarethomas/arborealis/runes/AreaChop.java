@@ -2,6 +2,7 @@ package com.youarethomas.arborealis.runes;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
+import com.youarethomas.arborealis.mixin_access.ServerWorldMixinAccess;
 import com.youarethomas.arborealis.util.TreeManager;
 import com.youarethomas.arborealis.util.TreeStructure;
 import net.minecraft.tag.BlockTags;
@@ -25,15 +26,17 @@ public class AreaChop extends Rune {
 
     @Override
     public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {
+        TreeManager treeManager = ((ServerWorldMixinAccess)world).getTreeManager();
+
         // Iterate randomly through logs
         BlockPos.iterateRandomly(Arborealis.RANDOM, SPEED, pos, be.radius).forEach(blockPos -> {
             // If the block found is a log
             if (world.getBlockState(blockPos).isIn(BlockTags.LOGS) || world.getBlockState(blockPos).isIn(Arborealis.MODIFIED_LOGS)) {
-                TreeStructure homeTree = TreeManager.getTreeStructureFromBlock(pos, world);
+                TreeStructure homeTree = treeManager.getTreeStructureFromBlock(pos, world);
 
                 // if the found block is in the home tree
                 if (!homeTree.isPosInTree(blockPos)) {
-                    TreeStructure foundTree = TreeManager.getTreeStructureFromBlock(blockPos, world);
+                    TreeStructure foundTree = treeManager.getTreeStructureFromBlock(blockPos, world);
 
                     // if the tree is mini natural, kill it >:)
                     if (foundTree.isNatural()) {

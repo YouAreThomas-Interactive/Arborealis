@@ -55,6 +55,7 @@ public class CarvedLogDModel extends DynamicModel {
         boolean hasLightRune = false;
         for (Direction dir : Direction.values()) {
             // Check if rune is valid and tree is natural
+
             if (be.isFaceCatalysed(dir)) {
                 Rune rune = be.getFaceRune(dir);
 

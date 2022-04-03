@@ -2,6 +2,7 @@ package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.runes.Rune;
+import com.youarethomas.arborealis.mixin_access.ServerWorldMixinAccess;
 import com.youarethomas.arborealis.util.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -245,16 +246,16 @@ public class CarvedLogEntity extends BlockEntity {
                     setFaceRune(dir, null); // Clear rune if not recognised
                 }
             }
-        }
 
-        for (Rune rune : runesPresentLastCheck) {
-            if (!foundRunes.contains(rune)) {
-                rune.onRuneLost(world, pos, this);
+            for (Rune rune : runesPresentLastCheck) {
+                if (!foundRunes.contains(rune)) {
+                    rune.onRuneLost(world, pos, this);
+                }
+
+                runesPresentLastCheck = foundRunes;
+                this.markDirty();
             }
         }
-
-        runesPresentLastCheck = foundRunes;
-        this.markDirty();
     }
 
     private static void createParticleRadiusBorder(World world, BlockPos pos, float radius, int numberOfPoints) {

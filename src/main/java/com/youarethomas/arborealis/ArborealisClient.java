@@ -1,5 +1,6 @@
 package com.youarethomas.arborealis;
 
+import com.google.common.collect.Lists;
 import com.youarethomas.arborealis.block_entity_renderers.HollowedLogEntityRenderer;
 import com.youarethomas.arborealis.block_entity_renderers.WarpCoreEntityRenderer;
 import com.youarethomas.arborealis.models.CarvedLogDModel;
@@ -10,21 +11,39 @@ import com.youarethomas.arborealis.models.model_utils.DynamicModelRegistry;
 import com.youarethomas.arborealis.particles.WarpTreeParticle;
 import com.youarethomas.arborealis.gui.StencilBagScreen;
 import com.youarethomas.arborealis.util.RuneManager;
+import com.youarethomas.arborealis.util.ArborealisConstants;
+import com.youarethomas.arborealis.util.TreeManagerRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.model.ModelLoadingRegistry;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.DyeableItem;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
+import net.minecraft.world.World;
+
+import java.util.Collection;
 
 @Environment(EnvType.CLIENT)
 public class ArborealisClient implements ClientModInitializer {
@@ -77,5 +96,18 @@ public class ArborealisClient implements ClientModInitializer {
 
         // Particles
         ParticleFactoryRegistry.getInstance().register(Arborealis.WARP_TREE_PARTICLE, WarpTreeParticle.Factory::new);
+
+        // Networking
+        ClientPlayNetworking.registerGlobalReceiver(ArborealisConstants.TREE_MAP_UPDATE, (client, handler, buf, responseSender) -> {
+            Collection<BlockPos> treeBlockPositions = buf.readCollection(PacketByteBuf.getMaxValidator(Lists::newArrayListWithCapacity, 10000), PacketByteBuf::readBlockPos);
+            RegistryKey<World> worldKey = RegistryKey.of(Registry.WORLD_KEY, new Identifier(buf.readString()));
+
+            client.execute(() -> TreeManagerRenderer.setBlockPositions(worldKey, treeBlockPositions));
+        });
+
+        // Events
+        ClientPlayConnectionEvents.JOIN.register((ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) -> {
+
+        });
     }
 }
