@@ -103,22 +103,24 @@ public class CarvedLogDModel extends DynamicModel {
         int northSideCount = 0;
         for (int y = 13; y >= 1; y -= 2) {
             for (int x = 13; x >= 1; x -= 2) {
-                int carveState = be.getFaceArray(Direction.NORTH)[northSideCount];
+                if (northSideCount < be.getFaceArray(Direction.NORTH).length) {
+                    int carveState = be.getFaceArray(Direction.NORTH)[northSideCount];
 
-                // Where a state of 1 means carved - do not render anything
-                if (carveState != 1) {
-                    DynamicCuboid cuboid;
+                    // Where a state of 1 means carved - do not render anything
+                    if (carveState != 1) {
+                        DynamicCuboid cuboid;
 
-                    cuboid = new DynamicCuboid(x, y, 0, 2, 2, 1);
-                    // 2 means highlighted
-                    if (carveState == 2) {
-                        cuboid.setSideOverlay(Direction.NORTH, 0x2bff95);
+                        cuboid = new DynamicCuboid(x, y, 0, 2, 2, 1);
+                        // 2 means highlighted
+                        if (carveState == 2) {
+                            cuboid.setSideOverlay(Direction.NORTH, 0x2bff95);
+                        }
+
+                        cuboid.applyTexturesFromBlock(logState);
+                        builder.addCuboid(cuboid);
                     }
-
-                    cuboid.applyTexturesFromBlock(logState);
-                    builder.addCuboid(cuboid);
+                    northSideCount++;
                 }
-                northSideCount++;
             }
         }
 
@@ -126,20 +128,22 @@ public class CarvedLogDModel extends DynamicModel {
         int eastSideCount = 0;
         for (int y = 13; y >= 1; y -= 2) {
             for (int z = 13; z >= 1; z -= 2) {
-                int carveState = be.getFaceArray(Direction.EAST)[eastSideCount];
+                if (eastSideCount < be.getFaceArray(Direction.EAST).length) {
+                    int carveState = be.getFaceArray(Direction.EAST)[eastSideCount];
 
-                if (carveState != 1) {
-                    DynamicCuboid cuboid;
+                    if (carveState != 1) {
+                        DynamicCuboid cuboid;
 
-                    cuboid = new DynamicCuboid(15, y, z, 1, 2, 2);
-                    if (carveState == 2) {
-                        cuboid.setSideOverlay(Direction.EAST, 0x2bff95);
+                        cuboid = new DynamicCuboid(15, y, z, 1, 2, 2);
+                        if (carveState == 2) {
+                            cuboid.setSideOverlay(Direction.EAST, 0x2bff95);
+                        }
+
+                        cuboid.applyTexturesFromBlock(logState);
+                        builder.addCuboid(cuboid);
                     }
-
-                    cuboid.applyTexturesFromBlock(logState);
-                    builder.addCuboid(cuboid);
+                    eastSideCount++;
                 }
-                eastSideCount++;
             }
         }
 
@@ -147,20 +151,22 @@ public class CarvedLogDModel extends DynamicModel {
         int southSideCount = 0;
         for (int y = 13; y >= 1; y -= 2) {
             for (int x = 1; x <= 13; x += 2) {
-                int carveState = be.getFaceArray(Direction.SOUTH)[southSideCount];
+                if (southSideCount < be.getFaceArray(Direction.SOUTH).length) {
+                    int carveState = be.getFaceArray(Direction.SOUTH)[southSideCount];
 
-                if (carveState != 1) {
-                    DynamicCuboid cuboid;
+                    if (carveState != 1) {
+                        DynamicCuboid cuboid;
 
-                    cuboid = new DynamicCuboid(x, y, 15, 2, 2, 1);
-                    if (carveState == 2) {
-                        cuboid.setSideOverlay(Direction.SOUTH, 0x2bff95);
+                        cuboid = new DynamicCuboid(x, y, 15, 2, 2, 1);
+                        if (carveState == 2) {
+                            cuboid.setSideOverlay(Direction.SOUTH, 0x2bff95);
+                        }
+
+                        cuboid.applyTexturesFromBlock(logState);
+                        builder.addCuboid(cuboid);
                     }
-
-                    cuboid.applyTexturesFromBlock(logState);
-                    builder.addCuboid(cuboid);
+                    southSideCount++;
                 }
-                southSideCount++;
             }
         }
 
@@ -168,20 +174,22 @@ public class CarvedLogDModel extends DynamicModel {
         int westSideCount = 0;
         for (int y = 13; y >= 1; y -= 2) {
             for (int z = 1; z <= 13; z += 2) {
-                int carveState = be.getFaceArray(Direction.WEST)[westSideCount];
+                if (westSideCount < be.getFaceArray(Direction.WEST).length) {
+                    int carveState = be.getFaceArray(Direction.WEST)[westSideCount];
 
-                if (carveState != 1) {
-                    DynamicCuboid cuboid;
+                    if (carveState != 1) {
+                        DynamicCuboid cuboid;
 
-                    cuboid = new DynamicCuboid(0, y, z, 1, 2, 2);
-                    if (carveState == 2) {
-                        cuboid.setSideOverlay(Direction.WEST, 0x2bff95);
+                        cuboid = new DynamicCuboid(0, y, z, 1, 2, 2);
+                        if (carveState == 2) {
+                            cuboid.setSideOverlay(Direction.WEST, 0x2bff95);
+                        }
+
+                        cuboid.applyTexturesFromBlock(logState);
+                        builder.addCuboid(cuboid);
                     }
-
-                    cuboid.applyTexturesFromBlock(logState);
-                    builder.addCuboid(cuboid);
+                    westSideCount++;
                 }
-                westSideCount++;
             }
         }
 
@@ -189,20 +197,22 @@ public class CarvedLogDModel extends DynamicModel {
         int topSideCount = 0;
         for (int x = 13; x >= 1; x -= 2) {
             for (int z = 1; z <= 13; z += 2) {
-                int carveState = be.getFaceArray(Direction.UP)[topSideCount];
+                if (topSideCount < be.getFaceArray(Direction.UP).length) {
+                    int carveState = be.getFaceArray(Direction.UP)[topSideCount];
 
-                if (carveState != 1) {
-                    DynamicCuboid cuboid;
+                    if (carveState != 1) {
+                        DynamicCuboid cuboid;
 
-                    cuboid = new DynamicCuboid(x, 15, z, 2, 1, 2);
-                    if (carveState == 2) {
-                        cuboid.setSideOverlay(Direction.UP, 0x2bff95);
+                        cuboid = new DynamicCuboid(x, 15, z, 2, 1, 2);
+                        if (carveState == 2) {
+                            cuboid.setSideOverlay(Direction.UP, 0x2bff95);
+                        }
+
+                        cuboid.applyTexturesFromBlock(logState);
+                        builder.addCuboid(cuboid);
                     }
-
-                    cuboid.applyTexturesFromBlock(logState);
-                    builder.addCuboid(cuboid);
+                    topSideCount++;
                 }
-                topSideCount++;
             }
         }
 
@@ -210,20 +220,22 @@ public class CarvedLogDModel extends DynamicModel {
         int bottomSideCount = 0;
         for (int x = 13; x >= 1; x -= 2) {
             for (int z = 1; z <= 13; z += 2) {
-                int carveState = be.getFaceArray(Direction.DOWN)[bottomSideCount];
+                if (bottomSideCount < be.getFaceArray(Direction.UP).length) {
+                    int carveState = be.getFaceArray(Direction.DOWN)[bottomSideCount];
 
-                if (carveState != 1) {
-                    DynamicCuboid cuboid;
+                    if (carveState != 1) {
+                        DynamicCuboid cuboid;
 
-                    cuboid = new DynamicCuboid(x, 0, z, 2, 1, 2);
-                    if (carveState == 2) {
-                        cuboid.setSideOverlay(Direction.DOWN, 0x2bff95);
+                        cuboid = new DynamicCuboid(x, 0, z, 2, 1, 2);
+                        if (carveState == 2) {
+                            cuboid.setSideOverlay(Direction.DOWN, 0x2bff95);
+                        }
+
+                        cuboid.applyTexturesFromBlock(logState);
+                        builder.addCuboid(cuboid);
                     }
-
-                    cuboid.applyTexturesFromBlock(logState);
-                    builder.addCuboid(cuboid);
+                    bottomSideCount++;
                 }
-                bottomSideCount++;
             }
         }
 

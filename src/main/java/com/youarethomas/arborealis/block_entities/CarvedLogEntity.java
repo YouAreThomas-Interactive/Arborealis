@@ -2,7 +2,6 @@ package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.runes.Rune;
-import com.youarethomas.arborealis.mixin_access.ServerWorldMixinAccess;
 import com.youarethomas.arborealis.util.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -22,7 +21,7 @@ import java.util.*;
 public class CarvedLogEntity extends BlockEntity {
 
     private BlockState logState = Blocks.OAK_LOG.getDefaultState();
-    private boolean runesActive = false;
+    private boolean runesActive = true;
 
     private final int BASE_RADIUS = 10;
     public int radius = 10;
@@ -43,25 +42,22 @@ public class CarvedLogEntity extends BlockEntity {
 
     public CarvedLogEntity(BlockPos pos, BlockState state) {
         super(Arborealis.CARVED_LOG_ENTITY, pos, state);
-        checkForRunes();
     }
 
     public CarvedLogEntity(BlockEntityType type, BlockPos pos, BlockState state) {
         super(type, pos, state);
-        checkForRunes();
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState state, CarvedLogEntity be) {
         for (Rune rune : be.runesPresentLastCheck) {
-            if (rune != null)
+            if (rune != null) {
                 rune.onClientTick(world, pos, be);
+            }
         }
 
-        if (be.showRadius) {
+        if (be.getShowRadius()) {
             createParticleRadiusBorder(world, pos, be.radius, 150);
         }
-
-        // TODO: Rune particles?
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, CarvedLogEntity be) {
@@ -70,16 +66,9 @@ public class CarvedLogEntity extends BlockEntity {
             be.reload = false;
         }
 
-        boolean showRuneRadius = false;
         for (Rune rune : be.runesPresentLastCheck) {
             rune.onServerTick(world, pos, be);
-
-            if (rune.showRadiusEffect()) {
-                showRuneRadius = true;
-            }
         }
-
-        be.showRadius = showRuneRadius;
     }
 
     public void performCarve() {
@@ -106,6 +95,12 @@ public class CarvedLogEntity extends BlockEntity {
     }
 
     //region NBT Shenanigans
+    public boolean getShowRadius() { return showRadius; }
+    public void setShowRadius(boolean radius) {
+        this.showRadius = radius;
+        markDirty();
+    }
+
     public BlockState getLogState() {
         return logState;
     }
@@ -159,7 +154,6 @@ public class CarvedLogEntity extends BlockEntity {
         CarvedLogEntityFace face = carvedFaces.get(direction);
         face.setFaceRune(rune);
         carvedFaces.replace(direction, face);
-        System.out.println("Rune set");
         this.markDirty();
     }
 
@@ -222,39 +216,49 @@ public class CarvedLogEntity extends BlockEntity {
      * All the logic for each rune if detected. Called randomly every 2 seconds or so.
      */
     public void checkForRunes() {
-        if (world == null || world.isClient())
-            return;
+        if (world != null && !world.isClient()) {
+            System.out.println("Checking for runes");
+            List<Rune> foundRunes = new ArrayList<>();
 
-        List<Rune> foundRunes = new ArrayList<>();
-        TreeStructure tree = TreeManager.getTreeStructureFromBlock(pos, world);
+            for (Direction dir : Direction.values()) {
+                if (isFaceCatalysed(dir) && areRunesActive()) {
+                    int[] faceArray = getFaceArray(dir);
 
-        for (Direction dir : Direction.values()) {
-            if (isFaceCatalysed(dir) && areRunesActive()) {
-                int[] faceArray = getFaceArray(dir);
+                    Rune rune = RuneManager.getRuneFromArray(faceArray);
 
-                Rune rune = RuneManager.getRuneFromArray(faceArray);
+                    if (rune != null) {
+                        setFaceRune(dir, rune); // Save rune to BlockEntity
 
-                if (rune != null && tree.isNatural()) {
-                    setFaceRune(dir, rune); // Save rune to BlockEntity
+                        if (!runesPresentLastCheck.contains(rune)) {
+                            System.out.println(rune.name + " was found.");
+                            rune.onRuneFound(world, pos, this); // If rune appears for the first time, execute onRuneFound(...)
+                        }
 
-                    if (!runesPresentLastCheck.contains(rune)) {
-                        rune.onRuneFound(world, pos, this); // If rune appears for the first time, execute onRuneFound(...)
+                        foundRunes.add(rune);
+                    } else {
+                        setFaceRune(dir, null); // Clear rune if not recognised
                     }
-
-                    foundRunes.add(rune);
-                } else {
-                    setFaceRune(dir, null); // Clear rune if not recognised
                 }
             }
 
             for (Rune rune : runesPresentLastCheck) {
                 if (!foundRunes.contains(rune)) {
+                    System.out.println(rune.name + " was lost.");
                     rune.onRuneLost(world, pos, this);
                 }
-
-                runesPresentLastCheck = foundRunes;
-                this.markDirty();
             }
+
+
+            runesPresentLastCheck = foundRunes;
+            this.markDirty();
+
+            boolean displayRadiusParticles = false;
+            for (Rune rune : runesPresentLastCheck) {
+                if (rune.showRadiusEffect())
+                    displayRadiusParticles = true;
+            }
+
+            setShowRadius(displayRadiusParticles);
         }
     }
 

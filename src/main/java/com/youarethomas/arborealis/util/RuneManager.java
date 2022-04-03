@@ -24,6 +24,18 @@ public class RuneManager {
     private static List<Rune> Runes = new ArrayList<>();
     private static final Gson GSON = new Gson();
 
+    public static int getRuneCount() {
+        return Runes.size();
+    }
+
+    public static List<Rune> getRunes() {
+        return Runes;
+    }
+
+    public static void setRunes(List<Rune> runes) {
+        Runes = runes;
+    }
+
     public static void initializeRunes(Identifier runesPath) {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
             @Override
@@ -40,6 +52,7 @@ public class RuneManager {
                     try (InputStream stream = manager.getResource(id).getInputStream()) {
                         Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
                         Rune.RuneSettings runeSettings = GSON.fromJson(reader, Rune.RuneSettings.class);
+                        runeSettings.id = id.toString();
                         Runes.add(RuneRegistry.get(id).fromJson(runeSettings));
                         runesRegistered++;
                     } catch (Exception e) {
@@ -52,8 +65,32 @@ public class RuneManager {
         });
     }
 
+    public static void registerRunes() {
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "light"), Arborealis.LIGHT);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "chop"), Arborealis.CHOP);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "pull"), Arborealis.PULL);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "push"), Arborealis.PUSH);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "area_chop"), Arborealis.AREA_CHOP);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "plant_trees"), Arborealis.PLANT_TREES);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "harvest"), Arborealis.HARVEST);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "plant_crops"), Arborealis.PLANT_CROPS);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "extinguish"), Arborealis.EXTINGUISH);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "grow"), Arborealis.GROW);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "diffuse"), Arborealis.DIFFUSE);
+    }
+
     public static void register(Identifier path, Rune rune) {
         RuneRegistry.put(getRuneJsonPath(path), rune);
+    }
+
+    public static Rune getRuneFromID(String id) {
+        for (Rune rune : Runes) {
+            if (rune.settings.id.equals(id)) {
+                return rune; // If a rune is found with a matching path id
+            }
+        }
+
+        return null;
     }
 
     private static Identifier getRuneJsonPath(Identifier identifier) {

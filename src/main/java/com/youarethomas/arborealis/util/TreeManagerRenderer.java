@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@Environment(EnvType.CLIENT)
 public class TreeManagerRenderer {
 
     private static Map<RegistryKey<World>, Collection<BlockPos>> treeBlockPositions = new HashMap<>();
@@ -31,11 +30,12 @@ public class TreeManagerRenderer {
     }
 
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Camera camera, World world) {
-        for (BlockPos blockToHighlight: treeBlockPositions.get(world.getRegistryKey())) {
-            matrices.push();
-            drawBorderBlock(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), blockToHighlight, camera);
-            matrices.pop();
-        }
+        if (treeBlockPositions.get(world.getRegistryKey()) != null)
+            for (BlockPos blockToHighlight: treeBlockPositions.get(world.getRegistryKey())) {
+                matrices.push();
+                drawBorderBlock(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), blockToHighlight, camera);
+                matrices.pop();
+            }
     }
 
     private void drawBorderBlock(MatrixStack matrices, VertexConsumer vertices, BlockPos pos, Camera camera) {

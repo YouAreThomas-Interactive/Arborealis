@@ -150,19 +150,7 @@ public class Arborealis implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		// Rune registration
-		RuneManager.register(new Identifier(MOD_ID, "light"), LIGHT);
-		RuneManager.register(new Identifier(MOD_ID, "chop"), CHOP);
-		RuneManager.register(new Identifier(MOD_ID, "pull"), PULL);
-		RuneManager.register(new Identifier(MOD_ID, "push"), PUSH);
-		RuneManager.register(new Identifier(MOD_ID, "area_chop"), AREA_CHOP);
-		RuneManager.register(new Identifier(MOD_ID, "plant_trees"), PLANT_TREES);
-		RuneManager.register(new Identifier(MOD_ID, "harvest"), HARVEST);
-		RuneManager.register(new Identifier(MOD_ID, "plant_crops"), PLANT_CROPS);
-		RuneManager.register(new Identifier(MOD_ID, "extinguish"), EXTINGUISH);
-		RuneManager.register(new Identifier(MOD_ID, "grow"), GROW);
-		RuneManager.register(new Identifier(MOD_ID, "diffuse"), DIFFUSE);
-
+		RuneManager.registerRunes();
 		RuneManager.initializeRunes(new Identifier(MOD_ID, "runes"));
 
 		// Block registration

@@ -6,16 +6,18 @@
   "mixins": [
     "RecipeMixin",
     "CreateLeavesBlockInvoker",
-    "AxeItemAccessor"
+    "AxeItemAccessor",
+    "PlayerManagerMixin",
+    "ServerWorldMixin"
   ],
   "client": [
     "MouseMixin",
     "CameraMixin",
     "KeyboardMixin",
-    "ServerWorldMixin",
     "WorldRendererMixin"
   ],
-  "server": [],
+  "server": [
+  ],
   "injectors": {
     "defaultRequire": 1
   }

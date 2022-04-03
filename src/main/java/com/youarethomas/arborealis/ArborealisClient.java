@@ -10,6 +10,7 @@ import com.youarethomas.arborealis.models.WarpCoreDModel;
 import com.youarethomas.arborealis.models.model_utils.DynamicModelRegistry;
 import com.youarethomas.arborealis.particles.WarpTreeParticle;
 import com.youarethomas.arborealis.gui.StencilBagScreen;
+import com.youarethomas.arborealis.runes.Rune;
 import com.youarethomas.arborealis.util.RuneManager;
 import com.youarethomas.arborealis.util.ArborealisConstants;
 import com.youarethomas.arborealis.util.TreeManagerRenderer;
@@ -43,13 +44,18 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
+import java.util.function.Function;
 
 @Environment(EnvType.CLIENT)
 public class ArborealisClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        RuneManager.registerRunes();
+
         // Register pumpkin texture - super important for mod functionality x
         ClientSpriteRegistryCallback.event(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).register((atlasTexture, registry) -> {
             registry.register(new Identifier(Arborealis.MOD_ID, "block/invisible"));
@@ -105,9 +111,25 @@ public class ArborealisClient implements ClientModInitializer {
             client.execute(() -> TreeManagerRenderer.setBlockPositions(worldKey, treeBlockPositions));
         });
 
-        // Events
-        ClientPlayConnectionEvents.JOIN.register((ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) -> {
+        ClientPlayNetworking.registerGlobalReceiver(ArborealisConstants.CLIENT_RUNE_PUSH, (client, handler, buf, responseSender) -> {
+            ArrayList<Rune> runes = buf.readCollection(PacketByteBuf.getMaxValidator(Lists::newArrayListWithCapacity, 10000), innerBuf -> {
+                String id = innerBuf.readString();
+                String name = innerBuf.readString();
+                String colour = innerBuf.readString();
+                String catalyst = innerBuf.readString();
+                int lifeForce = innerBuf.readInt();
+                int[] shape = innerBuf.readIntArray();
 
+                if (RuneManager.getRuneFromID(id) != null)
+                    return RuneManager.getRuneFromID(id).fromValues(name, colour, catalyst, lifeForce, shape);
+                else
+                    return new Rune().fromValues(name, colour, catalyst, lifeForce,shape);
+
+            });
+
+            client.execute(() -> {
+                RuneManager.setRunes(runes);
+            });
         });
     }
 }

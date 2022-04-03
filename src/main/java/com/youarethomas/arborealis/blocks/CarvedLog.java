@@ -25,6 +25,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.*;
 import java.util.function.ToIntFunction;
 
 public class CarvedLog extends BlockWithEntity implements BlockEntityProvider {
@@ -36,9 +37,15 @@ public class CarvedLog extends BlockWithEntity implements BlockEntityProvider {
         setDefaultState(getStateManager().getDefaultState().with(LIT, false));
     }
 
+    @Override
+    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
+        System.out.println("Block added called");
+    }
+
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        System.out.println("Create block entity called");
         return new CarvedLogEntity(pos, state);
     }
 
@@ -54,30 +61,22 @@ public class CarvedLog extends BlockWithEntity implements BlockEntityProvider {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         CarvedLogEntity be = (CarvedLogEntity) world.getBlockEntity(pos);
-
         Direction hitSide = hit.getSide();
         int[] faceArray = be.getFaceArray(hitSide);
 
-        if (world instanceof ServerWorld serverWorld) {
-            TreeManager treeManager = ((ServerWorldMixinAccess)serverWorld).getTreeManager();
-
-            if (RuneManager.isValidRune(faceArray) && treeManager.getTreeStructureFromBlock(pos, world).isNatural()) {
-                if (player.isHolding(RuneManager.getRuneCatalyst(faceArray)) && !be.isFaceCatalysed(hitSide)) {
-                    if (world.isClient) {
-                        if (!player.isCreative()) {
-                            player.getStackInHand(hand).decrement(1);
-                        }
-                        world.playSound(player, pos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, 0.5F);
-                    } else {
-                        be.setFaceCatalysed(hitSide, true);
-                        TreeManager.checkLifeForce(world, pos);
-                    }
-                    return ActionResult.SUCCESS;
-                }
+        if (RuneManager.isValidRune(faceArray) && player.isHolding(RuneManager.getRuneCatalyst(faceArray)) && !be.isFaceCatalysed(hitSide)) {
+            if (world.isClient) {
+                world.playSound(player, pos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, 0.5F);
             }
-        }
+            if (!player.isCreative()) {
+                player.getStackInHand(hand).decrement(1);
+            }
 
-        if (player.isHolding(Items.GLOW_INK_SAC)) {
+            be.setFaceCatalysed(hitSide, true);
+            be.checkForRunes();
+
+            return ActionResult.SUCCESS;
+        } else if (player.isHolding(Items.GLOW_INK_SAC) && !be.isFaceEmissive(hitSide)) {
             be.setFaceEmissive(hitSide, true);
 
             if (!player.isCreative()) {

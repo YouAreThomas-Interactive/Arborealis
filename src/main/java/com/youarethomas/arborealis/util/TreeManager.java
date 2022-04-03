@@ -266,7 +266,7 @@ public class TreeManager extends PersistentState {
         TreeSet<BlockPos> visited = new TreeSet<>();
 
         //TODO: Add leaf range to config
-        int range = 5; // The maximum manhattan search range for the leaves
+        int range = 6; // The maximum manhattan search range for the leaves
 
         for(BlockPos logPos : logSet) {
             TreeSet<BlockPos> tempVisited = new TreeSet<>();

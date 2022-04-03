@@ -53,6 +53,7 @@ public class Rune {
     }
 
     public class RuneSettings {
+        public String id;
         String name;
         String colour;
         String catalyst;

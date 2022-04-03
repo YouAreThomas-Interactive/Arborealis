@@ -47,11 +47,20 @@ public class RegrowthSpoon extends ToolItem {
                         be.setFaceArray(dir, new int[49]); // reset side of face
                         be.setFaceCatalysed(dir, false);
                         be.setFaceEmissive(dir, false);
+                        be.setFaceRune(dir, null);
                     }
                 } else {
                     be.setFaceArray(context.getSide(), new int[49]); // reset side of face
                     be.setFaceCatalysed(context.getSide(), false);
                     be.setFaceEmissive(context.getSide(), false);
+                    be.setFaceRune(context.getSide(), null);
+                }
+
+                if (world.isClient) {
+                    world.playSound(player, blockPos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1.0F, 0.5F);
+                } else {
+                    be.checkForRunes();
+                    //TreeManager.checkLifeForce(world, blockPos);
                 }
 
                 // Check to see if any sides are carved
@@ -62,20 +71,12 @@ public class RegrowthSpoon extends ToolItem {
                     }
                 }
 
-                TreeManager.checkLifeForce(world, blockPos);
-
                 // If no sides are carved, reset to respective log block. Otherwise, update runes
                 if (blockReset) {
                     if (!world.isClient) {
                         world.setBlockState(blockPos, be.getLogState());
                         itemStack.damage(1, player, (p) -> p.sendToolBreakStatus(context.getHand())); // Damage carving knife when carving is applied
                     }
-                } else {
-                    be.checkForRunes();
-                }
-
-                if (world.isClient) {
-                    world.playSound(player, blockPos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1.0F, 0.5F);
                 }
 
                 return ActionResult.SUCCESS;
