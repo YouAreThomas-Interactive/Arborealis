@@ -1,5 +1,6 @@
 package com.youarethomas.arborealis.util;
 
+import com.sun.source.tree.Tree;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
@@ -180,7 +181,7 @@ public class TreeManager extends PersistentState {
         return structure;
     }
 
-    public void addTreeStructureFromBlock(BlockPos startingPos, ServerWorld world) {
+    public TreeStructure addTreeStructureFromBlock(BlockPos startingPos, ServerWorld world) {
         TreeStructure structure = new TreeStructure();
 
         structure.logs.addAll(getTreeLogs(world, startingPos)); // Add all found logs to the TreeStructure
@@ -198,6 +199,8 @@ public class TreeManager extends PersistentState {
 
         updateAllPlayers(world, world.getRegistryKey());
         markDirty();
+
+        return structure;
     }
 
     public List<BlockPos> getStructureBlocks() {

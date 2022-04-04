@@ -15,7 +15,7 @@ public class Chop extends Rune {
     @Override
     public void onRuneFound(World world, BlockPos pos, CarvedLogEntity be) {
         TreeManager treeManager = ((ServerWorldMixinAccess)world).getTreeManager();
-        TreeStructure tree = treeManager.getTreeStructureFromBlock(pos, world);
+        TreeStructure tree = treeManager.addTreeStructureFromBlock(pos, (ServerWorld) world);
 
         be.chopTimer.schedule(new TimerTask() {
             @Override
@@ -30,15 +30,5 @@ public class Chop extends Rune {
     @Override
     public void onRuneLost(World world, BlockPos pos, CarvedLogEntity be) {
         be.chopTimer.cancel();
-    }
-
-    @Override
-    public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {
-
-    }
-
-    @Override
-    public void onClientTick(World world, BlockPos pos, CarvedLogEntity be) {
-
     }
 }

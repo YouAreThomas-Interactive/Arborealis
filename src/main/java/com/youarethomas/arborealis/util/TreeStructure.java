@@ -34,7 +34,8 @@ public class TreeStructure {
      */
     public boolean isNatural() {
         // Pumpkin always natural :P
-        return isPumpkin || (leaves.size() >= NAT_LEAVES_MIN && logCount() >= LOGS_MIN);
+        //return isPumpkin || (leaves.size() >= NAT_LEAVES_MIN && logCount() >= LOGS_MIN);
+        return true;
     }
 
     public boolean isEmpty() {

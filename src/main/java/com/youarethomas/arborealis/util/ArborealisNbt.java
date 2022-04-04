@@ -17,6 +17,7 @@ public class ArborealisNbt {
     public static NbtCompound serializeRune(Rune rune) {
         NbtCompound nbt = new NbtCompound();
 
+        nbt.putString("id", rune.settings.id);
         nbt.putString("name", rune.name);
         nbt.putString("colour", rune.colour);
         nbt.putString("catalyst", rune.catalyst.toString());
@@ -27,13 +28,14 @@ public class ArborealisNbt {
     }
 
     public static Rune deserializeRune(NbtCompound nbt) {
+        String id = nbt.getString("id");
         String name = nbt.getString("name");
         String colour = nbt.getString("colour");
         String catalyst = nbt.getString("catalyst");
         int lifeForce = nbt.getInt("life_force");
         int[] shape = nbt.getIntArray("shape");
 
-        return new Rune().fromValues(name, colour, catalyst, lifeForce, shape);
+        return RuneManager.getRuneFromID(id).fromValues(name, colour, catalyst, lifeForce, shape);
     }
 
     public static NbtList serializeRuneList(List<Rune> runeList) {
