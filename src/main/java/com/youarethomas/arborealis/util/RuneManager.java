@@ -2,7 +2,7 @@ package com.youarethomas.arborealis.util;
 
 import com.google.gson.Gson;
 import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.runes.Rune;
+import com.youarethomas.arborealis.runes.*;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.item.Item;
@@ -20,23 +20,30 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class RuneManager {
+    public static final Light LIGHT = new Light();
+    public static final Chop CHOP = new Chop();
+    public static final Pull PULL = new Pull();
+    public static final Push PUSH = new Push();
+    public static final AreaChop AREA_CHOP = new AreaChop();
+    public static final PlantTrees PLANT_TREES = new PlantTrees();
+    public static final Harvest HARVEST = new Harvest();
+    public static final PlantCrops PLANT_CROPS = new PlantCrops();
+    public static final Extinguish EXTINGUISH = new Extinguish();
+    public static final Grow GROW = new Grow();
+    public static final Diffuse DIFFUSE = new Diffuse();
+
     private static HashMap<Identifier, Rune> RuneRegistry = new HashMap<>();
-    private static List<Rune> Runes = new ArrayList<>();
     private static final Gson GSON = new Gson();
 
     public static int getRuneCount() {
-        return Runes.size();
+        return RuneRegistry.size();
     }
 
     public static List<Rune> getRunes() {
-        return Runes;
+        return RuneRegistry.values().stream().toList();
     }
 
-    public static void setRunes(List<Rune> runes) {
-        Runes = runes;
-    }
-
-    public static void initializeRunes(Identifier runesPath) {
+    public static void initializeRunePatterns(Identifier runesPath) {
         ResourceManagerHelper.get(ResourceType.SERVER_DATA).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
             @Override
             public Identifier getFabricId() {
@@ -45,15 +52,13 @@ public class RuneManager {
 
             @Override
             public void reload(ResourceManager manager) {
-                Runes.clear(); // Clear out and reload runes
-
                 int runesRegistered = 0;
                 for (Identifier id : manager.findResources("runes", path -> path.endsWith(".json"))) {
                     try (InputStream stream = manager.getResource(id).getInputStream()) {
                         Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
                         Rune.RuneSettings runeSettings = GSON.fromJson(reader, Rune.RuneSettings.class);
                         runeSettings.id = id.toString();
-                        Runes.add(RuneRegistry.get(id).fromJson(runeSettings));
+                        RuneRegistry.replace(id, RuneRegistry.get(id).fromJson(runeSettings));
                         runesRegistered++;
                     } catch (Exception e) {
                         Arborealis.LOGGER.error(String.format("Error occurred while loading resource json %s: %s%n", id.toString(), e));
@@ -66,29 +71,29 @@ public class RuneManager {
     }
 
     public static void registerRunes() {
-        RuneManager.register(new Identifier(Arborealis.MOD_ID, "light"), Arborealis.LIGHT);
-        RuneManager.register(new Identifier(Arborealis.MOD_ID, "chop"), Arborealis.CHOP);
-        RuneManager.register(new Identifier(Arborealis.MOD_ID, "pull"), Arborealis.PULL);
-        RuneManager.register(new Identifier(Arborealis.MOD_ID, "push"), Arborealis.PUSH);
-        RuneManager.register(new Identifier(Arborealis.MOD_ID, "area_chop"), Arborealis.AREA_CHOP);
-        RuneManager.register(new Identifier(Arborealis.MOD_ID, "plant_trees"), Arborealis.PLANT_TREES);
-        RuneManager.register(new Identifier(Arborealis.MOD_ID, "harvest"), Arborealis.HARVEST);
-        RuneManager.register(new Identifier(Arborealis.MOD_ID, "plant_crops"), Arborealis.PLANT_CROPS);
-        RuneManager.register(new Identifier(Arborealis.MOD_ID, "extinguish"), Arborealis.EXTINGUISH);
-        RuneManager.register(new Identifier(Arborealis.MOD_ID, "grow"), Arborealis.GROW);
-        RuneManager.register(new Identifier(Arborealis.MOD_ID, "diffuse"), Arborealis.DIFFUSE);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "light"), LIGHT);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "chop"), CHOP);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "pull"), PULL);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "push"), PUSH);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "area_chop"), AREA_CHOP);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "plant_trees"), PLANT_TREES);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "harvest"), HARVEST);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "plant_crops"), PLANT_CROPS);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "extinguish"), EXTINGUISH);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "grow"), GROW);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "diffuse"), DIFFUSE);
     }
 
     public static void register(Identifier path, Rune rune) {
-        RuneRegistry.put(getRuneJsonPath(path), rune);
+        if (RuneRegistry.containsKey(path))
+            RuneRegistry.replace(path, rune);
+        else
+            RuneRegistry.put(getRuneJsonPath(path), rune);
     }
 
     public static Rune getRuneFromID(String id) {
-        for (Rune rune : Runes) {
-            if (rune.settings.id.equals(id)) {
-                return rune; // If a rune is found with a matching path id
-            }
-        }
+        if (RuneRegistry.containsKey(new Identifier(id)))
+            return RuneRegistry.get(new Identifier(id));
 
         return null;
     }
@@ -98,7 +103,7 @@ public class RuneManager {
     }
 
     public static Rune getRuneFromArray(int[] faceArray) {
-        for (Rune rune : Runes) {
+        for (Rune rune : RuneRegistry.values()) {
             if (faceHasRune(faceArray, rune.name)) {
                 return rune;
             }
@@ -124,8 +129,8 @@ public class RuneManager {
     }
 
     public static boolean faceHasRune(int[] faceArray, String runeName) {
-        // Get the rune from the runeName, and save it's shape for later
-        Optional<Rune> rune = Runes.stream().filter(r -> Objects.equals(r.name, runeName)).findFirst();
+        // Get the rune from the runeName, and save its shape for later
+        Optional<Rune> rune = RuneRegistry.values().stream().filter(r -> Objects.equals(r.name, runeName)).findFirst();
         int[] runeShape;
         if (rune.isPresent())
             runeShape = rune.get().shape;

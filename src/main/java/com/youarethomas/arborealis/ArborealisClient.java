@@ -110,15 +110,19 @@ public class ArborealisClient implements ClientModInitializer {
                 int lifeForce = innerBuf.readInt();
                 int[] shape = innerBuf.readIntArray();
 
-                if (RuneManager.getRuneFromID(id) != null)
-                    return RuneManager.getRuneFromID(id).fromValues(name, colour, catalyst, lifeForce, shape);
-                else
-                    return new Rune().fromValues(name, colour, catalyst, lifeForce,shape);
-
+                if (RuneManager.getRuneFromID(id) != null) {
+                    System.out.println("Found");
+                    return RuneManager.getRuneFromID(id).fromValues(id, name, colour, catalyst, lifeForce, shape);
+                } else {
+                    System.out.println("Not found");
+                    return null;
+                }
             });
 
             client.execute(() -> {
-                RuneManager.setRunes(runes);
+                // Replace existing runes with the new info
+                for (Rune rune : runes)
+                    RuneManager.register(new Identifier(rune.id), rune);
             });
         });
     }

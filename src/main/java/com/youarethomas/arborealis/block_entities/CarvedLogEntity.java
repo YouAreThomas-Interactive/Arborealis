@@ -51,7 +51,6 @@ public class CarvedLogEntity extends BlockEntity {
     public static void clientTick(World world, BlockPos pos, BlockState state, CarvedLogEntity be) {
         for (Rune rune : be.runesPresentLastCheck) {
             if (rune != null) {
-                System.out.println("Tick runes");
                 rune.onClientTick(world, pos, be);
             }
         }

@@ -17,6 +17,7 @@ import com.youarethomas.arborealis.gui.StencilBagScreenHandler;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
@@ -48,18 +49,7 @@ public class Arborealis implements ModInitializer {
 
 	public static final Logger LOGGER = LogManager.getLogger();
 
-	// Runes
-	public static final Light LIGHT = new Light();
-	public static final Chop CHOP = new Chop();
-	public static final Pull PULL = new Pull();
-	public static final Push PUSH = new Push();
-	public static final AreaChop AREA_CHOP = new AreaChop();
-	public static final PlantTrees PLANT_TREES = new PlantTrees();
-	public static final Harvest HARVEST = new Harvest();
-	public static final PlantCrops PLANT_CROPS = new PlantCrops();
-	public static final Extinguish EXTINGUISH = new Extinguish();
-	public static final Grow GROW = new Grow();
-	public static final Diffuse DIFFUSE = new Diffuse();
+
 
 	// Tool Items
 	public static final CarvingKnife CARVING_KNIFE = new CarvingKnife(CopperKnifeMaterial.INSTANCE, new FabricItemSettings());
@@ -151,7 +141,7 @@ public class Arborealis implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		RuneManager.registerRunes();
-		RuneManager.initializeRunes(new Identifier(MOD_ID, "runes"));
+		RuneManager.initializeRunePatterns(new Identifier(MOD_ID, "runes"));
 
 		// Block registration
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "carved_log"), CARVED_LOG);
@@ -234,6 +224,10 @@ public class Arborealis implements ModInitializer {
 				.put(WARP_LOG, STRIPPED_WARP_LOG).put(WARP_WOOD, STRIPPED_WARP_WOOD)
 				.build();
 		AxeItemAccessor.setStrippedBlocks(axeStripped);
+
+		ServerPlayNetworking.registerGlobalReceiver(ArborealisConstants.SCROLL_BAG_UPDATE, (server, player, handler, buf, responseSender) -> {
+
+		});
 
 		LOGGER.info("Arborealis Initialised!");
 	}

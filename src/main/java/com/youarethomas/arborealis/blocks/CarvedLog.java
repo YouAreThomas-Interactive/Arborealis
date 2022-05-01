@@ -37,15 +37,9 @@ public class CarvedLog extends BlockWithEntity implements BlockEntityProvider {
         setDefaultState(getStateManager().getDefaultState().with(LIT, false));
     }
 
-    @Override
-    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        System.out.println("Block added called");
-    }
-
     @Nullable
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        System.out.println("Create block entity called");
         return new CarvedLogEntity(pos, state);
     }
 

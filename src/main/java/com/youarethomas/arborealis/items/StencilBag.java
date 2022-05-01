@@ -54,12 +54,10 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
         // Can probably replace with something else... use is a bit shit
         openBag = player.getStackInHand(hand);
 
-        if (!world.isClient) {
-            // If you right-click the bag in the air...
-            if (Screen.hasShiftDown()) {
-                player.openHandledScreen(this);
-                return TypedActionResult.success(openBag);
-            }
+        // If you right-click the bag in the air...
+        if (player.isSneaking()) {
+            player.openHandledScreen(this);
+            return TypedActionResult.success(openBag);
         }
 
         return TypedActionResult.pass(openBag);

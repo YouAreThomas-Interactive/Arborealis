@@ -26,7 +26,7 @@ public class PlayerManagerMixin {
 
             PacketByteBuf buf = PacketByteBufs.create();
             buf.writeCollection(RuneManager.getRunes(), (packet, rune) -> {
-                packet.writeString(rune.settings.id);
+                packet.writeString(rune.id);
                 packet.writeString(rune.name);
                 packet.writeString(rune.colour);
                 packet.writeString(rune.catalyst.toString());

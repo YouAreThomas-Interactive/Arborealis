@@ -10,6 +10,7 @@ import net.minecraft.world.World;
 /** The Rune object created from a JSON rune file
  */
 public class Rune {
+    public String id;
     public String name;
     public String colour;
     public Identifier catalyst;
@@ -34,6 +35,7 @@ public class Rune {
     }
 
     public Rune fromJson(RuneSettings settings) {
+        this.id = settings.id;
         this.name = settings.name;
         this.colour = settings.colour;
         this.catalyst = new Identifier(settings.catalyst);
@@ -43,7 +45,8 @@ public class Rune {
         return this;
     }
 
-    public Rune fromValues(String name, String colour, String catalyst, int lifeForce, int[] shape) {
+    public Rune fromValues(String id, String name, String colour, String catalyst, int lifeForce, int[] shape) {
+        this.id = id;
         this.name = name;
         this.colour = colour;
         this.catalyst = new Identifier(catalyst);
@@ -52,7 +55,7 @@ public class Rune {
         return this;
     }
 
-    public class RuneSettings {
+    public static class RuneSettings {
         public String id;
         String name;
         String colour;
