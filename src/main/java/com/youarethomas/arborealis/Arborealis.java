@@ -27,12 +27,14 @@ import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.*;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.tag.Tag;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
@@ -226,7 +228,11 @@ public class Arborealis implements ModInitializer {
 		AxeItemAccessor.setStrippedBlocks(axeStripped);
 
 		ServerPlayNetworking.registerGlobalReceiver(ArborealisConstants.SCROLL_BAG_UPDATE, (server, player, handler, buf, responseSender) -> {
+			NbtCompound nbt = buf.readNbt();
 
+			ItemStack stack = player.getStackInHand(Hand.MAIN_HAND);
+			if (stack.isOf(STENCIL_BAG))
+				stack.setNbt(nbt);
 		});
 
 		LOGGER.info("Arborealis Initialised!");
