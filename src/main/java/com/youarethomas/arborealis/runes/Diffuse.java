@@ -39,7 +39,7 @@ public class Diffuse extends Rune {
 
     @Override
     public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {
-        List<Entity> entities = ArborealisUtil.getEntitiesInRadius(world, pos, be.radius, false);
+        List<Entity> entities = ArborealisUtil.getEntitiesInRadius(world, Vec3d.ofCenter(pos), be.radius, false);
 
         for (Entity entity : entities) {
             if (entity instanceof CreeperEntity creeper) {
@@ -64,7 +64,7 @@ public class Diffuse extends Rune {
         for (int i = diffusedCreepers.size() - 1; i >= 0; i--) {
             CreeperEntity creeper = diffusedCreepers.get(i);
 
-            if (ArborealisUtil.isWithinRadius(new Vec3i(creeper.getPos().x, creeper.getPos().y, creeper.getPos().z), pos, be.radius)) {
+            if (ArborealisUtil.isWithinRadius(creeper.getPos(), Vec3d.ofCenter(pos), be.radius)) {
                 if (creeper.isAlive()) {
                     creeper.setFuseSpeed(-1);
                 } else {

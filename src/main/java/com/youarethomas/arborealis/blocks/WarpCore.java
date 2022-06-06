@@ -48,8 +48,8 @@ public class WarpCore extends BlockWithEntity implements BlockEntityProvider {
                         warpCores.replace(pos, stack.getName().asString());
                         worldNbt.setWarpCoreList(warpCores);
                         stack.decrement(1);
-                        return ActionResult.SUCCESS;
 
+                        return ActionResult.SUCCESS;
                     }
                 }
             }

@@ -3,6 +3,7 @@ package com.youarethomas.arborealis.block_entity_renderers;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.WarpCoreEntity;
+import com.youarethomas.arborealis.util.ArborealisUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
@@ -54,7 +55,7 @@ public class WarpCoreEntityRenderer implements BlockEntityRenderer<WarpCoreEntit
 
                     float hoverScaleMultiplier = 1f;
                     boolean showText = false;
-                    if (entity.getSelectedWarpCore() != null && corePos.equals(entity.getSelectedWarpCore()) ) {
+                    if (entity.getSelectedWarpCore() != BlockPos.ORIGIN && corePos.equals(entity.getSelectedWarpCore()) ) {
                         hoverScaleMultiplier = 1.2f;
                         showText = true;
                     }
@@ -86,7 +87,7 @@ public class WarpCoreEntityRenderer implements BlockEntityRenderer<WarpCoreEntit
                         matrices.scale(-scaleFactor, -scaleFactor, scaleFactor);
 
                         TextRenderer textRenderer = this.textRenderer;
-                        int colourWithFade = (int)toHex((int)(255.0f * (entity.fadeAmount / 100f)), 255, 255, 255);
+                        int colourWithFade = (int) ArborealisUtil.argbToHex((int)(255.0f * (entity.fadeAmount / 100f)), 255, 255, 255);
                         textRenderer.draw(entry.getValue(), -(textRenderer.getWidth(entry.getValue()) / 2f), 0, colourWithFade, false, matrices.peek().getPositionMatrix(), vertexConsumers, true, 0, light);
 
                         matrices.pop();
@@ -96,8 +97,4 @@ public class WarpCoreEntityRenderer implements BlockEntityRenderer<WarpCoreEntit
         }
     }
 
-    protected long toHex(int a, int r, int g, int b) {
-        String hex = String.format("%02X%02X%02X%02X", a, r, b, b);
-        return Long.parseLong(hex, 16);
-    }
 }

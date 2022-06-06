@@ -28,7 +28,7 @@ public class Push extends Rune {
     @Override
     public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {
         if (applyEffect) {
-            List<Entity> entities = ArborealisUtil.getEntitiesInRadius(world, pos, be.radius, false);
+            List<Entity> entities = ArborealisUtil.getEntitiesInRadius(world, Vec3d.ofCenter(pos), be.radius, false);
 
             for (Entity entity : entities) {
                 Vec3d target = new Vec3d(pos.getX(), pos.getY(), pos.getZ());

@@ -129,14 +129,14 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(WOODEN_BUCKET));
 				stacks.add(new ItemStack(BLANK_STENCIL));
 				stacks.add(new ItemStack(STENCIL_BAG));
-				//stacks.add(new ItemStack(WARP_GRAFT));
-				//stacks.add(new ItemStack(WARP_SAPLING));
-				//stacks.add(new ItemStack(WARP_LEAVES));
-				//stacks.add(new ItemStack(WARP_CORE));
-				//stacks.add(new ItemStack(WARP_WOOD));
-				//stacks.add(new ItemStack(WARP_LOG));
-				//stacks.add(new ItemStack(STRIPPED_WARP_LOG));
-				//stacks.add(new ItemStack(STRIPPED_WARP_WOOD));
+				stacks.add(new ItemStack(WARP_GRAFT));
+				stacks.add(new ItemStack(WARP_SAPLING));
+				stacks.add(new ItemStack(WARP_LEAVES));
+				stacks.add(new ItemStack(WARP_CORE));
+				stacks.add(new ItemStack(WARP_WOOD));
+				stacks.add(new ItemStack(WARP_LOG));
+				stacks.add(new ItemStack(STRIPPED_WARP_LOG));
+				stacks.add(new ItemStack(STRIPPED_WARP_WOOD));
 			})
 			.build();
 
@@ -227,6 +227,7 @@ public class Arborealis implements ModInitializer {
 				.build();
 		AxeItemAccessor.setStrippedBlocks(axeStripped);
 
+		// Server networking handlers
 		ServerPlayNetworking.registerGlobalReceiver(ArborealisConstants.SCROLL_BAG_UPDATE, (server, player, handler, buf, responseSender) -> {
 			NbtCompound nbt = buf.readNbt();
 
@@ -234,6 +235,8 @@ public class Arborealis implements ModInitializer {
 			if (stack.isOf(STENCIL_BAG))
 				stack.setNbt(nbt);
 		});
+
+		ServerPlayNetworking.registerGlobalReceiver(ArborealisConstants.WARP_TREE_TELEPORT, WarpCoreEntity::teleportPlayer);
 
 		LOGGER.info("Arborealis Initialised!");
 	}

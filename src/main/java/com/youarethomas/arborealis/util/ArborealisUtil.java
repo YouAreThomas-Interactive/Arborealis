@@ -25,22 +25,28 @@ public class ArborealisUtil {
      * @param radiusPos The position the radius emanates from.
      * @param radius Radius of the test, defined as a cylinder.
      */
-    public static boolean isWithinRadius(Vec3i posToCheck, Vec3i radiusPos, int radius) {
-        double x = (double)posToCheck.getX() + 0.5D - (double)radiusPos.getX();
-        double z = (double)posToCheck.getZ() + 0.5D - (double)radiusPos.getZ();
+    public static boolean isWithinRadius(Vec3d posToCheck, Vec3d radiusPos, int radius) {
+        double x = posToCheck.getX() + 0.5D - radiusPos.getX();
+        double z = posToCheck.getZ() + 0.5D - radiusPos.getZ();
 
         double distance = x * x + z * z;
 
         return distance < radius * radius;
     }
 
-    public static List<Entity> getEntitiesInRadius(World world, Vec3i pos, int radius, boolean onlyPlayers) {
+
+    public static long argbToHex(int a, int r, int g, int b) {
+        String hex = String.format("%02X%02X%02X%02X", a, r, b, b);
+        return Long.parseLong(hex, 16);
+    }
+
+    public static List<Entity> getEntitiesInRadius(World world, Vec3d pos, int radius, boolean onlyPlayers) {
         Box box = Box.from(new Vec3d(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D)).expand(radius + 1);
 
         List<Entity> entities = new ArrayList<>();
 
         for (Entity entity : world.getNonSpectatingEntities(Entity.class, box)) {
-            if (ArborealisUtil.isWithinRadius(entity.getBlockPos(), pos, radius)) {
+            if (ArborealisUtil.isWithinRadius(entity.getPos(), pos, radius)) {
                 if (onlyPlayers) {
                     if (entity instanceof PlayerEntity) {
                         entities.add(entity);

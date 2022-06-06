@@ -13,6 +13,7 @@
   "client": [
     "MouseMixin",
     "CameraMixin",
+    "InGameHudMixin",
     "KeyboardMixin",
     "WorldRendererMixin"
   ],

@@ -3,19 +3,28 @@ package com.youarethomas.arborealis.block_entities;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.misc.ArborealisPersistentState;
 import com.youarethomas.arborealis.mixin_access.CameraMixinAccess;
+import com.youarethomas.arborealis.util.ArborealisConstants;
 import com.youarethomas.arborealis.util.ArborealisNbt;
 import com.youarethomas.arborealis.util.ArborealisUtil;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -32,10 +41,11 @@ public class WarpCoreEntity extends BlockEntity {
 
     private Map<BlockPos, String> otherWarpCores = new HashMap<>();
     private final Map<BlockPos, Direction> corePassPosList;
-    private static HashMap<String, Boolean> allowPlayerTeleport = new HashMap<>();
+
     public int fadeAmount = 0;
+
     private BlockPos selectedWarpCore = BlockPos.ORIGIN;
-    private static BlockPos currentlyTeleportingTo = null;
+    private static boolean justTeleported = false;
 
     public WarpCoreEntity(BlockPos pos, BlockState state) {
         super(Arborealis.WARP_CORE_ENTITY, pos, state);
@@ -49,27 +59,60 @@ public class WarpCoreEntity extends BlockEntity {
         }
     }
 
+    @Environment(EnvType.CLIENT)
     public static void clientTick(World world, BlockPos pos, BlockState state, WarpCoreEntity be) {
-        for(Map.Entry<BlockPos, Direction> passwordBlock : be.corePassPosList.entrySet()) {
-            if (world.getBlockState(passwordBlock.getKey()).isOf(Arborealis.WARP_WOOD) || world.getBlockState(passwordBlock.getKey()).isOf(Arborealis.WARP_LOG) || world.getBlockState(passwordBlock.getKey()).isOf(Arborealis.CARVED_LOG))
-                createPasswordParticles(passwordBlock.getKey(), passwordBlock.getValue(), world);
+        ClientPlayerEntity clientPlayer = MinecraftClient.getInstance().player;
+
+        // Only run on cores where the player is in the chamber
+        if (clientPlayer != null && ArborealisUtil.isWithinRadius(clientPlayer.getPos(), Vec3d.ofCenter(pos), 2)) {
+            // Create the password particle rings
+            for(Map.Entry<BlockPos, Direction> passwordBlock : be.corePassPosList.entrySet()) {
+                if (world.getBlockState(passwordBlock.getKey()).isOf(Arborealis.WARP_WOOD) || world.getBlockState(passwordBlock.getKey()).isOf(Arborealis.WARP_LOG) || world.getBlockState(passwordBlock.getKey()).isOf(Arborealis.CARVED_LOG))
+                    createPasswordParticles(passwordBlock.getKey(), passwordBlock.getValue(), world);
+            }
+
+            CameraMixinAccess cameraAccess = (CameraMixinAccess)MinecraftClient.getInstance().gameRenderer.getCamera();
+
+            if (clientPlayer.isSneaking() && !justTeleported) {
+                if (!be.getSelectedWarpCore().equals(BlockPos.ORIGIN)) {
+                    if (cameraAccess.getCameraOffset() > -1f) {
+                        cameraAccess.setCameraOffset(cameraAccess.getCameraOffset() - 0.1f);
+                    } else {
+                        System.out.println("Teleport! Boom!");
+                        world.playSound(clientPlayer, be.getSelectedWarpCore(), SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.BLOCKS, 0.6f, 0.7f);
+                        justTeleported = true;
+
+                        // Send teleport request
+                        PacketByteBuf buf = PacketByteBufs.create();
+                        buf.writeBlockPos(be.getSelectedWarpCore());
+                        ClientPlayNetworking.send(ArborealisConstants.WARP_TREE_TELEPORT, buf);
+                    }
+                }
+            } else {
+                if (cameraAccess.getCameraOffset() < 0f)
+                    cameraAccess.setCameraOffset(cameraAccess.getCameraOffset() + 0.05f);
+                else
+                    justTeleported = false;
+            }
         }
+
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, WarpCoreEntity be) {
-       /* // Get some userful shit
         Vec3d thisCore = Vec3d.ofCenter(pos);
-        CameraMixinAccess cameraAccess = (CameraMixinAccess)MinecraftClient.getInstance().gameRenderer.getCamera();
 
-        if (player != null) {
+        // Warp core list stored in world nbt
+        ArborealisPersistentState worldNbt = ((ServerWorld) world).getPersistentStateManager().getOrCreate(ArborealisPersistentState::fromNbt, ArborealisPersistentState::new, "warp_cores");
+
+        // Get all warp cores
+        Map<BlockPos, String> otherCorePositions = new HashMap<>(worldNbt.getWarpCoreList());
+        otherCorePositions.remove(pos); // remove this core
+
+        for (Entity playerEntity : ArborealisUtil.getEntitiesInRadius(world, Vec3d.ofCenter(pos), 2, true)) {
+            ServerPlayerEntity serverPlayer = (ServerPlayerEntity) playerEntity;
+
             // If the player is within the warp chamber...
-            if (player.getBoundingBox().intersects(new Box(new Vec3d(thisCore.getX() - 1D, thisCore.getY() + 1D, thisCore.getZ() - 1D), new Vec3d(thisCore.getX() + 1D, thisCore.getY() + 3D, thisCore.getZ() + 1D)))) {
-                // Warp core list stored in world nbt
-                ArborealisPersistentState worldNbt = ((ServerWorld) world).getPersistentStateManager().getOrCreate(ArborealisPersistentState::fromNbt, ArborealisPersistentState::new, "warp_cores");
-
-                // Get all warp cores
-                Map<BlockPos, String> otherCorePositions = new HashMap<>(worldNbt.getWarpCoreList());
-                otherCorePositions.remove(pos); // remove this core
+            if (serverPlayer.getBoundingBox().intersects(new Box(new Vec3d(thisCore.getX() - 1D, thisCore.getY() + 1D, thisCore.getZ() - 1D), new Vec3d(thisCore.getX() + 1D, thisCore.getY() + 3D, thisCore.getZ() + 1D)))) {
 
                 // Get a list of this warp core's password blocks
                 Map<Direction, int[]> thisCorePasses = new HashMap<>();
@@ -81,7 +124,6 @@ public class WarpCoreEntity extends BlockEntity {
                 }
 
                 List<BlockPos> corePosList = new ArrayList<>(otherCorePositions.keySet());
-
                 List<BlockPos> passedCorePosList = new ArrayList<>();
 
                 // Filter to only show cores that contain a matching symbol
@@ -103,7 +145,7 @@ public class WarpCoreEntity extends BlockEntity {
                         }
 
                         if (!otherCorePassRunes.values().stream().allMatch(ints -> Arrays.equals(ints, new int[49]))) {
-                            // Check all blocks to see if any of our current tree's cores are found
+                            // Check all blocks to see if any of our current tree's password runes are found
                             for (Map.Entry<BlockPos, Direction> otherCorePass : otherCorePasses.entrySet()) {
                                 if (world.getBlockState(otherCorePass.getKey()).isOf(Arborealis.CARVED_LOG)) {
                                     CarvedLogEntity carvedLog = (CarvedLogEntity) world.getBlockEntity(otherCorePass.getKey());
@@ -121,8 +163,8 @@ public class WarpCoreEntity extends BlockEntity {
                         // Only check if it is clumped up if it has the same password.
                         if(otherCorePositions.containsKey(corePos)) {
                             for(BlockPos passedCorePos : new ArrayList<>(passedCorePosList)) {
-                                Vec3d playerToPassed = Vec3d.ofCenter(passedCorePos).subtract(player.getEyePos());
-                                Vec3d playerToOther = Vec3d.ofCenter(corePos).subtract(player.getEyePos());
+                                Vec3d playerToPassed = Vec3d.ofCenter(passedCorePos).subtract(serverPlayer.getEyePos());
+                                Vec3d playerToOther = Vec3d.ofCenter(corePos).subtract(serverPlayer.getEyePos());
                                 double dot = playerToPassed.normalize().dotProduct(playerToOther.normalize());
 
                                 if(dot > 0.99) {
@@ -150,13 +192,13 @@ public class WarpCoreEntity extends BlockEntity {
 
                 if (otherCorePositions.size() > 0) {
                     // Get player look direction
-                    Vec3d playerLookVector = player.getRotationVecClient();
+                    Vec3d playerLookVector = serverPlayer.getRotationVecClient();
                     double similarity = -1d;
-                    be.setSelectedWarpCore(BlockPos.ORIGIN);
+                    be.setSelectedWarpCore(BlockPos.ORIGIN); // Reset selected core
 
                     for (Map.Entry<BlockPos, String> entry : otherCorePositions.entrySet()) {
                         BlockPos corePos = entry.getKey();
-                        Vec3d playerToBlock = Vec3d.ofCenter(corePos).subtract(player.getEyePos()).normalize();
+                        Vec3d playerToBlock = Vec3d.ofCenter(corePos).subtract(serverPlayer.getEyePos()).normalize();
 
                         double dot = playerToBlock.dotProduct(playerLookVector);
                         if (dot > 0.995 && dot > similarity) {
@@ -164,36 +206,15 @@ public class WarpCoreEntity extends BlockEntity {
                             be.setSelectedWarpCore(corePos);
                         }
                     }
-
-                    if (player.isSneaking()) {
-                        if (be.getSelectedWarpCore() != BlockPos.ORIGIN && allowPlayerTeleport.get(player.getEntityName()) != null && allowPlayerTeleport.get(player.getEntityName())) {
-                            currentlyTeleportingTo = be.getSelectedWarpCore();
-                        }
-                    } else {
-                        allowPlayerTeleport.put(player.getEntityName(), true);
-                        currentlyTeleportingTo = null;
-                    }
                 }
-
-                if (currentlyTeleportingTo != null) {
-                    if (cameraAccess.getCameraOffset() > -1f) {
-                        serverPlayer.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 30, 30, false, false, false));
-                        cameraAccess.setCameraOffset(cameraAccess.getCameraOffset() - 0.1f);
-                    } else {
-                        allowPlayerTeleport.put(player.getEntityName(), false);
-                        serverPlayer.teleport(currentlyTeleportingTo.getX() + 0.5D, currentlyTeleportingTo.up().getY(), currentlyTeleportingTo.getZ() + 0.5D);
-                        world.playSound(player, currentlyTeleportingTo, SoundEvents.ITEM_CHORUS_FRUIT_TELEPORT, SoundCategory.BLOCKS, 0.6f, 0.7f);
-                        currentlyTeleportingTo = null;
-                    }
-                } else {
-                    if (cameraAccess.getCameraOffset() < 0f)
-                        cameraAccess.setCameraOffset(cameraAccess.getCameraOffset() + 0.05f);
-                }
-            } else {
-                if (cameraAccess.getCameraOffset() >= 0f)
-                    allowPlayerTeleport.put(player.getEntityName(), true);
             }
-        }*/
+        }
+    }
+
+    public static void teleportPlayer(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        Vec3d pos = Vec3d.ofCenter(buf.readBlockPos().up()); // Get centre of block above core to teleport to
+
+        player.teleport(pos.getX(), pos.getY(), pos.getZ());
     }
 
     public void setOtherCorePositions(Map<BlockPos, String> positions) {
