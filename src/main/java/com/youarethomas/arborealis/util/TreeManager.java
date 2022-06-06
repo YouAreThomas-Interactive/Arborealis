@@ -24,9 +24,6 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
-
-import java.util.HashSet;
-import java.util.TreeSet;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;

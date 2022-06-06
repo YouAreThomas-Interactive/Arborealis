@@ -1,13 +1,13 @@
 package com.youarethomas.arborealis;
 
 import com.google.common.collect.ImmutableMap;
+import com.mojang.logging.LogUtils;
 import com.youarethomas.arborealis.block_entities.*;
 import com.youarethomas.arborealis.blocks.*;
 import com.youarethomas.arborealis.items.*;
 import com.youarethomas.arborealis.mixins.AxeItemAccessor;
 import com.youarethomas.arborealis.mixins.CreateLeavesBlockInvoker;
 import com.youarethomas.arborealis.misc.StencilBagDyeRecipe;
-import com.youarethomas.arborealis.runes.*;
 import com.youarethomas.arborealis.items.tool_materials.CopperKnifeMaterial;
 import com.youarethomas.arborealis.items.tool_materials.RegrowthSpoonMaterial;
 import com.youarethomas.arborealis.items.tool_materials.WoodDrillMaterial;
@@ -23,7 +23,6 @@ import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityT
 import net.fabricmc.fabric.api.particle.v1.FabricParticleTypes;
 import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
-import net.fabricmc.fabric.api.tag.TagRegistry;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.*;
@@ -33,13 +32,12 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialRecipeSerializer;
 import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 import java.util.Map;
 import java.util.Random;
@@ -49,9 +47,7 @@ public class Arborealis implements ModInitializer {
 	public static final String MOD_ID = ArborealisConstants.MOD_ID;
 	public static final Random RANDOM = new Random();
 
-	public static final Logger LOGGER = LogManager.getLogger();
-
-
+	public static final Logger LOGGER = LogUtils.getLogger();
 
 	// Tool Items
 	public static final CarvingKnife CARVING_KNIFE = new CarvingKnife(CopperKnifeMaterial.INSTANCE, new FabricItemSettings());
@@ -73,8 +69,6 @@ public class Arborealis implements ModInitializer {
 	public static final Item WARP_GRAFT = new Item(new FabricItemSettings());
 
 	// Blocks
-	public static final TestBlock TEST_BLOCK = new TestBlock(FabricBlockSettings.of(Material.STONE));
-
 	public static final CarvedLog CARVED_LOG = new CarvedLog(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD));
 	public static final CarvedNetherLog CARVED_NETHER_LOG = new CarvedNetherLog(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD));
 	public static final HollowedLog HOLLOWED_LOG = new HollowedLog(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD));
@@ -108,8 +102,8 @@ public class Arborealis implements ModInitializer {
 	public static DefaultParticleType WARP_TREE_PARTICLE = FabricParticleTypes.simple();
 
 	// Tags
-	public static final Tag<Block> MODIFIED_LOGS = TagRegistry.block(new Identifier(MOD_ID, "modified_logs"));
-	public static final Tag<Block> WARP_LOGS = TagRegistry.block(new Identifier(MOD_ID, "warp_logs"));
+	public static final TagKey<Block> MODIFIED_LOGS = TagKey.of(Registry.BLOCK_KEY, new Identifier(MOD_ID, "modified_logs"));
+	public static final TagKey<Block> WARP_LOGS = TagKey.of(Registry.BLOCK_KEY, new Identifier(MOD_ID, "warp_logs"));
 
 	// Item Groups
 	public static final ItemGroup ARBOREALIS_GROUP = FabricItemGroupBuilder.create(
@@ -170,8 +164,6 @@ public class Arborealis implements ModInitializer {
 		WARP_CORE_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "warp_core_entity"), FabricBlockEntityTypeBuilder.create(WarpCoreEntity::new, WARP_CORE).build(null));
 
 		// Block item registration
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "test_block"), new BlockItem(TEST_BLOCK, new FabricItemSettings()));
-
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_sapling"), new BlockItem(WARP_SAPLING, new FabricItemSettings()));
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_leaves"), new BlockItem(WARP_LEAVES, new FabricItemSettings()));
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_wood"), new BlockItem(WARP_WOOD, new FabricItemSettings()));
