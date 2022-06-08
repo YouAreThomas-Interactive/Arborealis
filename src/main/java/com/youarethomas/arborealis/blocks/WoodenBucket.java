@@ -18,9 +18,8 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -128,11 +127,11 @@ public class WoodenBucket extends Block implements BlockEntityProvider {
     // Append tooltip when pressing shift key
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
         if (Screen.hasShiftDown()) {
-            tooltip.add(new TranslatableText("block.arborealis.wooden_bucket.tooltip1"));
-            tooltip.add(new TranslatableText("block.arborealis.wooden_bucket.tooltip2"));
-            tooltip.add(new TranslatableText("block.arborealis.wooden_bucket.tooltip3"));
+            tooltip.add(Text.translatable("block.arborealis.wooden_bucket.tooltip1"));
+            tooltip.add(Text.translatable("block.arborealis.wooden_bucket.tooltip2"));
+            tooltip.add(Text.translatable("block.arborealis.wooden_bucket.tooltip3"));
         } else {
-            tooltip.add(new TranslatableText("item.arborealis.hidden_tooltip"));
+            tooltip.add(Text.translatable("item.arborealis.hidden_tooltip"));
         }
     }
 

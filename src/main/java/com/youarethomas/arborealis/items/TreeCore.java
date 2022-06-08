@@ -5,7 +5,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,11 +21,11 @@ public class TreeCore extends Item {
     // Append tooltip when pressing shift key
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         if (Screen.hasShiftDown()) {
-            tooltip.add(new TranslatableText("item.arborealis.tree_core.tooltip1"));
-            tooltip.add(new TranslatableText("item.arborealis.tree_core.tooltip2"));
-            tooltip.add(new TranslatableText("item.arborealis.tree_core.tooltip3"));
+            tooltip.add(Text.translatable("item.arborealis.tree_core.tooltip1"));
+            tooltip.add(Text.translatable("item.arborealis.tree_core.tooltip2"));
+            tooltip.add(Text.translatable("item.arborealis.tree_core.tooltip3"));
         } else {
-            tooltip.add(new TranslatableText("item.arborealis.hidden_tooltip"));
+            tooltip.add(Text.translatable("item.arborealis.hidden_tooltip"));
         }
     }
 }

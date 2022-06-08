@@ -16,14 +16,14 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -33,7 +33,6 @@ import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Random;
 
 public class TreeTap extends HorizontalFacingBlock {
 
@@ -128,12 +127,12 @@ public class TreeTap extends HorizontalFacingBlock {
     // Append tooltip when pressing shift key
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
         if (Screen.hasShiftDown()) {
-            tooltip.add(new TranslatableText("block.arborealis.tree_tap.tooltip1"));
-            tooltip.add(new TranslatableText("block.arborealis.tree_tap.tooltip2"));
-            tooltip.add(new TranslatableText("block.arborealis.tree_tap.tooltip3"));
-            tooltip.add(new TranslatableText("block.arborealis.tree_tap.tooltip4"));
+            tooltip.add(Text.translatable("block.arborealis.tree_tap.tooltip1"));
+            tooltip.add(Text.translatable("block.arborealis.tree_tap.tooltip2"));
+            tooltip.add(Text.translatable("block.arborealis.tree_tap.tooltip3"));
+            tooltip.add(Text.translatable("block.arborealis.tree_tap.tooltip4"));
         } else {
-            tooltip.add(new TranslatableText("item.arborealis.hidden_tooltip"));
+            tooltip.add(Text.translatable("item.arborealis.hidden_tooltip"));
         }
     }
 }

@@ -36,16 +36,16 @@ import net.minecraft.tag.TagKey;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.registry.Registry;
 import org.slf4j.Logger;
 
 import java.util.Map;
-import java.util.Random;
 
 public class Arborealis implements ModInitializer {
 
 	public static final String MOD_ID = ArborealisConstants.MOD_ID;
-	public static final Random RANDOM = new Random();
+	public static final Random RANDOM = Random.create();
 
 	public static final Logger LOGGER = LogUtils.getLogger();
 

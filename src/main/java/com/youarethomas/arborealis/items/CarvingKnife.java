@@ -15,7 +15,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.HitResult;
@@ -148,11 +148,11 @@ public class CarvingKnife extends ToolItem {
     // Append tooltip when pressing shift key
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         if (Screen.hasShiftDown()) {
-            tooltip.add(new TranslatableText("item.arborealis.carving_knife.tooltip1"));
-            tooltip.add(new TranslatableText("item.arborealis.carving_knife.tooltip2"));
-            tooltip.add(new TranslatableText("item.arborealis.carving_knife.tooltip3"));
+            tooltip.add(Text.translatable("item.arborealis.carving_knife.tooltip1"));
+            tooltip.add(Text.translatable("item.arborealis.carving_knife.tooltip2"));
+            tooltip.add(Text.translatable("item.arborealis.carving_knife.tooltip3"));
         } else {
-            tooltip.add(new TranslatableText("item.arborealis.hidden_tooltip"));
+            tooltip.add(Text.translatable("item.arborealis.hidden_tooltip"));
         }
     }
 }

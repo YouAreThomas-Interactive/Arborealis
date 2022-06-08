@@ -19,7 +19,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -95,12 +95,12 @@ public class LogDrill extends ToolItem {
     // Append tooltip when pressing shift key
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         if (Screen.hasShiftDown()) {
-            tooltip.add(new TranslatableText("item.arborealis.log_drill.tooltip1"));
-            tooltip.add(new TranslatableText("item.arborealis.log_drill.tooltip2"));
-            tooltip.add(new TranslatableText("item.arborealis.log_drill.tooltip3"));
-            tooltip.add(new TranslatableText("item.arborealis.log_drill.tooltip4"));
+            tooltip.add(Text.translatable("item.arborealis.log_drill.tooltip1"));
+            tooltip.add(Text.translatable("item.arborealis.log_drill.tooltip2"));
+            tooltip.add(Text.translatable("item.arborealis.log_drill.tooltip3"));
+            tooltip.add(Text.translatable("item.arborealis.log_drill.tooltip4"));
         } else {
-            tooltip.add(new TranslatableText("item.arborealis.hidden_tooltip"));
+            tooltip.add(Text.translatable("item.arborealis.hidden_tooltip"));
         }
     }
 }

@@ -20,7 +20,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -101,7 +101,7 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
             DefaultedList<ItemStack> inventory = DefaultedList.ofSize(StencilBag.BAG_SLOTS, ItemStack.EMPTY);
 
             NbtCompound nbt = stack.getNbt();
-            String selectedRuneName = new TranslatableText("item.arborealis.stencil_bag.none").getString();
+            String selectedRuneName = Text.translatable("item.arborealis.stencil_bag.none").getString();
             int numberOfRunes = 0;
 
             if (nbt != null) {
@@ -127,9 +127,9 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
                             if (RuneManager.isValidRune(pattern)) {
                                 Rune rune = RuneManager.getRuneFromArray(pattern);
 
-                                selectedRuneName = new TranslatableText("rune.arborealis." + rune.name).getString(); // Set to the rune name (retains colour too)
+                                selectedRuneName = Text.translatable("rune.arborealis." + rune.name).getString(); // Set to the rune name (retains colour too)
                             } else {
-                                selectedRuneName = new TranslatableText("rune.arborealis.unknown").getString();
+                                selectedRuneName = Text.translatable("rune.arborealis.unknown").getString();
                             }
                         }
 
@@ -141,12 +141,12 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
                 }
             }
 
-            tooltip.add(new TranslatableText("item.arborealis.stencil_bag.tooltip1", numberOfRunes, selectedRuneName));
-            tooltip.add(new TranslatableText("item.arborealis.stencil_bag.tooltip2"));
-            tooltip.add(new TranslatableText("item.arborealis.stencil_bag.tooltip3"));
-            tooltip.add(new TranslatableText("item.arborealis.stencil_bag.tooltip4"));
+            tooltip.add(Text.translatable("item.arborealis.stencil_bag.tooltip1", numberOfRunes, selectedRuneName));
+            tooltip.add(Text.translatable("item.arborealis.stencil_bag.tooltip2"));
+            tooltip.add(Text.translatable("item.arborealis.stencil_bag.tooltip3"));
+            tooltip.add(Text.translatable("item.arborealis.stencil_bag.tooltip4"));
         } else {
-            tooltip.add(new TranslatableText("item.arborealis.hidden_tooltip"));
+            tooltip.add(Text.translatable("item.arborealis.hidden_tooltip"));
         }
     }
 

@@ -6,6 +6,7 @@ import com.youarethomas.arborealis.runes.*;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.item.Item;
+import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
@@ -53,8 +54,9 @@ public class RuneManager {
             @Override
             public void reload(ResourceManager manager) {
                 int runesRegistered = 0;
-                for (Identifier id : manager.findResources("runes", path -> path.endsWith(".json"))) {
-                    try (InputStream stream = manager.getResource(id).getInputStream()) {
+                for (Map.Entry<Identifier, Resource> entry : manager.findResources("runes", path -> path.getPath().endsWith(".json")).entrySet()) {
+                    Identifier id = entry.getKey();
+                    try (InputStream stream = manager.getResource(id).get().getInputStream()) {
                         Reader reader = new InputStreamReader(stream, StandardCharsets.UTF_8);
                         Rune.RuneSettings runeSettings = GSON.fromJson(reader, Rune.RuneSettings.class);
                         runeSettings.id = id.toString();

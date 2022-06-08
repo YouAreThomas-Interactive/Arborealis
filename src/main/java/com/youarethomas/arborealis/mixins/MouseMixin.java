@@ -16,7 +16,8 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
 import org.spongepowered.asm.mixin.Mixin;
@@ -87,13 +88,13 @@ public class MouseMixin {
 
                 // Get the item stack at the specified spot
                 ItemStack selectedStack = inventory.get(selectedStencilSlot);
-                String selectedMsg = new TranslatableText("item.arborealis.stencil_bag.none").getString(); // If there are no runes in the bag
+                String selectedMsg = Text.translatable("item.arborealis.stencil_bag.none").getString(); // If there are no runes in the bag
 
                 if (!selectedStack.isEmpty()) {
                     if (selectedStack.isOf(Arborealis.CARVED_STENCIL)) {
                         NbtCompound stencilNbt = selectedStack.getNbt();
 
-                        selectedMsg = new TranslatableText("rune.arborealis.unknown").getString(); // If the rune isn't a known rune
+                        selectedMsg = Text.translatable("rune.arborealis.unknown").getString(); // If the rune isn't a known rune
 
                         // Same code as in StencilCarved to get the rune from the pattern
                         if (stencilNbt != null && stencilNbt.contains("pattern")) {
@@ -103,7 +104,7 @@ public class MouseMixin {
                             if (RuneManager.isValidRune(pattern)) {
                                 Rune rune = RuneManager.getRuneFromArray(pattern);
 
-                                selectedMsg = new TranslatableText("rune.arborealis." + rune.name).getString(); // Set to the rune name (retains colour too)
+                                selectedMsg = Text.translatable("rune.arborealis." + rune.name).getString(); // Set to the rune name (retains colour too)
                             }
                         }
 
@@ -115,7 +116,7 @@ public class MouseMixin {
                 }
 
                 // Send a message to the player on their hud that displays which rune is now selected
-                player.sendMessage(new TranslatableText("item.arborealis.stencil_bag.selected", selectedMsg), true);
+                player.sendMessage(Text.translatable("item.arborealis.stencil_bag.selected", selectedMsg), true);
                 info.cancel();
             }
         }

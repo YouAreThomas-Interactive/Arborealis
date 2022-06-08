@@ -9,15 +9,16 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.structure.Structure;
-import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePlacementData;
+import net.minecraft.structure.StructureTemplate;
+import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.*;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -25,7 +26,6 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 import java.util.Optional;
-import java.util.Random;
 
 public class WarpSapling extends Block {
     protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 12.0, 14.0);
@@ -69,8 +69,8 @@ public class WarpSapling extends Block {
     }
 
     public void trySpawnWarpTree(ServerWorld serverWorld, BlockPos pos) {
-        StructureManager structureManager = serverWorld.getStructureManager();
-        Optional<Structure> warpTreeStructure = structureManager.getStructure(new Identifier(Arborealis.MOD_ID, "warp_tree"));
+        StructureTemplateManager structureManager = serverWorld.getStructureTemplateManager();
+        Optional<StructureTemplate> warpTreeStructure = structureManager.getTemplate(new Identifier(Arborealis.MOD_ID, "warp_tree"));
 
         // Check two cylinders for spawn conditions - first for the base is 9x5x9, second for the top is 15x10x15
         boolean canBePlaced = true;
@@ -109,7 +109,7 @@ public class WarpSapling extends Block {
 
     }
 
-    public boolean place(ServerWorld world, BlockPos pos, Structure structure) {
+    public boolean place(ServerWorld world, BlockPos pos, StructureTemplate structure) {
         // Get size and rotation
         Vec3i structureSize = structure.getSize();
         StructurePlacementData placementData = (new StructurePlacementData()).setPosition(new BlockPos(structureSize.getX() / 2, 0, structureSize.getZ() / 2)).setRotation(BlockRotation.random(Arborealis.RANDOM));

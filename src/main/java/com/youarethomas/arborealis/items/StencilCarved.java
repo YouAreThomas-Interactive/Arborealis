@@ -13,7 +13,7 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -84,12 +84,12 @@ public class StencilCarved extends Item {
             if (RuneManager.isValidRune(pattern)) {
                 Rune rune = RuneManager.getRuneFromArray(pattern);
 
-                tooltip.add(new TranslatableText("rune.arborealis." + rune.name));
+                tooltip.add(Text.translatable("rune.arborealis." + rune.name));
             } else {
-                tooltip.add(new TranslatableText("rune.arborealis.unknown"));
+                tooltip.add(Text.translatable("rune.arborealis.unknown"));
             }
         } else {
-            tooltip.add(new TranslatableText("rune.arborealis.unknown"));
+            tooltip.add(Text.translatable("rune.arborealis.unknown"));
         }
     }
 }

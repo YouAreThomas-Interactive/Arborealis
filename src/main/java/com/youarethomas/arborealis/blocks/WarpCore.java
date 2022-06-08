@@ -45,7 +45,7 @@ public class WarpCore extends BlockWithEntity implements BlockEntityProvider {
 
                 for (Map.Entry<BlockPos, String> entry : warpCores.entrySet()) {
                     if (entry.getKey().equals(pos)) {
-                        warpCores.replace(pos, stack.getName().asString());
+                        warpCores.replace(pos, stack.getName().getString());
                         worldNbt.setWarpCoreList(warpCores);
                         stack.decrement(1);
 
