@@ -15,6 +15,7 @@
     "CameraMixin",
     "InGameHudMixin",
     "KeyboardMixin",
+    "KeyboardInvoker",
     "WorldRendererMixin"
   ],
   "server": [

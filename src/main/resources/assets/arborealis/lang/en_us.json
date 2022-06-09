@@ -1,7 +1,8 @@
 {
   "itemGroup.arborealis.arborealis": "Arborealis",
 
-  "item.arborealis.hidden_tooltip": "§8Hold Shift...",
+  "debug.show_tree_outline.on": "Arborealis debug: on",
+  "debug.show_tree_outline.off": "Arborealis debug: off",
 
   "rune.arborealis.unknown": "§7Unknown",
   "rune.arborealis.light": "§eLight",
@@ -14,6 +15,8 @@
   "rune.arborealis.harvest": "§eHarvest",
   "rune.arborealis.extinguish": "§eExtinguish",
   "rune.arborealis.grow": "§eGrow",
+
+  "item.arborealis.hidden_tooltip": "§8Hold Shift...",
 
   "item.arborealis.carving_knife": "Carving Knife",
   "item.arborealis.carving_knife.tooltip1": "§7Used for carving runes on trees.",
