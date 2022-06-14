@@ -8,7 +8,8 @@
     "CreateLeavesBlockInvoker",
     "AxeItemAccessor",
     "PlayerManagerMixin",
-    "ServerWorldMixin"
+    "ServerWorldMixin",
+    "SPIMMixin"
   ],
   "client": [
     "MouseMixin",

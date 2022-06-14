@@ -198,7 +198,7 @@ public class CarvedLogEntity extends BlockEntity {
             if (!this.getWorld().isClient())
                 ((ServerWorld) world).getChunkManager().markForUpdate(getPos());
             else
-                world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.REDRAW_ON_MAIN_THREAD);
+                world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.NOTIFY_ALL | Block.FORCE_STATE);
         }
     }
 

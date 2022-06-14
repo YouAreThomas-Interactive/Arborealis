@@ -70,6 +70,19 @@ public class TreeStructure {
         return false;
     }
 
+    public void addBlockToTree(BlockPos pos) {
+        logs.add(pos);
+    }
+
+    public void removeBlockFromTree(BlockPos pos) {
+        for (BlockPos logPos : logs) {
+            if (logPos.equals(pos)) {
+                logs.remove(logPos);
+                break;
+            }
+        }
+    }
+
     /**
      * Converts the tree structure into NBT data.
      *

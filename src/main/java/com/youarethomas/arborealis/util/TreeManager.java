@@ -1,6 +1,5 @@
 package com.youarethomas.arborealis.util;
 
-import com.sun.source.tree.Tree;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
@@ -158,31 +157,38 @@ public class TreeManager extends PersistentState {
         return treeStructureMapping.containsKey(position);
     }
 
-    /**If valid, returns a tree definition with structure and leaves from a given log block.
-     */
-    public TreeStructure getTreeStructureFromBlock(BlockPos pos, World world) {
-        TreeStructure structure = new TreeStructure();
-
-        BlockState clickedBlock = world.getBlockState(pos);
-
-        // Return and empty tree structure if the starting position is not a log
-        if (!(clickedBlock.isIn(BlockTags.LOGS) || clickedBlock.isIn(Arborealis.MODIFIED_LOGS))) {
-            return structure;
+    public void removeBlockFromTreeStructure(BlockPos pos, ServerWorld world) {
+        // If the block is in an existing structure...
+        if (isBlockInTreeStructure(pos)) {
+            // TODO: Recalculate tree from blocks around broken block
+            System.out.println("Removing block");
+            getTreeStructureFromPos(pos, world).removeBlockFromTree(pos);
+            treeStructureMapping.remove(pos);
+            updateAllPlayers(world);
         }
+    }
+
+    /**
+     * Attempt to get an existing tree structure from a given BlockPos
+     * @param pos BlockPos to test
+     * @return Returns a TreeStucture if found, otherwise returns null
+     */
+    public TreeStructure getTreeStructureFromPos(BlockPos pos, World world) {
+        BlockState clickedBlock = world.getBlockState(pos);
 
         if(this.treeStructureMapping.containsKey(pos)) {
             // Get the structure that is stored at that position.
-            structure = this.treeStructureRegistry.get(this.treeStructureMapping.get(pos));
+            return this.treeStructureRegistry.get(this.treeStructureMapping.get(pos));
         }
 
-        return structure;
+        return null;
     }
 
     public TreeStructure addTreeStructureFromBlock(BlockPos startingPos, ServerWorld world) {
         TreeStructure structure = new TreeStructure();
 
         structure.logs.addAll(getTreeLogs(world, startingPos)); // Add all found logs to the TreeStructure
-        structure.leaves.addAll(getTreeLeaves(world, structure.logs)); // Add all the founded leaves to the TreeStructure
+        structure.leaves.addAll(getTreeLeaves(world, structure.logs)); // Add all the found leaves to the TreeStructure
 
         // Create a new ID for the tree structure.
         String structureID = UUID.randomUUID().toString();
@@ -194,7 +200,7 @@ public class TreeManager extends PersistentState {
                 .collect(Collectors.toMap(Function.identity(), key -> structureID)));
         this.treeStructureRegistry.put(structureID, structure);
 
-        updateAllPlayers(world, world.getRegistryKey());
+        updateAllPlayers(world);
         markDirty();
 
         return structure;
@@ -211,12 +217,14 @@ public class TreeManager extends PersistentState {
             treeStructureMapping.values().removeAll(Collections.singleton(structureID));
             treeStructureRegistry.remove(structureID);
 
-            updateAllPlayers(world, world.getRegistryKey());
+            updateAllPlayers(world);
             markDirty();
         }
     }
 
-    public void updateAllPlayers(ServerWorld world, RegistryKey<World> worldKey) {
+    public void updateAllPlayers(ServerWorld world) {
+        RegistryKey<World> worldKey = world.getRegistryKey();
+
         // Add the tree structure map to a packet buf
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeCollection(treeStructureMapping.keySet(), PacketByteBuf::writeBlockPos);
@@ -325,7 +333,7 @@ public class TreeManager extends PersistentState {
 
     public static void checkLifeForce(World world, BlockPos startingPos) {
         TreeManager treeManager = ((ServerWorldMixinAccess)world).getTreeManager();
-        TreeStructure tree = treeManager.getTreeStructureFromBlock(startingPos, world);
+        TreeStructure tree = treeManager.getTreeStructureFromPos(startingPos, world);
 
         // Check life force of entire tree
         // TODO: Optimise

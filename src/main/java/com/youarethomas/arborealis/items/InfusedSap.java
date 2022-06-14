@@ -24,7 +24,7 @@ public class InfusedSap extends Item {
     // Test Method
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
-        /*if (!context.getWorld().isClient) {
+        if (!context.getWorld().isClient) {
             ServerWorldMixinAccess serverWorld = (ServerWorldMixinAccess) context.getWorld();
 
             TreeManager treeManager = serverWorld.getTreeManager();
@@ -35,9 +35,9 @@ public class InfusedSap extends Item {
                 treeManager.removeTreeStructureFromBlock(pos, world);
             else
                 treeManager.addTreeStructureFromBlock(pos, world);
-        }*/
+        }
 
-        BlockEntity be = context.getWorld().getBlockEntity(context.getBlockPos());
+        /*BlockEntity be = context.getWorld().getBlockEntity(context.getBlockPos());
         if (be instanceof CarvedLogEntity) {
             System.out.printf("== %s ==%n", context.getWorld().isClient() ? "Client" : "Server");
             System.out.println(" Runes registered: " + RuneManager.getRunes());
@@ -47,7 +47,7 @@ public class InfusedSap extends Item {
             System.out.println(" Show radius: " + ((CarvedLogEntity) be).getShowRadius());
 
             return ActionResult.SUCCESS;
-        }
+        }*/
 
         return ActionResult.PASS;
     }

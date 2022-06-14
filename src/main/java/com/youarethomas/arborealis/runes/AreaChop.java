@@ -32,11 +32,11 @@ public class AreaChop extends Rune {
         BlockPos.iterateRandomly(Arborealis.RANDOM, SPEED, pos, be.radius).forEach(blockPos -> {
             // If the block found is a log
             if (world.getBlockState(blockPos).isIn(BlockTags.LOGS) || world.getBlockState(blockPos).isIn(Arborealis.MODIFIED_LOGS)) {
-                TreeStructure homeTree = treeManager.getTreeStructureFromBlock(pos, world);
+                TreeStructure homeTree = treeManager.getTreeStructureFromPos(pos, world);
 
                 // if the found block is in the home tree
                 if (!homeTree.isPosInTree(blockPos)) {
-                    TreeStructure foundTree = treeManager.getTreeStructureFromBlock(blockPos, world);
+                    TreeStructure foundTree = treeManager.getTreeStructureFromPos(blockPos, world);
 
                     // if the tree is mini natural, kill it >:)
                     if (foundTree.isNatural()) {

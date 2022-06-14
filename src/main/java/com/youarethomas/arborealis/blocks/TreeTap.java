@@ -15,9 +15,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -107,7 +105,7 @@ public class TreeTap extends HorizontalFacingBlock {
 
         if (random.nextInt(2) == 0) {
             TreeManager treeManager = ((ServerWorldMixinAccess)world).getTreeManager();
-            if (treeManager.getTreeStructureFromBlock(pos.offset(state.get(Properties.HORIZONTAL_FACING), -1), world).isNatural())
+            if (treeManager.getTreeStructureFromPos(pos.offset(state.get(Properties.HORIZONTAL_FACING), -1), world).isNatural())
             {
                 if (bucketEntity != null && bucketEntity.getSapAmount() < 12) {
                     WoodenBucket.changeSapLevel(world, pos.down(), 1);

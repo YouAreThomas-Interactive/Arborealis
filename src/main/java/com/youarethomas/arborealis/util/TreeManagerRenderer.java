@@ -18,7 +18,7 @@ import java.util.Map;
 public class TreeManagerRenderer {
 
     private static Map<RegistryKey<World>, Collection<BlockPos>> treeBlockPositions = new HashMap<>();
-    private final static double PADDING = 0.01;
+    private final static double PADDING = 0.001;
 
     public static void setBlockPositions(RegistryKey<World> worldKey, Collection<BlockPos> positions) {
         treeBlockPositions.put(worldKey, positions);
@@ -48,6 +48,6 @@ public class TreeManagerRenderer {
                 pos.getX() - camera.getPos().x + 1 + PADDING,
                 pos.getY() - camera.getPos().y + 1 + PADDING,
                 pos.getZ() - camera.getPos().z + 1 + PADDING,
-                1.0f, 1.0f, 1.0f, 1.0f);
+                1.0f, 1.0f, 1.0f, 0.5f);
     }
 }
