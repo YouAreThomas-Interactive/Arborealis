@@ -67,6 +67,10 @@ public class TreeManager extends PersistentState {
         return new HashSet<>(treeStructureRegistry.values());
     }
 
+    public static boolean isTreeBlock(BlockState blockState) {
+        return blockState.isIn(BlockTags.LOGS) || blockState.isIn(BlockTags.LEAVES) || blockState.isIn(Arborealis.MODIFIED_LOGS);
+    }
+
     @Override
     public NbtCompound writeNbt(NbtCompound nbt) {
         // Handles the encoding of the block positions in the tree structure mapping.
@@ -160,10 +164,14 @@ public class TreeManager extends PersistentState {
     public void removeBlockFromTreeStructure(BlockPos pos, ServerWorld world) {
         // If the block is in an existing structure...
         if (isBlockInTreeStructure(pos)) {
-            // TODO: Recalculate tree from blocks around broken block
-            System.out.println("Removing block");
-            getTreeStructureFromPos(pos, world).removeBlockFromTree(pos);
-            treeStructureMapping.remove(pos);
+            removeTreeStructureFromBlock(pos, world);
+
+            BlockPos.iterateOutwards(pos, 1, 1, 1).forEach(pos1 -> {
+                if (!pos1.equals(pos))
+                    if (!treeStructureMapping.containsKey(pos1))
+                        addTreeStructureFromBlock(pos1, world);
+            });
+
             updateAllPlayers(world);
         }
     }
@@ -174,8 +182,6 @@ public class TreeManager extends PersistentState {
      * @return Returns a TreeStucture if found, otherwise returns null
      */
     public TreeStructure getTreeStructureFromPos(BlockPos pos, World world) {
-        BlockState clickedBlock = world.getBlockState(pos);
-
         if(this.treeStructureMapping.containsKey(pos)) {
             // Get the structure that is stored at that position.
             return this.treeStructureRegistry.get(this.treeStructureMapping.get(pos));
@@ -185,25 +191,31 @@ public class TreeManager extends PersistentState {
     }
 
     public TreeStructure addTreeStructureFromBlock(BlockPos startingPos, ServerWorld world) {
-        TreeStructure structure = new TreeStructure();
+        BlockState clickedBlock = world.getBlockState(startingPos);
 
-        structure.logs.addAll(getTreeLogs(world, startingPos)); // Add all found logs to the TreeStructure
-        structure.leaves.addAll(getTreeLeaves(world, structure.logs)); // Add all the found leaves to the TreeStructure
+        if (isTreeBlock(clickedBlock)) {
+            TreeStructure structure = new TreeStructure();
 
-        // Create a new ID for the tree structure.
-        String structureID = UUID.randomUUID().toString();
+            structure.logs.addAll(getTreeLogs(world, startingPos)); // Add all found logs to the TreeStructure
+            structure.leaves.addAll(getTreeLeaves(world, structure.logs)); // Add all the found leaves to the TreeStructure
 
-        // Stores the information of the tree structure found
-        this.treeStructureMapping.putAll(structure.logs.stream()
-                .collect(Collectors.toMap(Function.identity(), key -> structureID)));
-        this.treeStructureMapping.putAll(structure.leaves.stream()
-                .collect(Collectors.toMap(Function.identity(), key -> structureID)));
-        this.treeStructureRegistry.put(structureID, structure);
+            // Create a new ID for the tree structure.
+            String structureID = UUID.randomUUID().toString();
 
-        updateAllPlayers(world);
-        markDirty();
+            // Stores the information of the tree structure found
+            this.treeStructureMapping.putAll(structure.logs.stream()
+                    .collect(Collectors.toMap(Function.identity(), key -> structureID)));
+            this.treeStructureMapping.putAll(structure.leaves.stream()
+                    .collect(Collectors.toMap(Function.identity(), key -> structureID)));
+            this.treeStructureRegistry.put(structureID, structure);
 
-        return structure;
+            updateAllPlayers(world);
+            markDirty();
+
+            return structure;
+        }
+
+        return null;
     }
 
     public List<BlockPos> getStructureBlocks() {
