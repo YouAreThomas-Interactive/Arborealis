@@ -171,12 +171,10 @@ public class TreeManager extends PersistentState {
         return treeStructureMapping.containsKey(position);
     }
 
-    public void removeBlockFromTreeStructure(BlockPos pos, ServerWorld world) {
+    public void removeBlockFromTreeStructure(BlockState state, BlockPos pos, ServerWorld world) {
         // If the block is in an existing structure...
         if (isBlockInTreeStructure(pos)) {
-            BlockState blockState = world.getBlockState(pos);
-
-            if(isLogBlock(blockState)) {
+            if(isLogBlock(state)) {
                 deconstructTreeStructureFromBlock(pos, world);
 
                 BlockPos.iterateOutwards(pos, 1, 1, 1).forEach(pos1 -> {
@@ -184,7 +182,7 @@ public class TreeManager extends PersistentState {
                         if (!treeStructureMapping.containsKey(pos1))
                             constructTreeStructureFromBlock(pos1.mutableCopy(), List.of(pos), world);
                 });
-            } else if(isLeafBlock(blockState)) {
+            } else if(isLeafBlock(state)) {
                 getTreeStructureFromPos(pos, world).removeBlockFromTree(pos);
                 treeStructureMapping.remove(pos);
             }
