@@ -177,7 +177,7 @@ public class TreeManager extends PersistentState {
             BlockPos.iterateOutwards(pos, 1, 1, 1).forEach(pos1 -> {
                 if (!pos1.equals(pos))
                     if (!treeStructureMapping.containsKey(pos1))
-                        constructTreeStructureFromBlock(pos1, world);
+                        constructTreeStructureFromBlock(pos1.mutableCopy(), world);
             });
 
             updateAllPlayers(world);
