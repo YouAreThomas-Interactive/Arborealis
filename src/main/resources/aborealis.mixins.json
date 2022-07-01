@@ -9,7 +9,7 @@
     "AxeItemAccessor",
     "PlayerManagerMixin",
     "ServerWorldMixin",
-    "SPIMMixin"
+    "AbstractBlockMixin"
   ],
   "client": [
     "MouseMixin",
