@@ -23,6 +23,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
+
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -172,13 +174,20 @@ public class TreeManager extends PersistentState {
     public void removeBlockFromTreeStructure(BlockPos pos, ServerWorld world) {
         // If the block is in an existing structure...
         if (isBlockInTreeStructure(pos)) {
-            deconstructTreeStructureFromBlock(pos, world);
+            BlockState blockState = world.getBlockState(pos);
 
-            BlockPos.iterateOutwards(pos, 1, 1, 1).forEach(pos1 -> {
-                if (!pos1.equals(pos))
-                    if (!treeStructureMapping.containsKey(pos1))
-                        constructTreeStructureFromBlock(pos1.mutableCopy(), world);
-            });
+            if(isLogBlock(blockState)) {
+                deconstructTreeStructureFromBlock(pos, world);
+
+                BlockPos.iterateOutwards(pos, 1, 1, 1).forEach(pos1 -> {
+                    if (!pos1.equals(pos))
+                        if (!treeStructureMapping.containsKey(pos1))
+                            constructTreeStructureFromBlock(pos1.mutableCopy(), List.of(pos), world);
+                });
+            } else if(isLeafBlock(blockState)) {
+                getTreeStructureFromPos(pos, world).removeBlockFromTree(pos);
+                treeStructureMapping.remove(pos);
+            }
 
             updateAllPlayers(world);
         }
@@ -199,12 +208,16 @@ public class TreeManager extends PersistentState {
     }
 
     public TreeStructure constructTreeStructureFromBlock(BlockPos startingPos, ServerWorld world) {
+        return constructTreeStructureFromBlock(startingPos, null, world);
+    }
+
+    public TreeStructure constructTreeStructureFromBlock(BlockPos startingPos, @Nullable Collection<BlockPos> blackListPoses, ServerWorld world) {
         BlockState clickedBlock = world.getBlockState(startingPos);
 
         if (isTreeBlock(clickedBlock)) {
             TreeStructure structure = new TreeStructure();
 
-            structure.logs.addAll(getTreeLogs(world, startingPos)); // Add all found logs to the TreeStructure
+            structure.logs.addAll(getTreeLogs(world, startingPos, blackListPoses)); // Add all found logs to the TreeStructure
             structure.leaves.addAll(getTreeLeaves(world, structure.logs)); // Add all the found leaves to the TreeStructure
 
             // Create a new ID for the tree structure.
@@ -256,7 +269,7 @@ public class TreeManager extends PersistentState {
         }
     }
 
-    private static TreeSet<BlockPos> getTreeLogs(World world, BlockPos startingPos) {
+    private static TreeSet<BlockPos> getTreeLogs(World world, BlockPos startingPos, @Nullable Collection<BlockPos> blackListPoses) {
         TreeSet<BlockPos> toVisit = new TreeSet<>();
         TreeSet<BlockPos> visited = new TreeSet<>();
         BlockPos currentPos = startingPos;
@@ -272,9 +285,13 @@ public class TreeManager extends PersistentState {
 
             for (BlockPos pos : BlockPos.iterate(scanCubeStart, scanCubeEnd)) {
                 BlockState currentBlockState = world.getBlockState(pos);
-                // If a log is detected that hasn't been iterated over yet, add to the list of blocks to get around to
-                if ((currentBlockState.isIn(BlockTags.LOGS) || currentBlockState.isIn(Arborealis.MODIFIED_LOGS)) && !visited.contains(pos)) {
-                    toVisit.add(pos.mutableCopy()); // mutableCopy() required because Java is a tool
+
+                // TODO: Find better way to identify blocks NOT to be added to the tree, may be possible to handle through block state tags/metadata.
+                if(blackListPoses == null || !blackListPoses.contains(pos)) {
+                    // If a log is detected that hasn't been iterated over yet, add to the list of blocks to get around to
+                    if ((currentBlockState.isIn(BlockTags.LOGS) || currentBlockState.isIn(Arborealis.MODIFIED_LOGS)) && !visited.contains(pos)) {
+                        toVisit.add(pos.mutableCopy()); // mutableCopy() required because Java is a tool
+                    }
                 }
             }
 
