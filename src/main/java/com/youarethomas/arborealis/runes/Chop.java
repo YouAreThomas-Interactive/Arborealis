@@ -15,7 +15,7 @@ public class Chop extends Rune {
     @Override
     public void onRuneFound(World world, BlockPos pos, CarvedLogEntity be) {
         TreeManager treeManager = ((ServerWorldMixinAccess)world).getTreeManager();
-        TreeStructure tree = treeManager.addTreeStructureFromBlock(pos, (ServerWorld) world);
+        TreeStructure tree = treeManager.constructTreeStructureFromBlock(pos, (ServerWorld) world);
 
         be.chopTimer.schedule(new TimerTask() {
             @Override

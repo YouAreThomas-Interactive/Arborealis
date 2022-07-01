@@ -1,10 +1,7 @@
 package com.youarethomas.arborealis.items;
 
-import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.mixin_access.ServerWorldMixinAccess;
-import com.youarethomas.arborealis.util.RuneManager;
 import com.youarethomas.arborealis.util.TreeManager;
-import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.*;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -32,9 +29,9 @@ public class InfusedSap extends Item {
             ServerWorld world = (ServerWorld) context.getWorld();
 
             if (treeManager.isBlockInTreeStructure(pos))
-                treeManager.removeTreeStructureFromBlock(pos, world);
+                treeManager.deconstructTreeStructureFromBlock(pos, world);
             else
-                treeManager.addTreeStructureFromBlock(pos, world);
+                treeManager.constructTreeStructureFromBlock(pos, world);
         }
 
         /*BlockEntity be = context.getWorld().getBlockEntity(context.getBlockPos());

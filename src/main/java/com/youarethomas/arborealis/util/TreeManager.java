@@ -164,12 +164,12 @@ public class TreeManager extends PersistentState {
     public void removeBlockFromTreeStructure(BlockPos pos, ServerWorld world) {
         // If the block is in an existing structure...
         if (isBlockInTreeStructure(pos)) {
-            removeTreeStructureFromBlock(pos, world);
+            deconstructTreeStructureFromBlock(pos, world);
 
             BlockPos.iterateOutwards(pos, 1, 1, 1).forEach(pos1 -> {
                 if (!pos1.equals(pos))
                     if (!treeStructureMapping.containsKey(pos1))
-                        addTreeStructureFromBlock(pos1, world);
+                        constructTreeStructureFromBlock(pos1, world);
             });
 
             updateAllPlayers(world);
@@ -190,7 +190,7 @@ public class TreeManager extends PersistentState {
         return null;
     }
 
-    public TreeStructure addTreeStructureFromBlock(BlockPos startingPos, ServerWorld world) {
+    public TreeStructure constructTreeStructureFromBlock(BlockPos startingPos, ServerWorld world) {
         BlockState clickedBlock = world.getBlockState(startingPos);
 
         if (isTreeBlock(clickedBlock)) {
@@ -222,7 +222,7 @@ public class TreeManager extends PersistentState {
         return treeStructureMapping.keySet().stream().toList();
     }
 
-    public void removeTreeStructureFromBlock(BlockPos startingPos, ServerWorld world) {
+    public void deconstructTreeStructureFromBlock(BlockPos startingPos, ServerWorld world) {
         String structureID = this.treeStructureMapping.get(startingPos);
 
         if(structureID != null) {
