@@ -68,7 +68,15 @@ public class TreeManager extends PersistentState {
     }
 
     public static boolean isTreeBlock(BlockState blockState) {
-        return blockState.isIn(BlockTags.LOGS) || blockState.isIn(BlockTags.LEAVES) || blockState.isIn(Arborealis.MODIFIED_LOGS);
+        return isLogBlock(blockState) || isLeafBlock(blockState);
+    }
+
+    public static boolean isLogBlock(BlockState blockState) {
+        return blockState.isIn(BlockTags.LOGS) || blockState.isIn(Arborealis.MODIFIED_LOGS);
+    }
+
+    public static boolean isLeafBlock(BlockState blockState) {
+        return blockState.isIn(BlockTags.LEAVES);
     }
 
     @Override
