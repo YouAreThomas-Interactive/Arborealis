@@ -10,10 +10,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class TreeManagerRenderer {
 
@@ -30,15 +27,17 @@ public class TreeManagerRenderer {
     }
 
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Camera camera, World world) {
-        if (treeBlockPositions.get(world.getRegistryKey()) != null)
-            for (BlockPos blockToHighlight: treeBlockPositions.get(world.getRegistryKey())) {
+        if (treeBlockPositions.get(world.getRegistryKey()) != null) {
+            Random r = new Random(0);
+            for (BlockPos blockToHighlight : treeBlockPositions.get(world.getRegistryKey())) {
                 matrices.push();
-                drawBorderBlock(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), blockToHighlight, camera);
+                drawBorderBlock(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), blockToHighlight, camera, r);
                 matrices.pop();
             }
+        }
     }
 
-    private void drawBorderBlock(MatrixStack matrices, VertexConsumer vertices, BlockPos pos, Camera camera) {
+    private void drawBorderBlock(MatrixStack matrices, VertexConsumer vertices, BlockPos pos, Camera camera, Random r) {
         WorldRenderer.drawBox(
                 matrices,
                 vertices,
@@ -48,6 +47,9 @@ public class TreeManagerRenderer {
                 pos.getX() - camera.getPos().x + 1 + PADDING,
                 pos.getY() - camera.getPos().y + 1 + PADDING,
                 pos.getZ() - camera.getPos().z + 1 + PADDING,
-                1.0f, 1.0f, 1.0f, 0.5f);
+                0.5f + r.nextFloat() * 0.5f,
+                0.5f + r.nextFloat() * 0.5f,
+                0.5f + r.nextFloat() * 0.5f,
+                0.5f);
     }
 }
