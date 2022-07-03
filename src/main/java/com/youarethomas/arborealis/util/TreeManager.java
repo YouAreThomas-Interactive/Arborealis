@@ -287,7 +287,7 @@ public class TreeManager extends PersistentState {
                 // TODO: Find better way to identify blocks NOT to be added to the tree, may be possible to handle through block state tags/metadata.
                 if(blackListPoses == null || !blackListPoses.contains(pos)) {
                     // If a log is detected that hasn't been iterated over yet, add to the list of blocks to get around to
-                    if ((currentBlockState.isIn(BlockTags.LOGS) || currentBlockState.isIn(Arborealis.MODIFIED_LOGS)) && !visited.contains(pos)) {
+                    if (isLogBlock(currentBlockState) && !visited.contains(pos)) {
                         toVisit.add(pos.mutableCopy()); // mutableCopy() required because Java is a tool
                     }
                 }
