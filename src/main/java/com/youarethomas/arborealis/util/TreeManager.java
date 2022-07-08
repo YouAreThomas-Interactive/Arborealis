@@ -205,10 +205,11 @@ public class TreeManager extends PersistentState {
     }
 
     public TreeStructure constructTreeStructureFromBlock(BlockPos startingPos, ServerWorld world) {
-        return constructTreeStructureFromBlock(startingPos, null, world);
+        String structureID = constructTreeStructureFromBlock(startingPos, null, world);
+        return this.treeStructureRegistry.get(structureID);
     }
 
-    public TreeStructure constructTreeStructureFromBlock(BlockPos startingPos, @Nullable Collection<BlockPos> blackListPoses, ServerWorld world) {
+    private String constructTreeStructureFromBlock(BlockPos startingPos, @Nullable Collection<BlockPos> blackListPoses, ServerWorld world) {
         BlockState clickedBlock = world.getBlockState(startingPos);
 
         if (isTreeBlock(clickedBlock)) {
@@ -230,7 +231,7 @@ public class TreeManager extends PersistentState {
             updateAllPlayers(world);
             markDirty();
 
-            return structure;
+            return structureID;
         }
 
         return null;
@@ -240,7 +241,7 @@ public class TreeManager extends PersistentState {
         return treeStructureMapping.keySet().stream().toList();
     }
 
-    public void deconstructTreeStructureFromBlock(BlockPos startingPos, ServerWorld world) {
+    public String deconstructTreeStructureFromBlock(BlockPos startingPos, ServerWorld world) {
         String structureID = this.treeStructureMapping.get(startingPos);
 
         if(structureID != null) {
@@ -250,6 +251,8 @@ public class TreeManager extends PersistentState {
             updateAllPlayers(world);
             markDirty();
         }
+
+        return structureID;
     }
 
     public void updateAllPlayers(ServerWorld world) {
