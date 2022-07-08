@@ -58,11 +58,12 @@ public class TreeManager extends PersistentState {
     /**
      * Constructs the manager with a generated tree structure mapping.
      *
-     * @param treeStructureMapping The generated tree structure mapping.
+     * @param treeStructureMapping The generated world-dependent tree structure mapping.
+     * @param treeStructureRegistry The world-dependent registry of all tree structures.
      */
-    public TreeManager(Hashtable<BlockPos, String> treeStructureMapping, Hashtable<String, TreeStructure> treeStructureRegistery) {
+    public TreeManager(Hashtable<BlockPos, String> treeStructureMapping, Hashtable<String, TreeStructure> treeStructureRegistry) {
         this.treeStructureMapping = treeStructureMapping;
-        this.treeStructureRegistry = treeStructureRegistery;
+        this.treeStructureRegistry = treeStructureRegistry;
     }
 
     public HashSet<TreeStructure> getTreeStructures() {
