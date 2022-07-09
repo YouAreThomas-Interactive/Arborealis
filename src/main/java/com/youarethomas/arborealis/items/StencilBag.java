@@ -2,15 +2,14 @@ package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
+import com.youarethomas.arborealis.misc.StencilBagInventory;
 import com.youarethomas.arborealis.runes.Rune;
-import com.youarethomas.arborealis.util.ImplementedInventory;
 import com.youarethomas.arborealis.util.RuneManager;
 import com.youarethomas.arborealis.gui.StencilBagScreenHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.DyeableItem;
 import net.minecraft.item.Item;
@@ -18,9 +17,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -32,9 +30,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.List;
 
-public class StencilBag extends Item implements NamedScreenHandlerFactory, ImplementedInventory, DyeableItem {
+public class StencilBag extends Item implements DyeableItem {
     public static final int BAG_SLOTS = 18;
-    public static ItemStack openBag; // The active bag that's opened by the player
 
     public StencilBag(Settings settings) {
         super(settings);
@@ -52,11 +49,11 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         // Can probably replace with something else... use is a bit shit
-        openBag = player.getStackInHand(hand);
+        ItemStack openBag = player.getStackInHand(hand);
 
         // If you right-click the bag in the air...
         if (player.isSneaking()) {
-            player.openHandledScreen(this);
+            player.openHandledScreen(createScreenHandlerFactory(openBag));
             return TypedActionResult.success(openBag);
         }
 
@@ -70,15 +67,14 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
         World world = context.getWorld();
         BlockState blockState = world.getBlockState(blockPos);
 
-        DefaultedList<ItemStack> inventory = DefaultedList.ofSize(StencilBag.BAG_SLOTS, ItemStack.EMPTY);
         NbtCompound nbt = player.getMainHandStack().getNbt();
 
         if (nbt != null) {
-            Inventories.readNbt(nbt, inventory);
+            StencilBagInventory bagInventory = new StencilBagInventory(player.getMainHandStack());
 
             if (nbt.contains("selected")) {
                 int selectedSlot = nbt.getInt("selected");
-                ItemStack stack = inventory.get(selectedSlot);
+                ItemStack stack = bagInventory.getItems().get(selectedSlot);
 
                 if (stack.isOf(Arborealis.CARVED_STENCIL)) {
                     StencilCarved stencil = (StencilCarved) stack.getItem();
@@ -97,25 +93,22 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         if (Screen.hasShiftDown()) {
-
-            DefaultedList<ItemStack> inventory = DefaultedList.ofSize(StencilBag.BAG_SLOTS, ItemStack.EMPTY);
-
             NbtCompound nbt = stack.getNbt();
             String selectedRuneName = Text.translatable("item.arborealis.stencil_bag.none").getString();
             int numberOfRunes = 0;
 
             if (nbt != null) {
-                Inventories.readNbt(nbt, inventory);
+                StencilBagInventory bagInventory = new StencilBagInventory(stack);
 
                 for (int i = 0; i < StencilBag.BAG_SLOTS; i++) {
-                    if (!getStack(i).isEmpty()) {
+                    if (!bagInventory.getStack(i).isEmpty()) {
                         numberOfRunes++;
                     }
                 }
 
                 if (nbt.contains("selected")) {
                     // Get the item stack at the specified spot
-                    ItemStack selectedStack = inventory.get(nbt.getInt("selected"));
+                    ItemStack selectedStack = bagInventory.getItems().get(nbt.getInt("selected"));
                     if (!selectedStack.isEmpty()) {
                         NbtCompound stencilNbt = selectedStack.getNbt();
 
@@ -150,66 +143,7 @@ public class StencilBag extends Item implements NamedScreenHandlerFactory, Imple
         }
     }
 
-    @Override
-    public DefaultedList<ItemStack> getItems() {
-        DefaultedList<ItemStack> inventory = DefaultedList.ofSize(StencilBag.BAG_SLOTS, ItemStack.EMPTY);
-
-        NbtCompound nbt = openBag.getOrCreateNbt();
-        Inventories.readNbt(nbt, inventory);
-
-        return inventory;
-    }
-
-    @Override
-    public void setStack(int slot, ItemStack stack) {
-        DefaultedList<ItemStack> inventory = this.getItems();
-
-        inventory.set(slot, stack);
-        if (stack.getCount() > getMaxCountPerStack()) {
-            stack.setCount(getMaxCountPerStack());
-        }
-
-        saveItems(inventory);
-    }
-
-    @Override
-    public ItemStack removeStack(int slot) {
-        DefaultedList<ItemStack> inventory = this.getItems();
-        ItemStack removedStack = Inventories.removeStack(inventory, slot);
-
-        saveItems(inventory);
-
-        return removedStack;
-    }
-
-    @Override
-    public ItemStack removeStack(int slot, int count) {
-        DefaultedList<ItemStack> inventory = this.getItems();
-
-        ItemStack result = Inventories.splitStack(inventory, slot, count);
-        if (!result.isEmpty()) {
-            markDirty();
-        }
-
-        saveItems(inventory);
-
-        return result;
-    }
-
-    private void saveItems(DefaultedList<ItemStack> inventory) {
-        NbtCompound nbt = openBag.getOrCreateNbt();
-        Inventories.writeNbt(nbt, inventory);
-        openBag.setNbt(nbt);
-    }
-
-    @Override
-    public Text getDisplayName() {
-        return this.getName(openBag); // Copies bag item name
-    }
-
-    @Nullable
-    @Override
-    public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-        return new StencilBagScreenHandler(syncId, inv, this);
+    private NamedScreenHandlerFactory createScreenHandlerFactory(ItemStack stack) {
+        return new SimpleNamedScreenHandlerFactory((syncId, inventory, player) -> new StencilBagScreenHandler(syncId, inventory, new StencilBagInventory(stack)), stack.getName());
     }
 }

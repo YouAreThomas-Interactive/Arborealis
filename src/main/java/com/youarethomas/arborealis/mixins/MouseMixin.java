@@ -2,6 +2,7 @@ package com.youarethomas.arborealis.mixins;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.items.StencilBag;
+import com.youarethomas.arborealis.misc.StencilBagInventory;
 import com.youarethomas.arborealis.runes.Rune;
 import com.youarethomas.arborealis.util.ArborealisConstants;
 import com.youarethomas.arborealis.util.RuneManager;
@@ -37,17 +38,14 @@ public class MouseMixin {
 
         if (player != null && player.isSneaking()) {
             ItemStack itemInHand = player.getStackInHand(Hand.MAIN_HAND);
+            StencilBagInventory bagInventory = new StencilBagInventory(itemInHand);
 
             // If player is holding shift and holding a stencil bag, cancel the normal hotbar scroll and instead...
             if (itemInHand.isOf(Arborealis.STENCIL_BAG)) {
-                DefaultedList<ItemStack> inventory = DefaultedList.ofSize(StencilBag.BAG_SLOTS, ItemStack.EMPTY);
-
                 NbtCompound nbt = itemInHand.getNbt();
                 int selectedStencilSlot = 0;
 
                 if (nbt != null) {
-                    Inventories.readNbt(nbt, inventory);
-
                     if (nbt.contains("selected")) {
                         // Get the currently selected slot
                         selectedStencilSlot = nbt.getInt("selected");
@@ -56,7 +54,7 @@ public class MouseMixin {
                         if (vertical > 0) {
                             for (int i = 1; i <= StencilBag.BAG_SLOTS; i++) {
                                 int newSlot = (selectedStencilSlot + i) % StencilBag.BAG_SLOTS;
-                                if (inventory.get(newSlot).isOf(Arborealis.CARVED_STENCIL)) {
+                                if (bagInventory.getItems().get(newSlot).isOf(Arborealis.CARVED_STENCIL)) {
                                     selectedStencilSlot = newSlot;
                                     nbt.putInt("selected", selectedStencilSlot);
                                     break;
@@ -65,7 +63,7 @@ public class MouseMixin {
                         } else {
                             for (int i = StencilBag.BAG_SLOTS - 1; i >= 0; i--) {
                                 int newSlot = (selectedStencilSlot + i) % StencilBag.BAG_SLOTS;
-                                if (inventory.get(newSlot).isOf(Arborealis.CARVED_STENCIL)) {
+                                if (bagInventory.getItems().get(newSlot).isOf(Arborealis.CARVED_STENCIL)) {
                                     selectedStencilSlot = newSlot;
                                     nbt.putInt("selected", selectedStencilSlot);
                                     break;
@@ -87,7 +85,7 @@ public class MouseMixin {
                 }
 
                 // Get the item stack at the specified spot
-                ItemStack selectedStack = inventory.get(selectedStencilSlot);
+                ItemStack selectedStack = bagInventory.getItems().get(selectedStencilSlot);
                 String selectedMsg = Text.translatable("item.arborealis.stencil_bag.none").getString(); // If there are no runes in the bag
 
                 if (!selectedStack.isEmpty()) {
