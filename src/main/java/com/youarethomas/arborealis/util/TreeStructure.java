@@ -39,7 +39,7 @@ public class TreeStructure {
     }
 
     public boolean isEmpty() {
-        return logs.isEmpty();
+        return logs.isEmpty() && leaves.isEmpty();
     }
 
     public void replaceLogStructure(World world) {
