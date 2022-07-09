@@ -1,5 +1,6 @@
 package com.youarethomas.arborealis.util;
 
+import com.sun.source.tree.Tree;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
@@ -53,6 +54,7 @@ public class TreeManager extends PersistentState {
     public TreeManager() {
         this.treeStructureMapping = new Hashtable<>();
         this.treeStructureRegistry = new Hashtable<>();
+        markDirty();
     }
 
     /**
@@ -64,6 +66,7 @@ public class TreeManager extends PersistentState {
     public TreeManager(Hashtable<BlockPos, String> treeStructureMapping, Hashtable<String, TreeStructure> treeStructureRegistry) {
         this.treeStructureMapping = treeStructureMapping;
         this.treeStructureRegistry = treeStructureRegistry;
+        markDirty();
     }
 
     public HashSet<TreeStructure> getTreeStructures() {
@@ -230,7 +233,6 @@ public class TreeManager extends PersistentState {
             this.treeStructureRegistry.put(structureID, structure);
 
             updateAllPlayers(world);
-            markDirty();
 
             return structureID;
         }
@@ -250,7 +252,6 @@ public class TreeManager extends PersistentState {
             treeStructureRegistry.remove(structureID);
 
             updateAllPlayers(world);
-            markDirty();
         }
 
         return structureID;
@@ -268,6 +269,8 @@ public class TreeManager extends PersistentState {
         for (ServerPlayerEntity player : PlayerLookup.all(world.getServer())) {
             ServerPlayNetworking.send(player, ArborealisConstants.TREE_MAP_UPDATE, buf);
         }
+
+        markDirty();
     }
 
     private static TreeSet<BlockPos> getTreeLogs(World world, BlockPos startingPos, @Nullable Collection<BlockPos> blackListPoses) {
