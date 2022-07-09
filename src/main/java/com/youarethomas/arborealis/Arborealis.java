@@ -84,6 +84,7 @@ public class Arborealis implements ModInitializer {
 
 	public static final TreeTap TREE_TAP = new TreeTap(FabricBlockSettings.of(Material.METAL));
 	public static final WoodenBucket WOODEN_BUCKET = new WoodenBucket(FabricBlockSettings.of(Material.WOOD));
+	public static final ProjectorBlock PROJECTOR = new ProjectorBlock(FabricBlockSettings.of(Material.METAL));
 
 	// Block Entities
 	public static BlockEntityType<CarvedLogEntity> CARVED_LOG_ENTITY;
@@ -91,6 +92,7 @@ public class Arborealis implements ModInitializer {
 	public static BlockEntityType<HollowedLogEntity> HOLLOWED_LOG_ENTITY;
 	public static BlockEntityType<WoodenBucketEntity> WOODEN_BUCKET_ENTITY;
 	public static BlockEntityType<WarpCoreEntity> WARP_CORE_ENTITY;
+	public static BlockEntityType<ProjectorBlockEntity> PROJECTOR_ENTITY;
 
 	// Screen Handlers
 	public static ScreenHandlerType<StencilBagScreenHandler> STENCIL_BAG_SCREEN_HANDLER;
@@ -123,11 +125,13 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(WOODEN_BUCKET));
 				stacks.add(new ItemStack(BLANK_STENCIL));
 				stacks.add(new ItemStack(STENCIL_BAG));
+				stacks.add(new ItemStack(PROJECTOR));
 				stacks.add(new ItemStack(WARP_GRAFT));
 				stacks.add(new ItemStack(WARP_SAPLING));
 				stacks.add(new ItemStack(WARP_LEAVES));
 				stacks.add(new ItemStack(WARP_CORE));
 				stacks.add(new ItemStack(WARP_WOOD));
+
 				stacks.add(new ItemStack(WARP_LOG));
 				stacks.add(new ItemStack(STRIPPED_WARP_LOG));
 				stacks.add(new ItemStack(STRIPPED_WARP_WOOD));
@@ -155,6 +159,7 @@ public class Arborealis implements ModInitializer {
 
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "tree_tap"), TREE_TAP);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "wooden_bucket"), WOODEN_BUCKET);
+		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "projector"), PROJECTOR);
 
 		// Block entity registration
 		CARVED_LOG_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "carved_log_entity"), FabricBlockEntityTypeBuilder.create(CarvedLogEntity::new, CARVED_LOG).build(null));
@@ -162,6 +167,7 @@ public class Arborealis implements ModInitializer {
 		HOLLOWED_LOG_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "hollowed_log_entity"), FabricBlockEntityTypeBuilder.create(HollowedLogEntity::new, HOLLOWED_LOG).build(null));
 		WOODEN_BUCKET_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "wooden_bucket_entity"), FabricBlockEntityTypeBuilder.create(WoodenBucketEntity::new, WOODEN_BUCKET).build(null));
 		WARP_CORE_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "warp_core_entity"), FabricBlockEntityTypeBuilder.create(WarpCoreEntity::new, WARP_CORE).build(null));
+		PROJECTOR_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "projector_entity"), FabricBlockEntityTypeBuilder.create(ProjectorBlockEntity::new, PROJECTOR).build(null));
 
 		// Block item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_sapling"), new BlockItem(WARP_SAPLING, new FabricItemSettings()));
@@ -174,6 +180,7 @@ public class Arborealis implements ModInitializer {
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tree_tap"), new BlockItem(TREE_TAP, new FabricItemSettings().maxCount(16)));
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wooden_bucket"), new BlockItem(WOODEN_BUCKET, new FabricItemSettings().maxCount(16)));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "projector"), new BlockItem(PROJECTOR, new FabricItemSettings()));
 
 		// Tool Item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "carving_knife"), CARVING_KNIFE);

@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "arborealis:block/projector", "uvlock": true },
+    "facing=east":  { "model": "arborealis:block/projector", "y":  90, "uvlock": true },
+    "facing=south": { "model": "arborealis:block/projector", "y": 180, "uvlock": true },
+    "facing=west":  { "model": "arborealis:block/projector", "y": 270, "uvlock": true }
+  }
+}

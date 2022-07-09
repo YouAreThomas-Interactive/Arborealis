@@ -74,7 +74,13 @@
   "block.arborealis.tree_tap.tooltip4": "§8to collect §2Bottled Sap.",
 
   "block.arborealis.wooden_bucket": "Wooden Bucket",
-  "block.arborealis.wooden_bucket.tooltip1": "§7Allows sap to be collected and stored",
+  "block.arborealis.wooden_bucket.tooltip1": "§7Allows sap to be collected and stored.",
   "block.arborealis.wooden_bucket.tooltip2": "§8Place under a tree tap to begin collecting",
-  "block.arborealis.wooden_bucket.tooltip3": "§8sap, then extract with a §2Glass Bottle."
+  "block.arborealis.wooden_bucket.tooltip3": "§8sap, then extract with a §2Glass Bottle.",
+
+  "block.arborealis.projector": "Projector",
+  "block.arborealis.projector.tooltip1": "§7Used with rune stencils and lenses.",
+  "block.arborealis.projector.tooltip2": "§8Place a Rune Stencil into the holder to project",
+  "block.arborealis.projector.tooltip3": "§8runes onto a tree, or use a lens to apply effects",
+  "block.arborealis.projector.tooltip4": "§8to the entire tree."
 }

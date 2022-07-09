@@ -48,7 +48,7 @@ public class HollowedLog extends HorizontalFacingBlock implements BlockEntityPro
                     world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.3F);
                 } else {
                     // Update all runes in the tree
-                    TreeManager.checkLifeForce(world, pos);
+                    // TreeManager.checkLifeForce(world, pos);
                 }
 
                 ItemStack itemInHand = player.getStackInHand(hand);
