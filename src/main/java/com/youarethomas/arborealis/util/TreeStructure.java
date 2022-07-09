@@ -75,12 +75,9 @@ public class TreeStructure {
     }
 
     public void removeBlockFromTree(BlockPos pos) {
-        for (BlockPos logPos : logs) {
-            if (logPos.equals(pos)) {
-                logs.remove(logPos);
-                break;
-            }
-        }
+        // Will remove the block from the tree, whether log or leaf.
+        logs.remove(pos);
+        leaves.remove(pos);
     }
 
     /**
