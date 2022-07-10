@@ -1,5 +1,6 @@
 package com.youarethomas.arborealis.mixins;
 
+import com.youarethomas.arborealis.mixin_access.ServerWorldMixinAccess;
 import com.youarethomas.arborealis.util.TreeManager;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
@@ -18,7 +19,7 @@ public class AbstractBlockMixin {
     public void onStateReplacedTree(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved, CallbackInfo ci) {
         if(!Registry.BLOCK.getId(state.getBlock()).equals(Registry.BLOCK.getId(newState.getBlock())) && TreeManager.isTreeBlock(state) && !world.isClient()) {
             ServerWorld serverWorld = (ServerWorld)world;
-            TreeManager treeManager = TreeManager.getManager(serverWorld);
+            TreeManager treeManager = ((ServerWorldMixinAccess)serverWorld).getTreeManager();
             treeManager.removeBlockFromTreeStructure(state, pos, serverWorld);
         }
     }
