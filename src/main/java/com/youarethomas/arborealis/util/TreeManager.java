@@ -194,18 +194,25 @@ public class TreeManager extends PersistentState {
                             _constructTreeStructureFromBlock(pos1.mutableCopy(), List.of(pos), world, additionTable);
                 });
             } else if(isLeafBlock(state)) {
-                getTreeStructureFromPos(pos, world).removeBlockFromTree(pos);
-                String structureId = treeStructureMapping.remove(pos);
-                TreeStructure structure = treeStructureRegistry.get(structureId);
+                TreeStructure removedStructure = getTreeStructureFromPos(pos, world);
 
-                if(structure.isEmpty()) {
-                    // Remove the empty tree.
-                    treeStructureRegistry.remove(structureId);
-                    removalList.add(structureId);
-                } else {
-                    // Marks it as being replaced on the client side.
-                    // TODO: Maybe have a separate protocol to mark a leaf block being removed.
-                    additionTable.put(structureId, treeStructureRegistry.get(structureId));
+                // Removes the block pos regardless to eliminate any null entries in the block mappings.
+                String structureId = treeStructureMapping.remove(pos);
+
+                if(removedStructure != null) {
+                    removedStructure.removeBlockFromTree(pos);
+                    treeStructureRegistry.get(structureId);
+
+                    if (removedStructure.isEmpty() || !removedStructure.isNatural()) {
+                        // Remove the empty and non-natural trees.
+                        treeStructureMapping.values().removeAll(Collections.singleton(structureId));
+                        treeStructureRegistry.remove(structureId);
+                        removalList.add(structureId);
+                    } else {
+                        // Marks it as being replaced on the client side.
+                        // TODO: Maybe have a separate protocol to mark a leaf block being removed.
+                        additionTable.put(structureId, removedStructure);
+                    }
                 }
             }
         }
@@ -229,7 +236,7 @@ public class TreeManager extends PersistentState {
         Hashtable<String, TreeStructure> additionTable = new Hashtable<>();
         String structureID = _constructTreeStructureFromBlock(startingPos, null, world, additionTable);
         updateAllPlayers(world, List.of(), additionTable);
-        return this.treeStructureRegistry.get(structureID);
+        return structureID == null ? null : this.treeStructureRegistry.get(structureID);
     }
 
     private String _constructTreeStructureFromBlock(BlockPos startingPos,
@@ -247,16 +254,23 @@ public class TreeManager extends PersistentState {
             // Create a new ID for the tree structure.
             String structureID = UUID.randomUUID().toString();
 
-            // Stores the information of the tree structure found
-            this.treeStructureMapping.putAll(structure.logs.stream()
-                    .collect(Collectors.toMap(Function.identity(), key -> structureID)));
-            this.treeStructureMapping.putAll(structure.leaves.stream()
-                    .collect(Collectors.toMap(Function.identity(), key -> structureID)));
-            this.treeStructureRegistry.put(structureID, structure);
+            if(structure.isNatural()) {
+                // Only adds natural trees, otherwise does not create the tree.
 
-            additionTable.put(structureID, structure);
+                // Create a new ID for the tree structure.
+                String structureID = UUID.randomUUID().toString();
 
-            return structureID;
+                // Stores the information of the tree structure found
+                this.treeStructureMapping.putAll(structure.logs.stream()
+                        .collect(Collectors.toMap(Function.identity(), key -> structureID)));
+                this.treeStructureMapping.putAll(structure.leaves.stream()
+                        .collect(Collectors.toMap(Function.identity(), key -> structureID)));
+                this.treeStructureRegistry.put(structureID, structure);
+
+                additionTable.put(structureID, structure);
+
+                return structureID;
+            }
         }
 
         return null;
