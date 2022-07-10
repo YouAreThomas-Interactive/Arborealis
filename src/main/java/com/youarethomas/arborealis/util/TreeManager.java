@@ -248,11 +248,14 @@ public class TreeManager extends PersistentState {
         if (isLogBlock(clickedBlock)) {
             TreeStructure structure = new TreeStructure();
 
-            structure.logs.addAll(getTreeLogs(world, startingPos, blackListPoses)); // Add all found logs to the TreeStructure
-            structure.leaves.addAll(getTreeLeaves(world, structure.logs)); // Add all the found leaves to the TreeStructure
+            TreeSet<BlockPos> logs = getTreeLogs(world, startingPos, blackListPoses);
+            logs.removeAll(treeStructureMapping.keySet());
 
-            // Create a new ID for the tree structure.
-            String structureID = UUID.randomUUID().toString();
+            TreeSet<BlockPos> leaves = getTreeLeaves(world, logs);
+            leaves.removeAll(treeStructureMapping.keySet());
+
+            structure.logs.addAll(logs); // Add all found logs to the TreeStructure
+            structure.leaves.addAll(leaves); // Add all the found leaves to the TreeStructure
 
             if(structure.isNatural()) {
                 // Only adds natural trees, otherwise does not create the tree.
@@ -373,7 +376,7 @@ public class TreeManager extends PersistentState {
         return visited;
     }
 
-    private static TreeSet<BlockPos> getTreeLeaves(World world, HashSet<BlockPos> logSet) {
+    private static TreeSet<BlockPos> getTreeLeaves(World world, Set<BlockPos> logSet) {
         TreeSet<BlockPos> visited = new TreeSet<>();
 
         //TODO: Add leaf range to config
