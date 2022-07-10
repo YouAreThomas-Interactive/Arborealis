@@ -1,12 +1,20 @@
 package com.youarethomas.arborealis.util;
 
+import com.youarethomas.arborealis.Arborealis;
+import net.fabricmc.fabric.api.client.model.BakedModelManagerHelper;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.BakedQuad;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
@@ -33,6 +41,7 @@ public class ArborealisUtil {
 
         return distance < radius * radius;
     }
+
 
 
     public static long argbToHex(int a, int r, int g, int b) {

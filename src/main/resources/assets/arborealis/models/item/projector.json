@@ -1,5 +1,5 @@
 {
-  "parent": "arborealis:block/projector",
+  "parent": "arborealis:block/projector/projector_base",
   "display": {
     "gui": {
       "rotation": [ 30, 45, 0 ],

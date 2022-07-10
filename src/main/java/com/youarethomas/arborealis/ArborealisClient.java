@@ -2,6 +2,7 @@ package com.youarethomas.arborealis;
 
 import com.google.common.collect.Lists;
 import com.youarethomas.arborealis.block_entity_renderers.HollowedLogEntityRenderer;
+import com.youarethomas.arborealis.block_entity_renderers.ProjectorBlockEntityRenderer;
 import com.youarethomas.arborealis.block_entity_renderers.WarpCoreEntityRenderer;
 import com.youarethomas.arborealis.models.CarvedLogDModel;
 import com.youarethomas.arborealis.models.CarvedStencilDModel;
@@ -27,6 +28,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
 import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.DyeableItem;
@@ -71,6 +73,8 @@ public class ArborealisClient implements ClientModInitializer {
         ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/hollowed_log/tree_core"))));
         ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/hollowed_log/core_tether"))));
 
+        ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/projector/beam_full"))));
+
         // Model registration
         DynamicModelRegistry.register(new CarvedLogDModel(), new Identifier(Arborealis.MOD_ID, "block/carved_log"));
         DynamicModelRegistry.register(new HollowedLogDModel(), new Identifier(Arborealis.MOD_ID, "block/hollowed_log"));
@@ -86,6 +90,7 @@ public class ArborealisClient implements ClientModInitializer {
         // Block Entity Renderers
         BlockEntityRendererRegistry.register(Arborealis.HOLLOWED_LOG_ENTITY, HollowedLogEntityRenderer::new);
         BlockEntityRendererRegistry.register(Arborealis.WARP_CORE_ENTITY, WarpCoreEntityRenderer::new);
+        BlockEntityRendererRegistry.register(Arborealis.PROJECTOR_ENTITY, ProjectorBlockEntityRenderer::new);
 
         // Colour providers
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> tintIndex > 0 ? -1 : ((DyeableItem)stack.getItem()).getColor(stack), Arborealis.STENCIL_BAG);
