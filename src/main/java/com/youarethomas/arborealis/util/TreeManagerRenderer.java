@@ -30,24 +30,35 @@ public class TreeManagerRenderer {
 
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Camera camera, World world) {
         if (treeStructureMappings.get(world.getRegistryKey()) != null) {
-            Random r = new Random(0);
+            Random ran = new Random(0);
             for (TreeStructure treeStructure : treeStructureMappings.get(world.getRegistryKey()).values()) {
+                float base_r = ran.nextFloat();
+                float base_g = ran.nextFloat();
+                float base_b = ran.nextFloat();
+
                 for (BlockPos blockToHighlight : treeStructure.leaves) {
                     matrices.push();
-                    drawBorderBlock(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), blockToHighlight, camera, r);
+                    // Leaf blocks are brighter than the logs.
+                    drawBorderBlock(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), blockToHighlight, camera,
+                            0.60f * base_r + 0.40f,
+                            0.60f * base_g + 0.40f,
+                            0.60f * base_b + 0.40f);
                     matrices.pop();
                 }
 
                 for (BlockPos blockToHighlight : treeStructure.logs) {
                     matrices.push();
-                    drawBorderBlock(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), blockToHighlight, camera, r);
+                    drawBorderBlock(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), blockToHighlight, camera,
+                            0.40f * base_r + 0.20f,
+                            0.40f * base_g + 0.20f,
+                            0.40f * base_b + 0.20f);
                     matrices.pop();
                 }
             }
         }
     }
 
-    private void drawBorderBlock(MatrixStack matrices, VertexConsumer vertices, BlockPos pos, Camera camera, Random r) {
+    private void drawBorderBlock(MatrixStack matrices, VertexConsumer vertices, BlockPos pos, Camera camera, float r, float g, float b) {
         WorldRenderer.drawBox(
                 matrices,
                 vertices,
@@ -57,9 +68,6 @@ public class TreeManagerRenderer {
                 pos.getX() - camera.getPos().x + 1 + PADDING,
                 pos.getY() - camera.getPos().y + 1 + PADDING,
                 pos.getZ() - camera.getPos().z + 1 + PADDING,
-                0.5f + r.nextFloat() * 0.5f,
-                0.5f + r.nextFloat() * 0.5f,
-                0.5f + r.nextFloat() * 0.5f,
-                0.5f);
+                r, g, b, 0.5f);
     }
 }
