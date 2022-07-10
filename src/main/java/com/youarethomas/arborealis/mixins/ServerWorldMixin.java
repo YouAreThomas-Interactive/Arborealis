@@ -23,7 +23,8 @@ public class ServerWorldMixin implements ServerWorldMixinAccess {
         // Create a new tree manager
         ServerWorld thisWorld = (ServerWorld)(Object)this;
         this.treeManager = TreeManager.getManager(thisWorld);
-        TreeManagerRenderer.setBlockPositions(thisWorld.getRegistryKey(), treeManager.getStructureBlocks());
+//        TreeManagerRenderer.setBlockPositions(thisWorld.getRegistryKey(), treeManager.getStructureBlocks());
+        // TODO: Make sure this goes the logger, can be useful debug information.
         System.out.println("World: " + thisWorld.getRegistryKey().toString() + " contains structures:" + treeManager.getTreeStructures().size());
     }
 

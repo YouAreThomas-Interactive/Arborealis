@@ -14,6 +14,7 @@ import com.youarethomas.arborealis.runes.Rune;
 import com.youarethomas.arborealis.util.RuneManager;
 import com.youarethomas.arborealis.util.ArborealisConstants;
 import com.youarethomas.arborealis.util.TreeManagerRenderer;
+import com.youarethomas.arborealis.util.TreeStructure;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -29,15 +30,19 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.DyeableItem;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Environment(EnvType.CLIENT)
 public class ArborealisClient implements ClientModInitializer {
@@ -94,11 +99,43 @@ public class ArborealisClient implements ClientModInitializer {
         ParticleFactoryRegistry.getInstance().register(Arborealis.WARP_TREE_PARTICLE, WarpTreeParticle.Factory::new);
 
         // Networking
-        ClientPlayNetworking.registerGlobalReceiver(ArborealisConstants.TREE_MAP_UPDATE, (client, handler, buf, responseSender) -> {
-            Collection<BlockPos> treeBlockPositions = buf.readCollection(PacketByteBuf.getMaxValidator(Lists::newArrayListWithCapacity, 10000), PacketByteBuf::readBlockPos);
+        ClientPlayNetworking.registerGlobalReceiver(ArborealisConstants.TREE_MAP_INIT, (client, handler, buf, responseSender) -> {
+            List<String> structureIDs = buf.readCollection(PacketByteBuf.getMaxValidator(Lists::newArrayListWithCapacity, 10000), PacketByteBuf::readString);
+            List<TreeStructure> structures = buf.readCollection(PacketByteBuf.getMaxValidator(Lists::newArrayListWithCapacity, 10000), packetByteBuf -> {
+                NbtCompound nbt = packetByteBuf.readNbt();
+                if(nbt != null) {
+                    return TreeStructure.fromNbt(nbt);
+                } else {
+                    return null;
+                }
+            });
             RegistryKey<World> worldKey = RegistryKey.of(Registry.WORLD_KEY, new Identifier(buf.readString()));
 
-            client.execute(() -> TreeManagerRenderer.setBlockPositions(worldKey, treeBlockPositions));
+            // Recreates the mappings from the structure IDs and the structures.
+            Hashtable<String, TreeStructure> treeStructureMappings = new Hashtable<>(IntStream.range(0, structureIDs.size()).boxed()
+                    .collect(Collectors.toMap(structureIDs::get, structures::get)));
+
+            client.execute(() -> TreeManagerRenderer.initTreeStructure(worldKey, treeStructureMappings));
+        });
+
+        ClientPlayNetworking.registerGlobalReceiver(ArborealisConstants.TREE_MAP_UPDATE, (client, handler, buf, responseSender) -> {
+            List<String> removedStructureIDs = buf.readCollection(PacketByteBuf.getMaxValidator(Lists::newArrayListWithCapacity, 10000), PacketByteBuf::readString);
+            List<String> addedStructureIDs = buf.readCollection(PacketByteBuf.getMaxValidator(Lists::newArrayListWithCapacity, 10000), PacketByteBuf::readString);
+            List<TreeStructure> addedStructures = buf.readCollection(PacketByteBuf.getMaxValidator(Lists::newArrayListWithCapacity, 10000), packetByteBuf -> {
+                NbtCompound nbt = packetByteBuf.readNbt();
+                if(nbt != null) {
+                    return TreeStructure.fromNbt(nbt);
+                } else {
+                    return null;
+                }
+            });
+            RegistryKey<World> worldKey = RegistryKey.of(Registry.WORLD_KEY, new Identifier(buf.readString()));
+
+            // Recreates the mappings from the structure IDs and the structures.
+            Hashtable<String, TreeStructure> treeStructureMappings = new Hashtable<>(IntStream.range(0, addedStructureIDs.size()).boxed()
+                    .collect(Collectors.toMap(addedStructureIDs::get, addedStructures::get)));
+
+            client.execute(() -> TreeManagerRenderer.updateTreeStructures(worldKey, removedStructureIDs, treeStructureMappings));
         });
 
         ClientPlayNetworking.registerGlobalReceiver(ArborealisConstants.CLIENT_RUNE_PUSH, (client, handler, buf, responseSender) -> {

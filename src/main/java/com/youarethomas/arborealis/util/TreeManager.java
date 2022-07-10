@@ -1,5 +1,6 @@
 package com.youarethomas.arborealis.util;
 
+import com.sun.source.tree.Tree;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
@@ -24,6 +25,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
@@ -53,16 +55,19 @@ public class TreeManager extends PersistentState {
     public TreeManager() {
         this.treeStructureMapping = new Hashtable<>();
         this.treeStructureRegistry = new Hashtable<>();
+        markDirty();
     }
 
     /**
      * Constructs the manager with a generated tree structure mapping.
      *
-     * @param treeStructureMapping The generated tree structure mapping.
+     * @param treeStructureMapping The generated world-dependent tree structure mapping.
+     * @param treeStructureRegistry The world-dependent registry of all tree structures.
      */
-    public TreeManager(Hashtable<BlockPos, String> treeStructureMapping, Hashtable<String, TreeStructure> treeStructureRegistery) {
+    public TreeManager(Hashtable<BlockPos, String> treeStructureMapping, Hashtable<String, TreeStructure> treeStructureRegistry) {
         this.treeStructureMapping = treeStructureMapping;
-        this.treeStructureRegistry = treeStructureRegistery;
+        this.treeStructureRegistry = treeStructureRegistry;
+        markDirty();
     }
 
     public HashSet<TreeStructure> getTreeStructures() {
@@ -164,7 +169,59 @@ public class TreeManager extends PersistentState {
     }
 
     public static TreeManager getManager(ServerWorld serverWorld) {
-        return serverWorld.getPersistentStateManager().getOrCreate(TreeManager::fromNbt, TreeManager::new, TREE_MANAGER_NBT);
+        TreeManager manager = serverWorld.getPersistentStateManager().getOrCreate(TreeManager::fromNbt, TreeManager::new, TREE_MANAGER_NBT);
+
+        // TODO: Find a better place for this, or remove if we deem the manager smart enough to not make any more "ghost" trees.
+        //manager.refreshNaturalTrees(serverWorld);
+
+        return manager;
+    }
+
+    /**
+     * Removes all non-natural trees from the manager.
+     *
+     * Will remove "ghost trees" -> Trees that are not natural but are stuck in the registry.
+     *
+     * @param world Uses the world to update the state of the blocks.
+     */
+    public void refreshNaturalTrees(World world) {
+        Hashtable<String, TreeStructure> tmp = new Hashtable<>(treeStructureRegistry);
+        for(Map.Entry<String, TreeStructure> structureEntry : tmp.entrySet()) {
+            refreshStructure(structureEntry.getValue(), world);
+
+            if(!structureEntry.getValue().isNatural()) {
+                this.treeStructureMapping.values().removeAll(Collections.singleton(structureEntry.getKey()));
+                this.treeStructureRegistry.remove(structureEntry.getKey());
+            }
+
+            if(!this.treeStructureMapping.containsValue(structureEntry.getKey())) {
+                // Removes any "ghost" trees where the structure's blocks are not registered.
+                // TODO: Figure out if this is the appropriate thing to do in this scenario.
+                this.treeStructureRegistry.remove(structureEntry.getKey());
+            }
+        }
+        markDirty();
+    }
+
+    /**
+     * Refreshes the structure, removing any blocks that are no longer a part of the tree.
+     *
+     * @param world used to get the updated state of the blocks.
+     */
+    public void refreshStructure(TreeStructure structure, World world) {
+        for(BlockPos log : new HashSet<>(structure.logs)) {
+            if(!isLogBlock(world.getBlockState(log))) {
+                structure.removeBlockFromTree(log);
+                this.treeStructureMapping.remove(log);
+            }
+        }
+
+        for(BlockPos leaf : new HashSet<>(structure.leaves)) {
+            if(!isLeafBlock(world.getBlockState(leaf))) {
+                structure.removeBlockFromTree(leaf);
+                this.treeStructureMapping.remove(leaf);
+            }
+        }
     }
 
     public boolean isBlockInTreeStructure(BlockPos position) {
@@ -172,22 +229,44 @@ public class TreeManager extends PersistentState {
     }
 
     public void removeBlockFromTreeStructure(BlockState state, BlockPos pos, ServerWorld world) {
+        List<String> removalList = new ArrayList<>();
+        Hashtable<String, TreeStructure> additionTable = new Hashtable<>();
+        _removeBlockFromTreeStructure(state, pos, world, removalList, additionTable);
+        updateAllPlayers(world, removalList, additionTable);
+    }
+
+    public void _removeBlockFromTreeStructure(BlockState state, BlockPos pos, ServerWorld world, List<String> removalList, Hashtable<String, TreeStructure> additionTable) {
         // If the block is in an existing structure...
         if (isBlockInTreeStructure(pos)) {
             if(isLogBlock(state)) {
-                deconstructTreeStructureFromBlock(pos, world);
+                _deconstructTreeStructureFromBlock(pos, removalList);
 
                 BlockPos.iterateOutwards(pos, 1, 1, 1).forEach(pos1 -> {
-                    if (!pos1.equals(pos))
-                        if (!treeStructureMapping.containsKey(pos1))
-                            constructTreeStructureFromBlock(pos1.mutableCopy(), List.of(pos), world);
+                    if (!pos1.equals(pos) && !treeStructureMapping.containsKey(pos1))
+                            _constructTreeStructureFromBlock(pos1.mutableCopy(), List.of(pos), world, additionTable);
                 });
             } else if(isLeafBlock(state)) {
-                getTreeStructureFromPos(pos, world).removeBlockFromTree(pos);
-                treeStructureMapping.remove(pos);
-            }
+                TreeStructure removedStructure = getTreeStructureFromPos(pos, world);
 
-            updateAllPlayers(world);
+                // Removes the block pos regardless to eliminate any null entries in the block mappings.
+                String structureId = treeStructureMapping.remove(pos);
+
+                if(removedStructure != null) {
+                    removedStructure.removeBlockFromTree(pos);
+                    treeStructureRegistry.get(structureId);
+
+                    if (removedStructure.isEmpty() || !removedStructure.isNatural()) {
+                        // Remove the empty and non-natural trees.
+                        treeStructureMapping.values().removeAll(Collections.singleton(structureId));
+                        treeStructureRegistry.remove(structureId);
+                        removalList.add(structureId);
+                    } else {
+                        // Marks it as being replaced on the client side.
+                        // TODO: Maybe have a separate protocol to mark a leaf block being removed.
+                        additionTable.put(structureId, removedStructure);
+                    }
+                }
+            }
         }
     }
 
@@ -206,32 +285,47 @@ public class TreeManager extends PersistentState {
     }
 
     public TreeStructure constructTreeStructureFromBlock(BlockPos startingPos, ServerWorld world) {
-        return constructTreeStructureFromBlock(startingPos, null, world);
+        Hashtable<String, TreeStructure> additionTable = new Hashtable<>();
+        String structureID = _constructTreeStructureFromBlock(startingPos, null, world, additionTable);
+        updateAllPlayers(world, List.of(), additionTable);
+        return structureID == null ? null : this.treeStructureRegistry.get(structureID);
     }
 
-    public TreeStructure constructTreeStructureFromBlock(BlockPos startingPos, @Nullable Collection<BlockPos> blackListPoses, ServerWorld world) {
+    private String _constructTreeStructureFromBlock(BlockPos startingPos,
+                                                    @Nullable Collection<BlockPos> blackListPoses,
+                                                    ServerWorld world,
+                                                    @Nonnull Hashtable<String, TreeStructure> additionTable) {
         BlockState clickedBlock = world.getBlockState(startingPos);
 
-        if (isTreeBlock(clickedBlock)) {
+        if (isLogBlock(clickedBlock)) {
             TreeStructure structure = new TreeStructure();
 
-            structure.logs.addAll(getTreeLogs(world, startingPos, blackListPoses)); // Add all found logs to the TreeStructure
-            structure.leaves.addAll(getTreeLeaves(world, structure.logs)); // Add all the found leaves to the TreeStructure
+            TreeSet<BlockPos> logs = getTreeLogs(world, startingPos, blackListPoses);
+            logs.removeAll(treeStructureMapping.keySet());
 
-            // Create a new ID for the tree structure.
-            String structureID = UUID.randomUUID().toString();
+            TreeSet<BlockPos> leaves = getTreeLeaves(world, logs);
+            leaves.removeAll(treeStructureMapping.keySet());
 
-            // Stores the information of the tree structure found
-            this.treeStructureMapping.putAll(structure.logs.stream()
-                    .collect(Collectors.toMap(Function.identity(), key -> structureID)));
-            this.treeStructureMapping.putAll(structure.leaves.stream()
-                    .collect(Collectors.toMap(Function.identity(), key -> structureID)));
-            this.treeStructureRegistry.put(structureID, structure);
+            structure.logs.addAll(logs); // Add all found logs to the TreeStructure
+            structure.leaves.addAll(leaves); // Add all the found leaves to the TreeStructure
 
-            updateAllPlayers(world);
-            markDirty();
+            if(structure.isNatural()) {
+                // Only adds natural trees, otherwise does not create the tree.
 
-            return structure;
+                // Create a new ID for the tree structure.
+                String structureID = UUID.randomUUID().toString();
+
+                // Stores the information of the tree structure found
+                this.treeStructureMapping.putAll(structure.logs.stream()
+                        .collect(Collectors.toMap(Function.identity(), key -> structureID)));
+                this.treeStructureMapping.putAll(structure.leaves.stream()
+                        .collect(Collectors.toMap(Function.identity(), key -> structureID)));
+                this.treeStructureRegistry.put(structureID, structure);
+
+                additionTable.put(structureID, structure);
+
+                return structureID;
+            }
         }
 
         return null;
@@ -242,28 +336,57 @@ public class TreeManager extends PersistentState {
     }
 
     public void deconstructTreeStructureFromBlock(BlockPos startingPos, ServerWorld world) {
+        List<String> removalList = new ArrayList<>();
+        _deconstructTreeStructureFromBlock(startingPos, removalList);
+        updateAllPlayers(world, removalList, new Hashtable<>());
+    }
+
+    public void _deconstructTreeStructureFromBlock(BlockPos startingPos, List<String> removalList) {
         String structureID = this.treeStructureMapping.get(startingPos);
 
         if(structureID != null) {
             treeStructureMapping.values().removeAll(Collections.singleton(structureID));
             treeStructureRegistry.remove(structureID);
-
-            updateAllPlayers(world);
-            markDirty();
+            removalList.add(structureID);
         }
     }
 
-    public void updateAllPlayers(ServerWorld world) {
+    public void sendInitPlayer(ServerWorld world, ServerPlayerEntity player) {
         RegistryKey<World> worldKey = world.getRegistryKey();
 
-        // Add the tree structure map to a packet buf
+        // Package up all the server side tree structure information.
         PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeCollection(treeStructureMapping.keySet(), PacketByteBuf::writeBlockPos);
+        buf.writeCollection(treeStructureRegistry.keySet(), PacketByteBuf::writeString);
+        buf.writeCollection(treeStructureRegistry.values(), (packet, structure) -> {
+            packet.writeNbt(TreeStructure.toNbt(structure));
+        });
         buf.writeString(worldKey.getValue().toString());
 
-        // Iterate over all players tracking a position in the world and send the packet to each player
-        for (ServerPlayerEntity player : PlayerLookup.all(world.getServer())) {
-            ServerPlayNetworking.send(player, ArborealisConstants.TREE_MAP_UPDATE, buf);
+        // Send to the player.
+        ServerPlayNetworking.send(player, ArborealisConstants.TREE_MAP_INIT, buf);
+    }
+
+    private void updateAllPlayers(ServerWorld world, List<String> removedStructures, Hashtable<String, TreeStructure> addedStructures) {
+        if(!(removedStructures.isEmpty() && addedStructures.isEmpty())) {
+            // Only update the players if the structures have been modified.
+
+            RegistryKey<World> worldKey = world.getRegistryKey();
+
+            // Add the tree structure map to a packet buf
+            PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeCollection(removedStructures, PacketByteBuf::writeString);
+            buf.writeCollection(addedStructures.keySet(), PacketByteBuf::writeString);
+            buf.writeCollection(addedStructures.values(), (packet, structure) -> {
+                packet.writeNbt(TreeStructure.toNbt(structure));
+            });
+            buf.writeString(worldKey.getValue().toString());
+
+            // Iterate over all players tracking a position in the world and send the packet to each player
+            for (ServerPlayerEntity player : PlayerLookup.all(world.getServer())) {
+                ServerPlayNetworking.send(player, ArborealisConstants.TREE_MAP_UPDATE, buf);
+            }
+
+            markDirty();
         }
     }
 
@@ -305,7 +428,7 @@ public class TreeManager extends PersistentState {
         return visited;
     }
 
-    private static TreeSet<BlockPos> getTreeLeaves(World world, HashSet<BlockPos> logSet) {
+    private static TreeSet<BlockPos> getTreeLeaves(World world, Set<BlockPos> logSet) {
         TreeSet<BlockPos> visited = new TreeSet<>();
 
         //TODO: Add leaf range to config

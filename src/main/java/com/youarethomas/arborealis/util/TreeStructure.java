@@ -34,12 +34,11 @@ public class TreeStructure {
      */
     public boolean isNatural() {
         // Pumpkin always natural :P
-        //return isPumpkin || (leaves.size() >= NAT_LEAVES_MIN && logCount() >= LOGS_MIN);
-        return true;
+        return isPumpkin || (leaves.size() >= NAT_LEAVES_MIN && logCount() >= LOGS_MIN);
     }
 
     public boolean isEmpty() {
-        return logs.isEmpty();
+        return logs.isEmpty() && leaves.isEmpty();
     }
 
     public void replaceLogStructure(World world) {
@@ -75,12 +74,9 @@ public class TreeStructure {
     }
 
     public void removeBlockFromTree(BlockPos pos) {
-        for (BlockPos logPos : logs) {
-            if (logPos.equals(pos)) {
-                logs.remove(logPos);
-                break;
-            }
-        }
+        // Will remove the block from the tree, whether log or leaf.
+        logs.remove(pos);
+        leaves.remove(pos);
     }
 
     /**
