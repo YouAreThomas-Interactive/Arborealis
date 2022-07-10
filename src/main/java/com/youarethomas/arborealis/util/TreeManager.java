@@ -169,7 +169,59 @@ public class TreeManager extends PersistentState {
     }
 
     public static TreeManager getManager(ServerWorld serverWorld) {
-        return serverWorld.getPersistentStateManager().getOrCreate(TreeManager::fromNbt, TreeManager::new, TREE_MANAGER_NBT);
+        TreeManager manager = serverWorld.getPersistentStateManager().getOrCreate(TreeManager::fromNbt, TreeManager::new, TREE_MANAGER_NBT);
+
+        // TODO: Find a better place for this, or remove if we deem the manager smart enough to not make any more "ghost" trees.
+        //manager.refreshNaturalTrees(serverWorld);
+
+        return manager;
+    }
+
+    /**
+     * Removes all non-natural trees from the manager.
+     *
+     * Will remove "ghost trees" -> Trees that are not natural but are stuck in the registry.
+     *
+     * @param world Uses the world to update the state of the blocks.
+     */
+    public void refreshNaturalTrees(World world) {
+        Hashtable<String, TreeStructure> tmp = new Hashtable<>(treeStructureRegistry);
+        for(Map.Entry<String, TreeStructure> structureEntry : tmp.entrySet()) {
+            refreshStructure(structureEntry.getValue(), world);
+
+            if(!structureEntry.getValue().isNatural()) {
+                this.treeStructureMapping.values().removeAll(Collections.singleton(structureEntry.getKey()));
+                this.treeStructureRegistry.remove(structureEntry.getKey());
+            }
+
+            if(!this.treeStructureMapping.containsValue(structureEntry.getKey())) {
+                // Removes any "ghost" trees where the structure's blocks are not registered.
+                // TODO: Figure out if this is the appropriate thing to do in this scenario.
+                this.treeStructureRegistry.remove(structureEntry.getKey());
+            }
+        }
+        markDirty();
+    }
+
+    /**
+     * Refreshes the structure, removing any blocks that are no longer a part of the tree.
+     *
+     * @param world used to get the updated state of the blocks.
+     */
+    public void refreshStructure(TreeStructure structure, World world) {
+        for(BlockPos log : new HashSet<>(structure.logs)) {
+            if(!isLogBlock(world.getBlockState(log))) {
+                structure.removeBlockFromTree(log);
+                this.treeStructureMapping.remove(log);
+            }
+        }
+
+        for(BlockPos leaf : new HashSet<>(structure.leaves)) {
+            if(!isLeafBlock(world.getBlockState(leaf))) {
+                structure.removeBlockFromTree(leaf);
+                this.treeStructureMapping.remove(leaf);
+            }
+        }
     }
 
     public boolean isBlockInTreeStructure(BlockPos position) {
