@@ -245,7 +245,7 @@ public class TreeManager extends PersistentState {
                                                     @Nonnull Hashtable<String, TreeStructure> additionTable) {
         BlockState clickedBlock = world.getBlockState(startingPos);
 
-        if (isTreeBlock(clickedBlock)) {
+        if (isLogBlock(clickedBlock)) {
             TreeStructure structure = new TreeStructure();
 
             structure.logs.addAll(getTreeLogs(world, startingPos, blackListPoses)); // Add all found logs to the TreeStructure
