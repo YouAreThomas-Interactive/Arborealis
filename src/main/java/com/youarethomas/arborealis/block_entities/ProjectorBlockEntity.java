@@ -41,7 +41,7 @@ public class ProjectorBlockEntity extends BlockEntity {
     }
 
     public void setThrowDistance(int throwDistance) {
-        this.lightLevel = throwDistance;
+        this.throwDistance = throwDistance;
         markDirty();
     }
 
