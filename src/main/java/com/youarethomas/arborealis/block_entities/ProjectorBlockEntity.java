@@ -51,18 +51,7 @@ public class ProjectorBlockEntity extends BlockEntity {
 
 
     public static void clientTick(World world, BlockPos pos, BlockState state, ProjectorBlockEntity be) {
-        if (be.getLightLevel() != 0) {
-            Direction facing = state.get(HorizontalFacingBlock.FACING);
 
-            for (int i = 0; i < be.getLightLevel(); i++) {
-                BlockPos testPos = pos.offset(facing, i + 1);
-
-                if (!world.getBlockState(testPos).isOf(Blocks.AIR)) {
-                    be.setThrowDistance(i);
-                    break;
-                }
-            }
-        }
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, ProjectorBlockEntity be) {
@@ -77,6 +66,19 @@ public class ProjectorBlockEntity extends BlockEntity {
         } else {
             if (be.getLightLevel() != 0) {
                 be.setLightLevel(0);
+            }
+        }
+
+        if (be.getLightLevel() != 0) {
+            Direction facing = state.get(HorizontalFacingBlock.FACING);
+
+            for (int i = 0; i < be.getLightLevel(); i++) {
+                BlockPos testPos = pos.offset(facing, i + 1);
+
+                if (!world.getBlockState(testPos).isOf(Blocks.AIR)) {
+                    be.setThrowDistance(i);
+                    break;
+                }
             }
         }
     }
