@@ -1,11 +1,16 @@
 package com.youarethomas.arborealis.util;
 
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.runes.*;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.item.Item;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
@@ -91,6 +96,31 @@ public class RuneManager {
             RuneRegistry.replace(path, rune);
         else
             RuneRegistry.put(getRuneJsonPath(path), rune);
+    }
+
+    public static void clientRunePush(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        ArrayList<Rune> runes = buf.readCollection(PacketByteBuf.getMaxValidator(Lists::newArrayListWithCapacity, 10000), innerBuf -> {
+            String id = innerBuf.readString();
+            String name = innerBuf.readString();
+            String colour = innerBuf.readString();
+            String catalyst = innerBuf.readString();
+            int lifeForce = innerBuf.readInt();
+            int[] shape = innerBuf.readIntArray();
+
+            if (RuneManager.getRuneFromID(id) != null) {
+                System.out.println("Found");
+                return RuneManager.getRuneFromID(id).fromValues(id, name, colour, catalyst, lifeForce, shape);
+            } else {
+                System.out.println("Not found");
+                return null;
+            }
+        });
+
+        client.execute(() -> {
+            // Replace existing runes with the new info
+            for (Rune rune : runes)
+                RuneManager.register(new Identifier(rune.id), rune);
+        });
     }
 
     public static Rune getRuneFromID(String id) {

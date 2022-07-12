@@ -17,7 +17,9 @@
     "InGameHudMixin",
     "KeyboardMixin",
     "KeyboardInvoker",
-    "WorldRendererMixin"
+    "WorldRendererMixin",
+    "BufferBuilderAccessor",
+    "BufferBuilderStorageMixin"
   ],
   "server": [
   ],

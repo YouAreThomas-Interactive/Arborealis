@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.ProjectorBlockEntity;
+import com.youarethomas.arborealis.rendering.BeamRenderLayer;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BeaconBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
@@ -31,12 +32,14 @@ public class ProjectorBlockEntityRenderer implements BlockEntityRenderer<Project
     public void render(ProjectorBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         matrices.push();
 
-        matrices.translate(0.0, 1, 0.5);
-        renderBeamSegment(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(BEAM_TEXTURE)), 1, 0.905f, 0.619f, 0.125f, 0, 1, -0.25f, -0.25f, 0.25f, -0.25f, -0.25f, 0.25f, 0.25f, 0.25f, 0, 1, 0, 1);
-        matrices.translate(0.5, 0, 0);
-        renderBeamSegment(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(BEAM_TEXTURE)), 1, 0.905f, 0.619f, 0.125f, 0, 1, -0.25f, -0.25f, 0.25f, -0.25f, -0.25f, 0.25f, 0.25f, 0.25f, 0, 1, 0, 1);
-        matrices.translate(0.5, 0, 0);
-        renderBeamSegment(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(BEAM_TEXTURE)), 1, 0.905f, 0.619f, 0.125f, 0, 1, -0.25f, -0.25f, 0.25f, -0.25f, -0.25f, 0.25f, 0.25f, 0.25f, 0, 1, 0, 1);
+        if (entity.getLightLevel() > 0) {
+            matrices.translate(0.0, 1, 0.5);
+            renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, 0.125f, 0, 1, -0.25f, -0.25f, 0.25f, -0.25f, -0.25f, 0.25f, 0.25f, 0.25f, 0, 1, 0, 1);
+            matrices.translate(0.6, 0, 0);
+            renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, 0.125f, 0, 1, -0.25f, -0.25f, 0.25f, -0.25f, -0.25f, 0.25f, 0.25f, 0.25f, 0, 1, 0, 1);
+            matrices.translate(0.6, 0, 0);
+            renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, 0.125f, 0, 1, -0.25f, -0.25f, 0.25f, -0.25f, -0.25f, 0.25f, 0.25f, 0.25f, 0, 1, 0, 1);
+        }
 
         matrices.pop();
     }
@@ -53,10 +56,10 @@ public class ProjectorBlockEntityRenderer implements BlockEntityRenderer<Project
     }
 
     private static void renderBeamFace(Matrix4f positionMatrix, Matrix3f normalMatrix, VertexConsumer vertices, float r, float g, float b, float a, int yOffset, int ySize, float x1, float z1, float x2, float z2, float u1, float u2, float v1, float v2) {
-        renderBeamVertex(positionMatrix, normalMatrix, vertices, r, g, b, a, ySize, x1, z1, u2, v1);
         renderBeamVertex(positionMatrix, normalMatrix, vertices, r, g, b, a, yOffset, x1, z1, u2, v2);
-        renderBeamVertex(positionMatrix, normalMatrix, vertices, r, g, b, a, yOffset, x2, z2, u1, v2);
+        renderBeamVertex(positionMatrix, normalMatrix, vertices, r, g, b, a, ySize, x1, z1, u2, v1);
         renderBeamVertex(positionMatrix, normalMatrix, vertices, r, g, b, a, ySize, x2, z2, u1, v1);
+        renderBeamVertex(positionMatrix, normalMatrix, vertices, r, g, b, a, yOffset, x2, z2, u1, v2);
     }
 
     private static void renderBeamVertex(Matrix4f positionMatrix, Matrix3f normalMatrix, VertexConsumer vertices, float r, float g, float b, float a, int y, float x, float z, float u, float v) {
