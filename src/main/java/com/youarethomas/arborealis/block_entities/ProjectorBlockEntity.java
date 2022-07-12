@@ -18,12 +18,18 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
 public class ProjectorBlockEntity extends BlockEntity {
 
     private int lightLevel;
+    private int throwDistance;
+
+    public ProjectorBlockEntity(BlockPos pos, BlockState state) {
+        super(Arborealis.PROJECTOR_ENTITY, pos, state);
+    }
 
     public void setLightLevel(int lightLevel) {
         this.lightLevel = lightLevel;
@@ -34,12 +40,29 @@ public class ProjectorBlockEntity extends BlockEntity {
         return this.lightLevel;
     }
 
-    public ProjectorBlockEntity(BlockPos pos, BlockState state) {
-        super(Arborealis.PROJECTOR_ENTITY, pos, state);
+    public void setThrowDistance(int throwDistance) {
+        this.lightLevel = throwDistance;
+        markDirty();
     }
 
-    public static void clientTick(World world, BlockPos pos, BlockState state, ProjectorBlockEntity be) {
+    public int getThrowDistance() {
+        return this.throwDistance;
+    }
 
+
+    public static void clientTick(World world, BlockPos pos, BlockState state, ProjectorBlockEntity be) {
+        if (be.getLightLevel() != 0) {
+            Direction facing = state.get(HorizontalFacingBlock.FACING);
+
+            for (int i = 0; i < be.getLightLevel(); i++) {
+                BlockPos testPos = pos.offset(facing, i + 1);
+
+                if (!world.getBlockState(testPos).isOf(Blocks.AIR)) {
+                    be.setThrowDistance(i);
+                    break;
+                }
+            }
+        }
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, ProjectorBlockEntity be) {
@@ -50,10 +73,8 @@ public class ProjectorBlockEntity extends BlockEntity {
             if (lightBehind != be.getLightLevel()) {
                 // TODO: Would be nice to move this into neighbour update, but the light level doesn't update before it's called
                 be.setLightLevel(lightBehind);
-                System.out.println(lightBehind);
             }
-        }
-        else {
+        } else {
             if (be.getLightLevel() != 0) {
                 be.setLightLevel(0);
             }
@@ -66,6 +87,7 @@ public class ProjectorBlockEntity extends BlockEntity {
         super.writeNbt(tag);
 
         tag.putInt("light_level", lightLevel);
+        tag.putInt("throw_distance", throwDistance);
     }
 
     // Deserialize the BlockEntity - retrieving data
@@ -74,6 +96,7 @@ public class ProjectorBlockEntity extends BlockEntity {
         super.readNbt(tag);
 
         lightLevel = tag.getInt("light_level");
+        throwDistance = tag.getInt("throw_distance");
 
         this.markDirty();
     }
