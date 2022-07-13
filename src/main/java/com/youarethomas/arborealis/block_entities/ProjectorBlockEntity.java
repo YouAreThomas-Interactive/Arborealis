@@ -72,14 +72,19 @@ public class ProjectorBlockEntity extends BlockEntity {
         if (be.getLightLevel() != 0) {
             Direction facing = state.get(HorizontalFacingBlock.FACING);
 
+            boolean blockFound = false;
             for (int i = 0; i < be.getLightLevel(); i++) {
                 BlockPos testPos = pos.offset(facing, i + 1);
 
                 if (!world.getBlockState(testPos).isOf(Blocks.AIR)) {
                     be.setThrowDistance(i);
+                    blockFound = true;
                     break;
                 }
             }
+
+            if (!blockFound)
+                be.setThrowDistance(be.getLightLevel());
         }
     }
 

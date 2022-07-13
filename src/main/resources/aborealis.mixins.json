@@ -19,7 +19,8 @@
     "KeyboardInvoker",
     "WorldRendererMixin",
     "BufferBuilderAccessor",
-    "BufferBuilderStorageMixin"
+    "BufferBuilderStorageMixin",
+    "GameRendererMixin"
   ],
   "server": [
   ],
