@@ -1,6 +1,7 @@
 package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.misc.ImplementedInventory;
 import com.youarethomas.arborealis.util.ArborealisConstants;
 import com.youarethomas.arborealis.util.RuneManager;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -11,18 +12,26 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.inventory.Inventories;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
-public class ProjectorBlockEntity extends BlockEntity {
+public class ProjectorBlockEntity extends BlockEntity implements ImplementedInventory {
+    private final DefaultedList<ItemStack> lens = DefaultedList.ofSize(1, ItemStack.EMPTY);
 
     private int lightLevel;
     private int throwDistance;
@@ -49,9 +58,22 @@ public class ProjectorBlockEntity extends BlockEntity {
         return this.throwDistance;
     }
 
-
     public static void clientTick(World world, BlockPos pos, BlockState state, ProjectorBlockEntity be) {
+        Random random = world.random;
 
+        // Particle chance scales depending on how long the beam is
+        if (be.getThrowDistance() > 0 && be.getLightLevel() > 0 && random.nextInt(be.getLightLevel() * 4) < be.getThrowDistance()) {
+            // Get the box for the beam
+            Direction.Axis facingAxis = state.get(HorizontalFacingBlock.FACING).getAxis();
+            Box beamBox = new Box(pos.offset(facingAxis, 1), pos.offset(state.get(HorizontalFacingBlock.FACING), 1 + be.getThrowDistance()));
+
+            // Calculate a random coordinate within that box
+            double randX = beamBox.minX + (((beamBox.maxX + 1) - beamBox.minX) * random.nextFloat());
+            double randY = beamBox.minY + (((beamBox.maxY + 1) - beamBox.minY) * random.nextFloat());
+            double randZ = beamBox.minZ + (((beamBox.maxZ + 1) - beamBox.minZ) * random.nextFloat());
+
+            world.addParticle(ParticleTypes.END_ROD, randX, randY, randZ, 0, 0, 0);
+        }
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, ProjectorBlockEntity be) {
@@ -93,6 +115,8 @@ public class ProjectorBlockEntity extends BlockEntity {
     public void writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
 
+        Inventories.writeNbt(tag, lens);
+
         tag.putInt("light_level", lightLevel);
         tag.putInt("throw_distance", throwDistance);
     }
@@ -102,10 +126,17 @@ public class ProjectorBlockEntity extends BlockEntity {
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
 
+        Inventories.readNbt(tag, lens);
+
         lightLevel = tag.getInt("light_level");
         throwDistance = tag.getInt("throw_distance");
 
         this.markDirty();
+    }
+
+    @Override
+    public DefaultedList<ItemStack> getItems() {
+        return lens;
     }
 
     @Override
