@@ -42,32 +42,28 @@ public class HollowedLog extends HorizontalFacingBlock implements BlockEntityPro
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         HollowedLogEntity entity = ((HollowedLogEntity) world.getBlockEntity(pos));
 
-        if (Objects.equals(entity.getItemID(), new Identifier(""))) {
+        System.out.println(entity.getStack(0).getName());
+
+        if (entity.getStack(0).isEmpty()) {
             if (!player.getStackInHand(hand).isEmpty()) {
                 if (world.isClient) {
                     world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.3F);
                 } else {
-                    // Update all runes in the tree
-                    // TreeManager.checkLifeForce(world, pos);
-                }
-
-                ItemStack itemInHand = player.getStackInHand(hand);
-                entity.setItemID(Registry.ITEM.getId(itemInHand.getItem()));
-
-
-                if (!player.isCreative()) {
+                    ItemStack itemInHand = player.getStackInHand(hand);
+                    entity.setStack(0, itemInHand.copy());
                     itemInHand.decrement(1);
+                    entity.markDirty();
                 }
 
                 return ActionResult.SUCCESS;
             }
         } else {
-            if (world.isClient) {
+            if (world.isClient)
                 world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.6F);
-            } else {
-                player.getInventory().offerOrDrop(Registry.ITEM.get(entity.getItemID()).getDefaultStack());
-                entity.setItemID(new Identifier(""));
-            }
+
+            player.getInventory().offerOrDrop(entity.getStack(0));
+            entity.removeStack(0);
+            entity.markDirty();
 
             return ActionResult.SUCCESS;
         }

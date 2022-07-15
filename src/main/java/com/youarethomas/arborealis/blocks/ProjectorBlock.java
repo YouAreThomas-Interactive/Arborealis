@@ -15,6 +15,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -51,7 +53,27 @@ public class ProjectorBlock extends BlockWithEntity implements BlockEntityProvid
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         ProjectorBlockEntity pbe = (ProjectorBlockEntity) world.getBlockEntity(pos);
-        player.sendMessage(Text.literal(String.valueOf(pbe.getLightLevel())), false);
+
+        if (pbe.getStack(0).isEmpty()) {
+            if (world.isClient) {
+                world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.3F);
+            } else {
+                ItemStack itemInHand = player.getStackInHand(hand);
+                if (itemInHand.isOf(Arborealis.CARVED_STENCIL) || itemInHand.isOf(Arborealis.BLANK_STENCIL)) {
+                    pbe.setStack(0, player.getStackInHand(hand));
+                    player.getStackInHand(hand).decrement(1);
+                }
+            }
+        } else {
+            if (world.isClient)
+                world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.6F);
+
+            player.getInventory().offerOrDrop(pbe.getStack(0));
+            pbe.removeStack(0);
+        }
+
+        pbe.markDirty();
+
         return ActionResult.SUCCESS;
     }
 

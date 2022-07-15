@@ -1,25 +1,30 @@
 package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.misc.ImplementedInventory;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.inventory.Inventories;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import org.lwjgl.system.Pointer;
 
-public class HollowedLogEntity extends BlockEntity {
+public class HollowedLogEntity extends BlockEntity implements ImplementedInventory {
+    private final DefaultedList<ItemStack> item = DefaultedList.ofSize(1, ItemStack.EMPTY);
 
     private BlockState logState = Blocks.OAK_LOG.getDefaultState();
-    private Identifier itemID;
 
     public HollowedLogEntity(BlockPos pos, BlockState state) {
         super(Arborealis.HOLLOWED_LOG_ENTITY, pos, state);
-        itemID = new Identifier("");
     }
 
     public void setLogState(BlockState logState) {
@@ -31,22 +36,14 @@ public class HollowedLogEntity extends BlockEntity {
         return logState;
     }
 
-    public void setItemID(Identifier itemID) {
-        this.itemID = itemID;
-        this.markDirty();
-    }
-
-    public Identifier getItemID() {
-        return itemID;
-    }
-
     // Serialize the BlockEntity - storing data
     @Override
     public void writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
 
+        Inventories.writeNbt(tag, item);
+
         tag.put("log_state", NbtHelper.fromBlockState(logState));
-        tag.putString("item_id", itemID.toString());
     }
 
     // Deserialize the BlockEntity - retrieving data
@@ -54,10 +51,16 @@ public class HollowedLogEntity extends BlockEntity {
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
 
+        Inventories.readNbt(tag, item);
+
         logState = NbtHelper.toBlockState(tag.getCompound("log_state"));
-        itemID = new Identifier(tag.getString("item_id"));
 
         this.markDirty();
+    }
+
+    @Override
+    public DefaultedList<ItemStack> getItems() {
+        return item;
     }
 
     @Override
@@ -68,7 +71,7 @@ public class HollowedLogEntity extends BlockEntity {
             if (!this.getWorld().isClient())
                 ((ServerWorld) world).getChunkManager().markForUpdate(getPos());
             else
-                world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.REDRAW_ON_MAIN_THREAD);
+                world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.NOTIFY_ALL | Block.FORCE_STATE);
         }
     }
 

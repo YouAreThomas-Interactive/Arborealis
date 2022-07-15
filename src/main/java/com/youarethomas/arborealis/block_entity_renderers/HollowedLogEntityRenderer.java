@@ -28,9 +28,8 @@ public class HollowedLogEntityRenderer implements BlockEntityRenderer<HollowedLo
 
         matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((entity.getWorld().getTime() + tickDelta) * 4));
 
-        Item item = Registry.ITEM.get(entity.getItemID());
-        if (!item.getDefaultStack().isOf(Arborealis.TREE_CORE))
-            MinecraftClient.getInstance().getItemRenderer().renderItem(item.getDefaultStack(), ModelTransformation.Mode.GROUND, light, overlay, matrices, vertexConsumers, 0);
+        if (!entity.getStack(0).isOf(Arborealis.TREE_CORE))
+            MinecraftClient.getInstance().getItemRenderer().renderItem(entity.getStack(0), ModelTransformation.Mode.GROUND, light, overlay, matrices, vertexConsumers, 0);
 
         matrices.pop();
     }

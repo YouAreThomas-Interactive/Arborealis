@@ -1,6 +1,7 @@
 package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.ArborealisClient;
 import com.youarethomas.arborealis.misc.ArborealisPersistentState;
 import com.youarethomas.arborealis.mixin_access.CameraMixinAccess;
 import com.youarethomas.arborealis.util.ArborealisConstants;

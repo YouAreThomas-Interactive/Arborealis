@@ -35,7 +35,7 @@ public class HollowedLogDModel extends DynamicModel {
         builder.addBakedModel(logInside, new CuboidBuilder.RetextureFromBlock(strippedState, true));
 
         // Render a tree core, if there's a core in the block, and the tether
-        if (Objects.equals(be.getItemID().toString(), new Identifier(Arborealis.MOD_ID, "tree_core").toString())) {
+        if (be.getStack(0).isOf(Arborealis.TREE_CORE)) {
             BakedModel treeCore = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/hollowed_log/tree_core"));
             builder.addBakedModel(treeCore);
 

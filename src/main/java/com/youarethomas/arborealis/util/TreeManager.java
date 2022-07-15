@@ -553,7 +553,7 @@ public class TreeManager extends PersistentState {
                     }
                 }
             } else if (be instanceof HollowedLogEntity hollowEntity) {
-                if (hollowEntity.getItemID().equals(Registry.ITEM.getId(Arborealis.TREE_CORE))) {
+                if (hollowEntity.getStack(0).isOf(Arborealis.TREE_CORE)) {
                     lifeForceTotal -= 5;
                 }
             }
