@@ -24,7 +24,7 @@ public class HollowedLogEntityRenderer implements BlockEntityRenderer<HollowedLo
         matrices.push();
 
         double offset = Math.sin((entity.getWorld().getTime() + tickDelta) / 8.0) / 12.0;
-        matrices.translate(0.5, 0.4 + offset, 0.5);
+        matrices.translate(0.5, 0.35 + offset, 0.5);
 
         matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((entity.getWorld().getTime() + tickDelta) * 4));
 

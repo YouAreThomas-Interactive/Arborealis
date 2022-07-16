@@ -13,6 +13,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -22,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -41,29 +43,28 @@ public class HollowedLog extends HorizontalFacingBlock implements BlockEntityPro
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         HollowedLogEntity entity = ((HollowedLogEntity) world.getBlockEntity(pos));
-
-        System.out.println(entity.getStack(0).getName());
+        ItemStack stackInHand = player.getStackInHand(Hand.MAIN_HAND);
 
         if (entity.getStack(0).isEmpty()) {
-            if (!player.getStackInHand(hand).isEmpty()) {
+            if (!stackInHand.isEmpty()) {
                 if (world.isClient) {
                     world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.3F);
                 } else {
-                    ItemStack itemInHand = player.getStackInHand(hand);
-                    entity.setStack(0, itemInHand.copy());
-                    itemInHand.decrement(1);
+                    entity.setStack(0, stackInHand.copy().split(1));
+                    stackInHand.decrement(1);
                     entity.markDirty();
                 }
 
                 return ActionResult.SUCCESS;
             }
         } else {
-            if (world.isClient)
+            if (world.isClient) {
                 world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.6F);
-
-            player.getInventory().offerOrDrop(entity.getStack(0));
-            entity.removeStack(0);
-            entity.markDirty();
+            } else {
+                player.getInventory().offerOrDrop(entity.getStack(0).copy());
+                entity.removeStack(0);
+                entity.markDirty();
+            }
 
             return ActionResult.SUCCESS;
         }

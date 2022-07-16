@@ -2,26 +2,18 @@ package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.misc.ImplementedInventory;
-import com.youarethomas.arborealis.util.ArborealisConstants;
-import com.youarethomas.arborealis.util.RuneManager;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -31,7 +23,7 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
 public class ProjectorBlockEntity extends BlockEntity implements ImplementedInventory {
-    private final DefaultedList<ItemStack> lens = DefaultedList.ofSize(1, ItemStack.EMPTY);
+    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
 
     private int lightLevel;
     private int throwDistance;
@@ -115,7 +107,7 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
     public void writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
 
-        Inventories.writeNbt(tag, lens);
+        Inventories.writeNbt(tag, inventory);
 
         tag.putInt("light_level", lightLevel);
         tag.putInt("throw_distance", throwDistance);
@@ -126,7 +118,8 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
 
-        Inventories.readNbt(tag, lens);
+        inventory.clear(); // Got to clear the inventory first
+        Inventories.readNbt(tag, inventory);
 
         lightLevel = tag.getInt("light_level");
         throwDistance = tag.getInt("throw_distance");
@@ -136,7 +129,17 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
 
     @Override
     public DefaultedList<ItemStack> getItems() {
-        return lens;
+        return inventory;
+    }
+
+    @Override
+    public boolean canExtract(int slot, ItemStack stack, Direction side) {
+        return false;
+    }
+
+    @Override
+    public boolean canInsert(int slot, ItemStack stack, Direction side) {
+        return false;
     }
 
     @Override

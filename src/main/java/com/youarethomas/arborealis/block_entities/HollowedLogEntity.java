@@ -7,19 +7,17 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.inventory.Inventories;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
-import org.lwjgl.system.Pointer;
+import net.minecraft.util.math.Direction;
 
 public class HollowedLogEntity extends BlockEntity implements ImplementedInventory {
-    private final DefaultedList<ItemStack> item = DefaultedList.ofSize(1, ItemStack.EMPTY);
+    public DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
 
     private BlockState logState = Blocks.OAK_LOG.getDefaultState();
 
@@ -41,7 +39,7 @@ public class HollowedLogEntity extends BlockEntity implements ImplementedInvento
     public void writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
 
-        Inventories.writeNbt(tag, item);
+        Inventories.writeNbt(tag, inventory, true);
 
         tag.put("log_state", NbtHelper.fromBlockState(logState));
     }
@@ -51,16 +49,25 @@ public class HollowedLogEntity extends BlockEntity implements ImplementedInvento
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
 
-        Inventories.readNbt(tag, item);
+        inventory.clear(); // Got to clear the inventory first
+        Inventories.readNbt(tag, inventory);
 
         logState = NbtHelper.toBlockState(tag.getCompound("log_state"));
-
-        this.markDirty();
     }
 
     @Override
     public DefaultedList<ItemStack> getItems() {
-        return item;
+        return inventory;
+    }
+
+    @Override
+    public boolean canExtract(int slot, ItemStack stack, Direction side) {
+        return true;
+    }
+
+    @Override
+    public boolean canInsert(int slot, ItemStack stack, Direction side) {
+        return getStack(0).isEmpty();
     }
 
     @Override
@@ -71,7 +78,7 @@ public class HollowedLogEntity extends BlockEntity implements ImplementedInvento
             if (!this.getWorld().isClient())
                 ((ServerWorld) world).getChunkManager().markForUpdate(getPos());
             else
-                world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.NOTIFY_ALL | Block.FORCE_STATE);
+                world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.NOTIFY_ALL);
         }
     }
 

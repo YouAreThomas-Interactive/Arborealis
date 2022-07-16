@@ -53,28 +53,35 @@ public class ProjectorBlock extends BlockWithEntity implements BlockEntityProvid
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         ProjectorBlockEntity pbe = (ProjectorBlockEntity) world.getBlockEntity(pos);
+        ItemStack stackInHand = player.getStackInHand(Hand.MAIN_HAND);
 
         if (pbe.getStack(0).isEmpty()) {
-            if (world.isClient) {
-                world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.3F);
-            } else {
-                ItemStack itemInHand = player.getStackInHand(hand);
-                if (itemInHand.isOf(Arborealis.CARVED_STENCIL) || itemInHand.isOf(Arborealis.BLANK_STENCIL)) {
-                    pbe.setStack(0, player.getStackInHand(hand));
-                    player.getStackInHand(hand).decrement(1);
+            if (stackInHand.isOf(Arborealis.CARVED_STENCIL) || stackInHand.isOf(Arborealis.BLANK_STENCIL)) {
+                if (world.isClient) {
+                    world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.3F);
+                } else {
+                    pbe.setStack(0, stackInHand.copy().split(1));
+                    stackInHand.decrement(1);
+                    pbe.markDirty();
                 }
+
+                return ActionResult.SUCCESS;
             }
         } else {
-            if (world.isClient)
+            if (world.isClient) {
                 world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.6F);
+            } else {
+                player.getInventory().offerOrDrop(pbe.getStack(0).copy());
+                pbe.removeStack(0);
+                pbe.markDirty();
+            }
 
-            player.getInventory().offerOrDrop(pbe.getStack(0));
-            pbe.removeStack(0);
+            return ActionResult.SUCCESS;
         }
 
         pbe.markDirty();
 
-        return ActionResult.SUCCESS;
+        return ActionResult.PASS;
     }
 
     @Override
