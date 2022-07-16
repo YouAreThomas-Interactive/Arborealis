@@ -169,8 +169,9 @@ public class RuneManager {
         else
             return false;
 
-        // Turn all highlights (2) into uncarved boyos (0)
+        // Turn all highlights (2) into uncarved boyos (0), and all light runes (3) into carved boyos (1)
         faceArray = Arrays.stream(faceArray).map(i -> i == 2 ? 0 : i).toArray();
+        faceArray = Arrays.stream(faceArray).map(i -> i == 3 ? 1 : i).toArray();
 
         // If the array is all 0s it contains shit all
         if (Arrays.stream(faceArray).allMatch(i -> i == 0))

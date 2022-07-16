@@ -29,7 +29,7 @@ public class CarvedLogEntity extends BlockEntity {
     private boolean showRadius;
     private boolean reload = true;
 
-    private List<Rune> runesPresentLastCheck = new ArrayList<>();
+    public List<Rune> runesPresentLastCheck = new ArrayList<>();
     public Timer chopTimer = new Timer();
 
     public Map<Direction, CarvedLogEntityFace> carvedFaces = new HashMap<>() {{
@@ -50,7 +50,7 @@ public class CarvedLogEntity extends BlockEntity {
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState state, CarvedLogEntity be) {
-        for (Rune rune : be.runesPresentLastCheck) {
+        for (Rune rune : be.getRunesPresentLastCheck()) {
             if (rune != null) {
                 rune.onClientTick(world, pos, be);
             }
@@ -63,11 +63,11 @@ public class CarvedLogEntity extends BlockEntity {
 
     public static void serverTick(World world, BlockPos pos, BlockState state, CarvedLogEntity be) {
         if (be.reload) {
-            be.runesPresentLastCheck.clear();
+            be.setRunesPresentLastCheck(new ArrayList<>());
             be.reload = false;
         }
 
-        for (Rune rune : be.runesPresentLastCheck) {
+        for (Rune rune : be.getRunesPresentLastCheck()) {
             rune.onServerTick(world, pos, be);
         }
     }
@@ -76,6 +76,21 @@ public class CarvedLogEntity extends BlockEntity {
         for (Direction dir : Direction.values()) {
             setFaceArray(dir, Arrays.stream(getFaceArray(dir)).map(i -> i == 2 ? 1 : i).toArray());
         }
+
+        checkForRunes();
+    }
+
+    public void projectLightRune(Direction dir, int[] runeToProject) {
+        int[] removeOldLight = Arrays.stream(getFaceArray(dir)).map(i -> i == 3 ? 0 : i).toArray(); // Set all existing light to uncarved
+        int[] projectedPattern = removeOldLight.clone();
+
+        for (int i = 0; i < runeToProject.length; i++) {
+            projectedPattern[i] = (projectedPattern[i] == 0 && runeToProject[i] == 2) ? 3 : projectedPattern[i]; // Set all uncarved to light
+            projectedPattern[i] = (projectedPattern[i] == 2 && runeToProject[i] == 2) ? 3 : projectedPattern[i]; // Set all highlighted to light
+        }
+
+        reload = false; // TODO: This is jank. Fix later
+        setFaceArray(dir, projectedPattern);
 
         checkForRunes();
     }
@@ -157,6 +172,13 @@ public class CarvedLogEntity extends BlockEntity {
         carvedFaces.replace(direction, face);
         this.markDirty();
     }
+    public List<Rune> getRunesPresentLastCheck() {
+        return runesPresentLastCheck;
+    }
+    public void setRunesPresentLastCheck(List<Rune> runeList) {
+        runesPresentLastCheck = runeList.stream().toList();
+        markDirty();
+    }
 
     // Serialize the BlockEntity - storing data
     @Override
@@ -230,7 +252,7 @@ public class CarvedLogEntity extends BlockEntity {
                     if (rune != null) {
                         setFaceRune(dir, rune); // Save rune to BlockEntity
 
-                        if (!runesPresentLastCheck.contains(rune)) {
+                        if (!getRunesPresentLastCheck().contains(rune)) {
                             System.out.println(rune.name + " was found.");
                             rune.onRuneFound(world, pos, this); // If rune appears for the first time, execute onRuneFound(...)
                         }
@@ -242,18 +264,18 @@ public class CarvedLogEntity extends BlockEntity {
                 }
             }
 
-            for (Rune rune : runesPresentLastCheck) {
+            for (Rune rune : getRunesPresentLastCheck()) {
                 if (!foundRunes.contains(rune)) {
                     System.out.println(rune.name + " was lost.");
                     rune.onRuneLost(world, pos, this);
                 }
             }
 
-            runesPresentLastCheck = foundRunes;
+            setRunesPresentLastCheck(foundRunes);
             this.markDirty();
 
             boolean displayRadiusParticles = false;
-            for (Rune rune : runesPresentLastCheck) {
+            for (Rune rune : getRunesPresentLastCheck()) {
                 if (rune.showRadiusEffect())
                     displayRadiusParticles = true;
             }

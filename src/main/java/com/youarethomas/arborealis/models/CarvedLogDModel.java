@@ -53,11 +53,12 @@ public class CarvedLogDModel extends DynamicModel {
 
         // If the face has a rune, make it glow
         boolean hasLightRune = false;
+        Rune rune = null;
         for (Direction dir : Direction.values()) {
             // Check if rune is valid and tree is natural
 
             if (be.isFaceCatalysed(dir)) {
-                Rune rune = be.getFaceRune(dir);
+                rune = be.getFaceRune(dir);
 
                 if (rune != null) {
                     if (Objects.equals(rune.name, "light"))
@@ -99,6 +100,8 @@ public class CarvedLogDModel extends DynamicModel {
 
         //region Carved Face Rendering
 
+        int planColor = 0x2bff95;
+
         // Carved side north
         int northSideCount = 0;
         for (int y = 13; y >= 1; y -= 2) {
@@ -111,12 +114,18 @@ public class CarvedLogDModel extends DynamicModel {
                         DynamicCuboid cuboid;
 
                         cuboid = new DynamicCuboid(x, y, 0, 2, 2, 1);
+                        cuboid.applyTexturesFromBlock(logState);
+
                         // 2 means highlighted
                         if (carveState == 2) {
-                            cuboid.setSideOverlay(Direction.NORTH, 0x2bff95);
+                            cuboid.setSideOverlay(Direction.NORTH, planColor);
+                        } else if (carveState == 3) {
+                            cuboid.applyTexture(Direction.NORTH, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
+                            if (rune != null && be.areRunesActive()) {
+                                cuboid.setSideOverlay(Direction.NORTH, rune.getIntColour());
+                            }
                         }
 
-                        cuboid.applyTexturesFromBlock(logState);
                         builder.addCuboid(cuboid);
                     }
                     northSideCount++;
@@ -135,11 +144,17 @@ public class CarvedLogDModel extends DynamicModel {
                         DynamicCuboid cuboid;
 
                         cuboid = new DynamicCuboid(15, y, z, 1, 2, 2);
+                        cuboid.applyTexturesFromBlock(logState);
+
                         if (carveState == 2) {
-                            cuboid.setSideOverlay(Direction.EAST, 0x2bff95);
+                            cuboid.setSideOverlay(Direction.EAST, planColor);
+                        } else if (carveState == 3) {
+                            cuboid.applyTexture(Direction.EAST, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
+                            if (rune != null && be.areRunesActive()) {
+                                cuboid.setSideOverlay(Direction.EAST, rune.getIntColour());
+                            }
                         }
 
-                        cuboid.applyTexturesFromBlock(logState);
                         builder.addCuboid(cuboid);
                     }
                     eastSideCount++;
@@ -158,11 +173,17 @@ public class CarvedLogDModel extends DynamicModel {
                         DynamicCuboid cuboid;
 
                         cuboid = new DynamicCuboid(x, y, 15, 2, 2, 1);
+                        cuboid.applyTexturesFromBlock(logState);
+
                         if (carveState == 2) {
-                            cuboid.setSideOverlay(Direction.SOUTH, 0x2bff95);
+                            cuboid.setSideOverlay(Direction.SOUTH, planColor);
+                        } else if (carveState == 3) {
+                            cuboid.applyTexture(Direction.SOUTH, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
+                            if (rune != null && be.areRunesActive()) {
+                                cuboid.setSideOverlay(Direction.SOUTH, rune.getIntColour());
+                            }
                         }
 
-                        cuboid.applyTexturesFromBlock(logState);
                         builder.addCuboid(cuboid);
                     }
                     southSideCount++;
@@ -181,11 +202,17 @@ public class CarvedLogDModel extends DynamicModel {
                         DynamicCuboid cuboid;
 
                         cuboid = new DynamicCuboid(0, y, z, 1, 2, 2);
+                        cuboid.applyTexturesFromBlock(logState);
+
                         if (carveState == 2) {
-                            cuboid.setSideOverlay(Direction.WEST, 0x2bff95);
+                            cuboid.setSideOverlay(Direction.WEST, planColor);
+                        } else if (carveState == 3) {
+                            cuboid.applyTexture(Direction.WEST, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
+                            if (rune != null && be.areRunesActive()) {
+                                cuboid.setSideOverlay(Direction.WEST, rune.getIntColour());
+                            }
                         }
 
-                        cuboid.applyTexturesFromBlock(logState);
                         builder.addCuboid(cuboid);
                     }
                     westSideCount++;
@@ -204,11 +231,17 @@ public class CarvedLogDModel extends DynamicModel {
                         DynamicCuboid cuboid;
 
                         cuboid = new DynamicCuboid(x, 15, z, 2, 1, 2);
+                        cuboid.applyTexturesFromBlock(logState);
+
                         if (carveState == 2) {
-                            cuboid.setSideOverlay(Direction.UP, 0x2bff95);
+                            cuboid.setSideOverlay(Direction.UP, planColor);
+                        } else if (carveState == 3) {
+                            cuboid.applyTexture(Direction.UP, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
+                            if (rune != null && be.areRunesActive()) {
+                                cuboid.setSideOverlay(Direction.UP, rune.getIntColour());
+                            }
                         }
 
-                        cuboid.applyTexturesFromBlock(logState);
                         builder.addCuboid(cuboid);
                     }
                     topSideCount++;
@@ -227,11 +260,17 @@ public class CarvedLogDModel extends DynamicModel {
                         DynamicCuboid cuboid;
 
                         cuboid = new DynamicCuboid(x, 0, z, 2, 1, 2);
+                        cuboid.applyTexturesFromBlock(logState);
+
                         if (carveState == 2) {
-                            cuboid.setSideOverlay(Direction.DOWN, 0x2bff95);
+                            cuboid.setSideOverlay(Direction.DOWN, planColor);
+                        } else if (carveState == 3) {
+                            cuboid.applyTexture(Direction.DOWN, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
+                            if (rune != null && be.areRunesActive()) {
+                                cuboid.setSideOverlay(Direction.DOWN, rune.getIntColour());
+                            }
                         }
 
-                        cuboid.applyTexturesFromBlock(logState);
                         builder.addCuboid(cuboid);
                     }
                     bottomSideCount++;

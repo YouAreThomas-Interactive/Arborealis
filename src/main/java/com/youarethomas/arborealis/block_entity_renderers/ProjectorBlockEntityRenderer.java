@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.ProjectorBlockEntity;
+import com.youarethomas.arborealis.items.StencilCarved;
 import com.youarethomas.arborealis.rendering.BeamRenderLayer;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.client.render.*;
@@ -11,6 +12,8 @@ import net.minecraft.client.render.block.entity.BeaconBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Matrix3f;
@@ -20,15 +23,6 @@ import net.minecraft.util.math.Quaternion;
 public class ProjectorBlockEntityRenderer implements BlockEntityRenderer<ProjectorBlockEntity> {
     public static final Identifier BEAM_TEXTURE = new Identifier(Arborealis.MOD_ID, "textures/block/blank.png");
     private static final float PIXEL_SIZE = 0.0625f;
-
-    int[] test = {
-            0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 1, 0, 0, 0,
-            0, 0, 0, 1, 1, 0, 0,
-            0, 0, 0, 1, 0, 0, 0,
-            0, 0, 0, 1, 1, 1, 0,
-            0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 1, 0, 0, 0 };
 
     public ProjectorBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {    }
 
@@ -52,13 +46,23 @@ public class ProjectorBlockEntityRenderer implements BlockEntityRenderer<Project
             matrices.multiply(Quaternion.fromEulerXyz(0.0f, -(float)(Math.PI / 2.0), 0.0f));
             matrices.translate(-0.5 + PIXEL_SIZE * 2, 0.5, -0.5 + PIXEL_SIZE * 2);
 
-            for(int ii = 0; ii < 49; ii++) {
-                matrices.push();
-                matrices.translate((float)(ii / 7) * PIXEL_SIZE * 2, 0.0f, (ii % 7) * PIXEL_SIZE * 2);
-                float alphaStart = ((0.2f / 15f) * entity.getLightLevel()); // Create light level based on light level
-                float alphaEnd = alphaStart - ((0.2f / 15f) * entity.getThrowDistance());
-                if(test[ii] == 1) renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, alphaStart, alphaEnd, 0, entity.getThrowDistance(), -PIXEL_SIZE, -PIXEL_SIZE, PIXEL_SIZE, -PIXEL_SIZE, -PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE, 0, 1, 0, 1);
-                matrices.pop();
+            ItemStack itemStack = entity.getStack(0);
+
+            // Render stencil beams
+            if (itemStack.isOf(Arborealis.CARVED_STENCIL)) {
+                NbtCompound nbt = itemStack.getNbt();
+                if (nbt != null && nbt.contains("pattern")) {
+                    int[] pattern = nbt.getIntArray("pattern");
+
+                    for(int ii = 0; ii < 49; ii++) {
+                        matrices.push();
+                        matrices.translate((float)(ii / 7) * PIXEL_SIZE * 2, 0.0f, (ii % 7) * PIXEL_SIZE * 2);
+                        float alphaStart = ((0.2f / 15f) * entity.getLightLevel()); // Create light level based on light level
+                        float alphaEnd = alphaStart - ((0.2f / 15f) * entity.getThrowDistance());
+                        if(pattern[ii] == 2) renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, alphaStart, alphaEnd, 0, entity.getThrowDistance(), -PIXEL_SIZE, -PIXEL_SIZE, PIXEL_SIZE, -PIXEL_SIZE, -PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE, 0, 1, 0, 1);
+                        matrices.pop();
+                    }
+                }
             }
         }
 
