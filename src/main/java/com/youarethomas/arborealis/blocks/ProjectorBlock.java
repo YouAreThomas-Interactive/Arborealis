@@ -23,6 +23,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -36,8 +37,14 @@ import java.util.List;
 public class ProjectorBlock extends BlockWithEntity implements BlockEntityProvider {
 
     public ProjectorBlock(Settings settings) {
-        super(settings.nonOpaque());
+        super(settings.nonOpaque().strength(1.0F));
         setDefaultState(this.stateManager.getDefaultState().with(Properties.HORIZONTAL_FACING, Direction.NORTH));
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+        return new ProjectorBlockEntity(pos, state);
     }
 
     @Override
@@ -85,6 +92,13 @@ public class ProjectorBlock extends BlockWithEntity implements BlockEntityProvid
     }
 
     @Override
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        ProjectorBlockEntity pbe = (ProjectorBlockEntity) world.getBlockEntity(pos);
+        ItemScatterer.spawn(world, pos, pbe.getItems());
+        super.onBreak(world, pos, state, player);
+    }
+
+    @Override
     // Append tooltip when pressing shift key
     public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
         if (Screen.hasShiftDown()) {
@@ -95,12 +109,6 @@ public class ProjectorBlock extends BlockWithEntity implements BlockEntityProvid
         } else {
             tooltip.add(Text.translatable("item.arborealis.hidden_tooltip"));
         }
-    }
-
-    @Nullable
-    @Override
-    public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-        return new ProjectorBlockEntity(pos, state);
     }
 
     @Override

@@ -79,8 +79,8 @@
   "block.arborealis.wooden_bucket.tooltip3": "§8sap, then extract with a §2Glass Bottle.",
 
   "block.arborealis.projector": "Projector",
-  "block.arborealis.projector.tooltip1": "§7Used with rune stencils and lenses.",
-  "block.arborealis.projector.tooltip2": "§8Place a Rune Stencil into the holder to project",
-  "block.arborealis.projector.tooltip3": "§8runes onto a tree, or use a lens to apply effects",
-  "block.arborealis.projector.tooltip4": "§8to the entire tree."
+  "block.arborealis.projector.tooltip1": "§7Used with Rune Stencils and Lenses.",
+  "block.arborealis.projector.tooltip2": "§8Place a §2Rune Stencil §8into the holder to ",
+  "block.arborealis.projector.tooltip3": "§8project runes onto a tree, or use a §2Lens to",
+  "block.arborealis.projector.tooltip4": "§8 apply effects to the entire tree."
 }
