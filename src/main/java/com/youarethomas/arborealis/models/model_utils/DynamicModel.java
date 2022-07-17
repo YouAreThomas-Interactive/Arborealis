@@ -86,17 +86,13 @@ public abstract class DynamicModel implements UnbakedModel {
 
             // Render out the pre-baked models, doing the retexture after the rotation transform
             for (var model : builder.models.get().entrySet()) {
-                if (model.getValue() != null) {
-                    context.pushTransform(model.getValue()); // Retexture transform
-                    if (state.contains(HorizontalFacingBlock.FACING)) context.pushTransform(new CuboidBuilder.RotateToFacing(state.get(HorizontalFacingBlock.FACING))); // Rotation transform
+                if (state.contains(HorizontalFacingBlock.FACING)) context.pushTransform(new CuboidBuilder.RotateToFacing(state.get(HorizontalFacingBlock.FACING))); // Rotation transform
+                if (model.getValue() != null) context.pushTransform(model.getValue()); // Retexture transform
 
-                    context.fallbackConsumer().accept(model.getKey());
+                context.fallbackConsumer().accept(model.getKey());
 
-                    if (state.contains(HorizontalFacingBlock.FACING)) context.popTransform();
-                    context.popTransform();
-                } else {
-                    context.fallbackConsumer().accept(model.getKey());
-                }
+                if (model.getValue() != null) context.popTransform(); // Retexture transform
+                if (state.contains(HorizontalFacingBlock.FACING)) context.popTransform(); // Rotation transform
             }
 
             loadDynamicModels(builder, context);
@@ -122,15 +118,24 @@ public abstract class DynamicModel implements UnbakedModel {
         }
 
         private void loadDynamicModels(CuboidBuilder builder, RenderContext context) {
-            for (DynamicCuboid cuboid : builder.cuboids.get()) {
-                cuboid.create(MESH_BUILDER.get().getEmitter());
+            for (var cuboid : builder.cuboids.get().entrySet()) {
+                if (cuboid.getValue() != null) context.pushTransform(cuboid.getValue());
+
+                cuboid.getKey().create(MESH_BUILDER.get().getEmitter());
+                context.meshConsumer().accept(MESH_BUILDER.get().build()); // TODO: Maybe change to use a global transform for a group of cuboids?
+
+                if (cuboid.getValue() != null) context.popTransform();
             }
 
-            for (DynamicPlane plane : builder.planes.get()) {
-                plane.create(MESH_BUILDER.get().getEmitter());
+            for (var plane : builder.planes.get().entrySet()) {
+                if (plane.getValue() != null) context.pushTransform(plane.getValue());
+
+                plane.getKey().create(MESH_BUILDER.get().getEmitter());
+                context.meshConsumer().accept(MESH_BUILDER.get().build()); // TODO: As above
+
+                if (plane.getValue() != null) context.popTransform();
             }
 
-            context.meshConsumer().accept(MESH_BUILDER.get().build());
         }
 
         @Override
@@ -181,8 +186,8 @@ public abstract class DynamicModel implements UnbakedModel {
     }
 
     protected class CuboidBuilder {
-        ThreadLocal<Collection<DynamicCuboid>> cuboids = ThreadLocal.withInitial(ArrayList::new);
-        ThreadLocal<Collection<DynamicPlane>> planes = ThreadLocal.withInitial(ArrayList::new);
+        ThreadLocal<Map<DynamicCuboid, RenderContext.QuadTransform>> cuboids = ThreadLocal.withInitial(HashMap::new);
+        ThreadLocal<Map<DynamicPlane, RenderContext.QuadTransform>> planes = ThreadLocal.withInitial(HashMap::new);
         ThreadLocal<Map<BakedModel, RenderContext.QuadTransform>> models = ThreadLocal.withInitial(HashMap::new);
 
         public BakedModel getModel(Identifier identifier) {
@@ -194,10 +199,20 @@ public abstract class DynamicModel implements UnbakedModel {
         }
 
         public void addCuboid(DynamicCuboid cuboid) {
-            cuboids.get().add(cuboid);
+            cuboids.get().put(cuboid, null);
         }
 
-        public void addPlane(DynamicPlane plane) {planes.get().add(plane); }
+        public void addCuboid(DynamicCuboid cuboid, RenderContext.QuadTransform transform) {
+            cuboids.get().put(cuboid, transform);
+        }
+
+        public void addPlane(DynamicPlane plane) {
+            planes.get().put(plane, null);
+        }
+
+        public void addPlane(DynamicPlane plane, RenderContext.QuadTransform transform) {
+            planes.get().put(plane, transform);
+        }
 
         public void addBakedModel(BakedModel model) {
             models.get().put(model, null);
