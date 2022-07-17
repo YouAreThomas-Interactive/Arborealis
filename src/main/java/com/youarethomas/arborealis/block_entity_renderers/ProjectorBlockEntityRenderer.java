@@ -48,6 +48,15 @@ public class ProjectorBlockEntityRenderer implements BlockEntityRenderer<Project
 
             ItemStack itemStack = entity.getStack(0);
 
+            float alphaStart = ((0.2f / 15f) * entity.getLightLevel()); // Create light level based on light level
+            float alphaEnd = alphaStart - ((0.2f / 15f) * entity.getThrowDistance());
+
+            // Render the initial beam inside the projector block
+            matrices.push();
+            matrices.translate(6 * PIXEL_SIZE, 0.0f, 6 * PIXEL_SIZE);
+            renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, alphaStart, alphaStart, -(PIXEL_SIZE * 7), -(PIXEL_SIZE * 2), -(PIXEL_SIZE * 7), -(PIXEL_SIZE * 7), PIXEL_SIZE * 7, -(PIXEL_SIZE * 7), -(PIXEL_SIZE * 7), PIXEL_SIZE * 7, PIXEL_SIZE * 7, PIXEL_SIZE * 7, 0, 1, 0, 1);
+            matrices.pop();
+
             // Render stencil beams
             if (itemStack.isOf(Arborealis.CARVED_STENCIL)) {
                 NbtCompound nbt = itemStack.getNbt();
@@ -57,19 +66,23 @@ public class ProjectorBlockEntityRenderer implements BlockEntityRenderer<Project
                     for(int ii = 0; ii < 49; ii++) {
                         matrices.push();
                         matrices.translate((float)(ii / 7) * PIXEL_SIZE * 2, 0.0f, (ii % 7) * PIXEL_SIZE * 2);
-                        float alphaStart = ((0.2f / 15f) * entity.getLightLevel()); // Create light level based on light level
-                        float alphaEnd = alphaStart - ((0.2f / 15f) * entity.getThrowDistance());
-                        if(pattern[ii] == 2) renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, alphaStart, alphaEnd, 0, entity.getThrowDistance(), -PIXEL_SIZE, -PIXEL_SIZE, PIXEL_SIZE, -PIXEL_SIZE, -PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE, 0, 1, 0, 1);
+                        if(pattern[ii] == 2) renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, alphaStart, alphaEnd, -PIXEL_SIZE, entity.getThrowDistance(), -PIXEL_SIZE, -PIXEL_SIZE, PIXEL_SIZE, -PIXEL_SIZE, -PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE, 0, 1, 0, 1);
                         matrices.pop();
                     }
                 }
+            } else if (itemStack.isEmpty()) {
+                // Render the default full
+                matrices.push();
+                matrices.translate(6 * PIXEL_SIZE, 0.0f, 6 * PIXEL_SIZE);
+                renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, alphaStart, alphaEnd, -PIXEL_SIZE, entity.getThrowDistance(), -(PIXEL_SIZE * 7), -(PIXEL_SIZE * 7), PIXEL_SIZE * 7, -(PIXEL_SIZE * 7), -(PIXEL_SIZE * 7), PIXEL_SIZE * 7, PIXEL_SIZE * 7, PIXEL_SIZE * 7, 0, 1, 0, 1);
+                matrices.pop();
             }
         }
 
         matrices.pop();
     }
 
-    private static void renderBeamSegment(MatrixStack matrices, VertexConsumer vertices, float r, float g, float b, float alphaStart, float alphaEnd, int yOffset, int ySize, float x1, float z1, float x2, float z2, float x3, float z3, float x4, float z4, float u1, float u2, float v1, float v2) {
+    private static void renderBeamSegment(MatrixStack matrices, VertexConsumer vertices, float r, float g, float b, float alphaStart, float alphaEnd, float yOffset, float ySize, float x1, float z1, float x2, float z2, float x3, float z3, float x4, float z4, float u1, float u2, float v1, float v2) {
         MatrixStack.Entry entry = matrices.peek();
         Matrix4f matrix4f = entry.getPositionMatrix();
         Matrix3f matrix3f = entry.getNormalMatrix();
@@ -80,14 +93,14 @@ public class ProjectorBlockEntityRenderer implements BlockEntityRenderer<Project
         renderBeamFace(matrix4f, matrix3f, vertices, r, g, b, alphaStart, alphaEnd, yOffset, ySize, x3, z3, x1, z1, u1, u2, v1, v2);
     }
 
-    private static void renderBeamFace(Matrix4f positionMatrix, Matrix3f normalMatrix, VertexConsumer vertices, float r, float g, float b, float alphaStart, float alphaEnd, int yOffset, int ySize, float x1, float z1, float x2, float z2, float u1, float u2, float v1, float v2) {
+    private static void renderBeamFace(Matrix4f positionMatrix, Matrix3f normalMatrix, VertexConsumer vertices, float r, float g, float b, float alphaStart, float alphaEnd, float yOffset, float ySize, float x1, float z1, float x2, float z2, float u1, float u2, float v1, float v2) {
         renderBeamVertex(positionMatrix, normalMatrix, vertices, r, g, b, alphaStart, yOffset, x1, z1, u2, v2);
         renderBeamVertex(positionMatrix, normalMatrix, vertices, r, g, b, alphaEnd, ySize, x1, z1, u2, v1);
         renderBeamVertex(positionMatrix, normalMatrix, vertices, r, g, b, alphaEnd, ySize, x2, z2, u1, v1);
         renderBeamVertex(positionMatrix, normalMatrix, vertices, r, g, b, alphaStart, yOffset, x2, z2, u1, v2);
     }
 
-    private static void renderBeamVertex(Matrix4f positionMatrix, Matrix3f normalMatrix, VertexConsumer vertices, float r, float g, float b, float a, int y, float x, float z, float u, float v) {
+    private static void renderBeamVertex(Matrix4f positionMatrix, Matrix3f normalMatrix, VertexConsumer vertices, float r, float g, float b, float a, float y, float x, float z, float u, float v) {
         vertices.vertex(positionMatrix, x, y, z).color(r, g, b, a).texture(u, v).overlay(OverlayTexture.DEFAULT_UV).light(LightmapTextureManager.MAX_LIGHT_COORDINATE).normal(normalMatrix, 0.0f, 1.0f, 0.0f).next();
     }
 

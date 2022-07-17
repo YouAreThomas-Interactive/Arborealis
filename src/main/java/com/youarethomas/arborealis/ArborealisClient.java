@@ -4,10 +4,7 @@ import com.google.common.collect.Lists;
 import com.youarethomas.arborealis.block_entity_renderers.HollowedLogEntityRenderer;
 import com.youarethomas.arborealis.block_entity_renderers.ProjectorBlockEntityRenderer;
 import com.youarethomas.arborealis.block_entity_renderers.WarpCoreEntityRenderer;
-import com.youarethomas.arborealis.models.CarvedLogDModel;
-import com.youarethomas.arborealis.models.CarvedStencilDModel;
-import com.youarethomas.arborealis.models.HollowedLogDModel;
-import com.youarethomas.arborealis.models.WarpCoreDModel;
+import com.youarethomas.arborealis.models.*;
 import com.youarethomas.arborealis.models.model_utils.DynamicModelRegistry;
 import com.youarethomas.arborealis.particles.WarpTreeParticle;
 import com.youarethomas.arborealis.gui.StencilBagScreen;
@@ -76,7 +73,7 @@ public class ArborealisClient implements ClientModInitializer {
         ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/hollowed_log/tree_core"))));
         ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/hollowed_log/core_tether"))));
 
-        ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/projector/beam_full"))));
+        ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/projector/projector_base"))));
 
         // Model registration
         DynamicModelRegistry.register(new CarvedLogDModel(), new Identifier(Arborealis.MOD_ID, "block/carved_log"));
@@ -84,6 +81,7 @@ public class ArborealisClient implements ClientModInitializer {
         DynamicModelRegistry.register(new WarpCoreDModel(), new Identifier(Arborealis.MOD_ID, "block/warp_core"));
         DynamicModelRegistry.register(new WarpCoreDModel(), new Identifier(Arborealis.MOD_ID, "item/warp_core"));
         DynamicModelRegistry.register(new CarvedStencilDModel(), new ModelIdentifier("arborealis:item/stencil_carved#inventory"));
+        DynamicModelRegistry.register(new ProjectorDModel(), new Identifier(Arborealis.MOD_ID, "block/projector"));
 
         DynamicModelRegistry.registerModels();
 
