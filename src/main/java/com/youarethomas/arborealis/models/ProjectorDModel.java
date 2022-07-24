@@ -6,7 +6,10 @@ import com.youarethomas.arborealis.models.model_utils.DynamicCuboid;
 import com.youarethomas.arborealis.models.model_utils.DynamicModel;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.item.ItemModels;
 import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
@@ -46,8 +49,10 @@ public class ProjectorDModel extends DynamicModel {
                     }
                 }
             }
+        } else if (itemStack.isOf(Arborealis.INFUSION_LENS)) {
+            BakedModel lensModel = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/infusion_lens"));
+            builder.addBakedModel(lensModel);
         }
-
     }
 
     @Override

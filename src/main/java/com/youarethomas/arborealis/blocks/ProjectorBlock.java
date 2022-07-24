@@ -63,7 +63,7 @@ public class ProjectorBlock extends BlockWithEntity implements BlockEntityProvid
         ItemStack stackInHand = player.getStackInHand(Hand.MAIN_HAND);
 
         if (pbe.getStack(0).isEmpty()) {
-            if (stackInHand.isOf(Arborealis.CARVED_STENCIL) || stackInHand.isOf(Arborealis.BLANK_STENCIL)) {
+            if (stackInHand.isOf(Arborealis.CARVED_STENCIL) || stackInHand.isOf(Arborealis.INFUSION_LENS)) {
                 if (world.isClient) {
                     world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.3F);
                 } else {

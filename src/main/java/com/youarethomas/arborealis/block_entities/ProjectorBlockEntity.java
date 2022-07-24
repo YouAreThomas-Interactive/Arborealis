@@ -23,15 +23,27 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class ProjectorBlockEntity extends BlockEntity implements ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
 
     private int lightLevel;
     private int throwDistance;
+    private int infusionTime = 0;
+    private int infusionTotalTime = 80; // Time in ticks
 
     public ProjectorBlockEntity(BlockPos pos, BlockState state) {
         super(Arborealis.PROJECTOR_ENTITY, pos, state);
+    }
+
+    public void setInfusionTime(int infusionTime) {
+        this.infusionTime = infusionTime;
+        markDirty();
+    }
+
+    public int getInfusionTime() {
+        return this.infusionTime;
     }
 
     public void setLightLevel(int lightLevel) {
@@ -71,6 +83,7 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, ProjectorBlockEntity pbe) {
+        // TODO: Change to lit and unlit server tick like in CampfireBlock
         BlockPos blockBehind = pos.offset(state.get(HorizontalFacingBlock.FACING).getOpposite());
         Direction facing = state.get(HorizontalFacingBlock.FACING);
 
@@ -103,54 +116,76 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
                 pbe.setThrowDistance(pbe.getLightLevel());
         }
 
-
         // Get current item
         ItemStack itemStack = pbe.getStack(0);
 
         // Project the light map thing onto the blocko
-        if (itemStack.isOf(Arborealis.CARVED_STENCIL)) {
-            NbtCompound nbt = itemStack.getNbt();
-            if (nbt != null && nbt.contains("pattern")) {
-                int[] pattern = nbt.getIntArray("pattern");
+        if (pbe.getLightLevel() > 0) {
+            if (itemStack.isOf(Arborealis.CARVED_STENCIL)) {
+                NbtCompound nbt = itemStack.getNbt();
+                if (nbt != null && nbt.contains("pattern")) {
+                    int[] pattern = nbt.getIntArray("pattern");
 
+                    BlockPos posInFront = pos.offset(facing, 1);
+                    BlockPos endPos = posInFront.offset(facing, pbe.getThrowDistance() + 1);
+                    for (BlockPos testPos : BlockPos.iterate(posInFront, endPos)) {
+                        // TODO: Optimise
+                        BlockState stateAtPos = world.getBlockState(testPos);
+
+                        // If the block clicked on is wood, create a new carved wood block
+                        if (stateAtPos.isIn(BlockTags.LOGS) || stateAtPos.isOf(Blocks.PUMPKIN)) {
+                            // Swap the block out with a carved wood block...
+                            if (stateAtPos.isIn(BlockTags.LOGS_THAT_BURN)) {
+                                world.setBlockState(testPos, Arborealis.CARVED_LOG.getDefaultState());
+                            } else {
+                                world.setBlockState(testPos, Arborealis.CARVED_NETHER_LOG.getDefaultState());
+                            }
+
+                            CarvedLogEntity carvedLogEntity = (CarvedLogEntity) world.getBlockEntity(testPos);
+
+                            // ... and assign relevant NBT data
+                            if (carvedLogEntity != null) {
+                                carvedLogEntity.setLogState(stateAtPos);
+                            }
+
+                            if (pbe.getThrowDistance() > 0 && pbe.getLightLevel() > 0) {
+                                carvedLogEntity.setFaceCatalysed(facing.getOpposite(), true);
+                                carvedLogEntity.projectLightRune(facing.getOpposite(), pattern);
+                            } else {
+                                carvedLogEntity.setFaceCatalysed(facing.getOpposite(), false); // Light catalysed should be different to normal
+                                carvedLogEntity.projectLightRune(facing.getOpposite(), new int[49]);
+                            }
+                        } else if (stateAtPos.isOf(Arborealis.CARVED_LOG) || stateAtPos.isOf(Arborealis.CARVED_NETHER_LOG)) {
+                            CarvedLogEntity be = (CarvedLogEntity) world.getBlockEntity(testPos);
+
+                            if (pbe.getThrowDistance() > 0 && pbe.getLightLevel() > 0) {
+                                be.setFaceCatalysed(facing.getOpposite(), true);
+                                be.projectLightRune(facing.getOpposite(), pattern);
+                            } else {
+                                be.setFaceCatalysed(facing.getOpposite(), false);
+                                be.projectLightRune(facing.getOpposite(), new int[49]);
+                            }
+                        }
+                    }
+                }
+            } else if (itemStack.isOf(Arborealis.INFUSION_LENS)) {
+                // TODO: Reset infusion if interrupted
                 BlockPos posInFront = pos.offset(facing, 1);
                 BlockPos endPos = posInFront.offset(facing, pbe.getThrowDistance() + 1);
                 for (BlockPos testPos : BlockPos.iterate(posInFront, endPos)) {
                     BlockState stateAtPos = world.getBlockState(testPos);
 
-                    // If the block clicked on is wood, create a new carved wood block
-                    if (stateAtPos.isIn(BlockTags.LOGS) || stateAtPos.isOf(Blocks.PUMPKIN)) {
-                        // Swap the block out with a carved wood block...
-                        if (stateAtPos.isIn(BlockTags.LOGS_THAT_BURN)) {
-                            world.setBlockState(testPos, Arborealis.CARVED_LOG.getDefaultState());
-                        } else {
-                            world.setBlockState(testPos, Arborealis.CARVED_NETHER_LOG.getDefaultState());
-                        }
+                    if (stateAtPos.isOf(Arborealis.HOLLOWED_LOG)) {
+                        HollowedLogEntity hollowedLogEntity = (HollowedLogEntity)world.getBlockEntity(testPos);
 
-                        CarvedLogEntity be = (CarvedLogEntity) world.getBlockEntity(testPos);
-
-                        // ... and assign relevant NBT data
-                        if (be != null) {
-                            be.setLogState(stateAtPos);
-                        }
-
-                        if (pbe.getThrowDistance() > 0 && pbe.getLightLevel() > 0) {
-                            be.setFaceCatalysed(facing.getOpposite(), true);
-                            be.projectLightRune(facing.getOpposite(), pattern);
-                        } else {
-                            be.setFaceCatalysed(facing.getOpposite(), false); // Light catalysed should be different to normal
-                            be.projectLightRune(facing.getOpposite(), new int[49]);
-                        }
-
-                    } else if (stateAtPos.isIn(Arborealis.MODIFIED_LOGS)) {
-                        CarvedLogEntity be = (CarvedLogEntity) world.getBlockEntity(testPos);
-
-                        if (pbe.getThrowDistance() > 0 && pbe.getLightLevel() > 0) {
-                            be.setFaceCatalysed(facing.getOpposite(), true);
-                            be.projectLightRune(facing.getOpposite(), pattern);
-                        } else {
-                            be.setFaceCatalysed(facing.getOpposite(), false);
-                            be.projectLightRune(facing.getOpposite(), new int[49]);
+                        if (hollowedLogEntity.getStack(0).isOf(Arborealis.BOTTLED_SAP)) {
+                            pbe.setInfusionTime(pbe.getInfusionTime() + 1);
+                            if (pbe.getInfusionTime() > pbe.infusionTotalTime) {
+                                hollowedLogEntity.setStack(0, Arborealis.INFUSED_SAP.getDefaultStack().split(1));
+                                pbe.setInfusionTime(0);
+                                world.updateListeners(testPos, stateAtPos, stateAtPos, Block.NOTIFY_ALL);
+                                world.emitGameEvent(GameEvent.BLOCK_CHANGE, testPos, GameEvent.Emitter.of(stateAtPos));
+                            }
                         }
                     }
                 }
@@ -165,6 +200,7 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
 
         Inventories.writeNbt(tag, inventory);
 
+        tag.putInt("infusion_time", infusionTime);
         tag.putInt("light_level", lightLevel);
         tag.putInt("throw_distance", throwDistance);
     }
@@ -177,6 +213,7 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
         inventory.clear(); // Got to clear the inventory first
         Inventories.readNbt(tag, inventory);
 
+        infusionTime = tag.getInt("infusion_time");
         lightLevel = tag.getInt("light_level");
         throwDistance = tag.getInt("throw_distance");
 

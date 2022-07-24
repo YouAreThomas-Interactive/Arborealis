@@ -2,12 +2,14 @@ package com.youarethomas.arborealis.util;
 
 import com.youarethomas.arborealis.Arborealis;
 import net.fabricmc.fabric.api.client.model.BakedModelManagerHelper;
+import net.fabricmc.fabric.impl.client.indigo.renderer.helper.ColorHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -41,8 +43,6 @@ public class ArborealisUtil {
 
         return distance < radius * radius;
     }
-
-
 
     public static long argbToHex(int a, int r, int g, int b) {
         String hex = String.format("%02X%02X%02X%02X", a, r, b, b);
@@ -78,4 +78,23 @@ public class ArborealisUtil {
             }
         }
     }
+
+    public static class Colour {
+        public int red;
+        public int green;
+        public int blue;
+
+        public Colour(int hex) {
+            red = (hex & 0xFF0000) >> 16;
+            green = (hex & 0xFF00) >> 8;
+            blue = (hex & 0xFF);
+        }
+
+        public Colour(int r, int g, int b) {
+            red = r;
+            green = g;
+            blue = g;
+        }
+    }
 }
+

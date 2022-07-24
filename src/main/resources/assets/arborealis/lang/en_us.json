@@ -58,6 +58,11 @@
   "item.arborealis.stencil_blank": "Rune Stencil",
   "item.arborealis.stencil_blank.blank": "§7Blank",
 
+  "item.arborealis.infusion_lens": "Infusion Lens",
+  "item.arborealis.infusion_lens.tooltip1": "§7Infuses objects with life force.",
+  "item.arborealis.infusion_lens.tooltip2": "§8Place inside a §2Projector §8to infuse",
+  "item.arborealis.infusion_lens.tooltip3": "§8items inside a hollowed log.",
+
   "block.arborealis.warp_sapling": "Warp Sapling",
   "block.arborealis.warp_leaves": "Warp Leaves",
   "block.arborealis.warp_wood": "Warp Wood",
@@ -82,5 +87,5 @@
   "block.arborealis.projector.tooltip1": "§7Used with Rune Stencils and Lenses.",
   "block.arborealis.projector.tooltip2": "§8Place a §2Rune Stencil §8into the holder to ",
   "block.arborealis.projector.tooltip3": "§8project runes onto a tree, or use a §2Lens to",
-  "block.arborealis.projector.tooltip4": "§8 apply effects to the entire tree."
+  "block.arborealis.projector.tooltip4": "§8apply effects to the entire tree."
 }

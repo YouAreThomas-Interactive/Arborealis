@@ -68,6 +68,8 @@ public class Arborealis implements ModInitializer {
 
 	public static final Item WARP_GRAFT = new Item(new FabricItemSettings());
 
+	public static final InfusionLensItem INFUSION_LENS = new InfusionLensItem(new FabricItemSettings());
+
 	// Blocks
 	public static final CarvedLog CARVED_LOG = new CarvedLog(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD));
 	public static final CarvedNetherLog CARVED_NETHER_LOG = new CarvedNetherLog(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD));
@@ -135,6 +137,7 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(WARP_LOG));
 				stacks.add(new ItemStack(STRIPPED_WARP_LOG));
 				stacks.add(new ItemStack(STRIPPED_WARP_WOOD));
+				stacks.add(new ItemStack(INFUSION_LENS));
 			})
 			.build();
 
@@ -200,6 +203,8 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stencil_bag"), STENCIL_BAG);
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_graft"), WARP_GRAFT);
+
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "infusion_lens"), INFUSION_LENS);
 
 		// Screen Handler
 		STENCIL_BAG_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(new Identifier(MOD_ID, "stencil_bag"), StencilBagScreenHandler::new);

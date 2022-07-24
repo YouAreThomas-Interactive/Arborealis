@@ -4,8 +4,10 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.ProjectorBlockEntity;
+import com.youarethomas.arborealis.items.InfusionLensItem;
 import com.youarethomas.arborealis.items.StencilCarved;
 import com.youarethomas.arborealis.rendering.BeamRenderLayer;
+import com.youarethomas.arborealis.util.ArborealisUtil;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BeaconBlockEntityRenderer;
@@ -15,10 +17,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.*;
 
 public class ProjectorBlockEntityRenderer implements BlockEntityRenderer<ProjectorBlockEntity> {
     public static final Identifier BEAM_TEXTURE = new Identifier(Arborealis.MOD_ID, "textures/block/blank.png");
@@ -70,6 +69,13 @@ public class ProjectorBlockEntityRenderer implements BlockEntityRenderer<Project
                         matrices.pop();
                     }
                 }
+            } else if (itemStack.isOf(Arborealis.INFUSION_LENS)) {
+                // Render the slightly smaller beam of that lens' colour
+                matrices.push();
+                matrices.translate(6 * PIXEL_SIZE, 0.0f, 6 * PIXEL_SIZE);
+                ArborealisUtil.Colour lensColour = ((InfusionLensItem) itemStack.getItem()).getLensColor();
+                renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), lensColour.red / 255f, lensColour.green / 255f, lensColour.blue / 255f, alphaStart, alphaEnd, -PIXEL_SIZE, entity.getThrowDistance(), -(PIXEL_SIZE * 6), -(PIXEL_SIZE * 6), PIXEL_SIZE * 6, -(PIXEL_SIZE * 6), -(PIXEL_SIZE * 6), PIXEL_SIZE * 6, PIXEL_SIZE * 6, PIXEL_SIZE * 6, 0, 1, 0, 1);
+                matrices.pop();
             } else if (itemStack.isEmpty()) {
                 // Render the default full
                 matrices.push();
