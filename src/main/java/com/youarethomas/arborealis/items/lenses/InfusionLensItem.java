@@ -1,9 +1,8 @@
-package com.youarethomas.arborealis.items;
+package com.youarethomas.arborealis.items.lenses;
 
 import com.youarethomas.arborealis.util.ArborealisUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
@@ -11,14 +10,15 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class InfusionLensItem extends Item {
+public class InfusionLensItem extends LensItem {
 
     public InfusionLensItem(Settings settings) {
         super(settings);
     }
 
+    @Override
     public ArborealisUtil.Colour getLensColor() {
-        return new ArborealisUtil.Colour(0x9EFAFF);
+        return new ArborealisUtil.Colour(0xDEB5FF);
     }
 
     @Override

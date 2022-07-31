@@ -43,17 +43,24 @@ public class RegrowthSpoon extends ToolItem {
             if (be != null) {
                 // Clear all sides if shift-right clicked
                 if (player.isSneaking()) {
-                    for (Direction dir : Direction.values()) {
-                        be.setFaceArray(dir, new int[49]); // reset side of face
-                        be.setFaceCatalysed(dir, false);
+                    for (Direction dir : Direction.values()) { // reset all faces (except light runes)
+                        be.setFaceArray(dir, Arrays.stream(be.getFaceArray(dir)).map(i -> i == 3 ? i : 0).toArray());
                         be.setFaceEmissive(dir, false);
-                        be.setFaceRune(dir, null);
+
+                        if (Arrays.deepEquals(ArrayUtils.toObject(be.getFaceArray(dir)), ArrayUtils.toObject(new int[49]))) {
+                            be.setFaceCatalysed(dir, false);
+                            be.setFaceRune(dir, null);
+                        }
                     }
                 } else {
-                    be.setFaceArray(context.getSide(), new int[49]); // reset side of face
-                    be.setFaceCatalysed(context.getSide(), false);
-                    be.setFaceEmissive(context.getSide(), false);
-                    be.setFaceRune(context.getSide(), null);
+                    Direction dir = context.getSide();
+                    be.setFaceArray(dir, Arrays.stream(be.getFaceArray(dir)).map(i -> i == 3 ? i : 0).toArray()); // reset side of face (except light runes)
+                    be.setFaceEmissive(dir, false);
+
+                    if (Arrays.deepEquals(ArrayUtils.toObject(be.getFaceArray(dir)), ArrayUtils.toObject(new int[49]))) {
+                        be.setFaceCatalysed(dir, false);
+                        be.setFaceRune(dir, null);
+                    }
                 }
 
                 if (world.isClient) {

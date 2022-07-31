@@ -119,11 +119,9 @@ public class CarvedLogDModel extends DynamicModel {
                         // 2 means highlighted
                         if (carveState == 2) {
                             cuboid.setSideOverlay(Direction.NORTH, planColor);
-                        } else if (carveState == 3) {
+                        } else if (carveState == 3 && rune != null && be.areRunesActive()) {
                             cuboid.applyTexture(Direction.NORTH, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
-                            if (rune != null && be.areRunesActive()) {
-                                cuboid.setSideOverlay(Direction.NORTH, rune.getIntColour());
-                            }
+                            cuboid.setSideOverlay(Direction.NORTH, rune.getIntColour());
                         }
 
                         builder.addCuboid(cuboid);
@@ -148,11 +146,9 @@ public class CarvedLogDModel extends DynamicModel {
 
                         if (carveState == 2) {
                             cuboid.setSideOverlay(Direction.EAST, planColor);
-                        } else if (carveState == 3) {
+                        } else if (carveState == 3 && rune != null && be.areRunesActive()) {
                             cuboid.applyTexture(Direction.EAST, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
-                            if (rune != null && be.areRunesActive()) {
-                                cuboid.setSideOverlay(Direction.EAST, rune.getIntColour());
-                            }
+                            cuboid.setSideOverlay(Direction.EAST, rune.getIntColour());
                         }
 
                         builder.addCuboid(cuboid);
@@ -177,11 +173,9 @@ public class CarvedLogDModel extends DynamicModel {
 
                         if (carveState == 2) {
                             cuboid.setSideOverlay(Direction.SOUTH, planColor);
-                        } else if (carveState == 3) {
+                        } else if (carveState == 3 && rune != null && be.areRunesActive()) {
                             cuboid.applyTexture(Direction.SOUTH, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
-                            if (rune != null && be.areRunesActive()) {
-                                cuboid.setSideOverlay(Direction.SOUTH, rune.getIntColour());
-                            }
+                            cuboid.setSideOverlay(Direction.SOUTH, rune.getIntColour());
                         }
 
                         builder.addCuboid(cuboid);
@@ -206,11 +200,9 @@ public class CarvedLogDModel extends DynamicModel {
 
                         if (carveState == 2) {
                             cuboid.setSideOverlay(Direction.WEST, planColor);
-                        } else if (carveState == 3) {
+                        } else if (carveState == 3 && rune != null && be.areRunesActive()) {
                             cuboid.applyTexture(Direction.WEST, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
-                            if (rune != null && be.areRunesActive()) {
-                                cuboid.setSideOverlay(Direction.WEST, rune.getIntColour());
-                            }
+                            cuboid.setSideOverlay(Direction.WEST, rune.getIntColour());
                         }
 
                         builder.addCuboid(cuboid);
@@ -235,11 +227,9 @@ public class CarvedLogDModel extends DynamicModel {
 
                         if (carveState == 2) {
                             cuboid.setSideOverlay(Direction.UP, planColor);
-                        } else if (carveState == 3) {
+                        } else if (carveState == 3 && rune != null && be.areRunesActive()) {
                             cuboid.applyTexture(Direction.UP, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
-                            if (rune != null && be.areRunesActive()) {
-                                cuboid.setSideOverlay(Direction.UP, rune.getIntColour());
-                            }
+                            cuboid.setSideOverlay(Direction.UP, rune.getIntColour());
                         }
 
                         builder.addCuboid(cuboid);
@@ -264,11 +254,9 @@ public class CarvedLogDModel extends DynamicModel {
 
                         if (carveState == 2) {
                             cuboid.setSideOverlay(Direction.DOWN, planColor);
-                        } else if (carveState == 3) {
+                        } else if (carveState == 3 && rune != null && be.areRunesActive()) {
                             cuboid.applyTexture(Direction.DOWN, new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("arborealis:rune/rune")));
-                            if (rune != null && be.areRunesActive()) {
-                                cuboid.setSideOverlay(Direction.DOWN, rune.getIntColour());
-                            }
+                            cuboid.setSideOverlay(Direction.DOWN, rune.getIntColour());
                         }
 
                         builder.addCuboid(cuboid);

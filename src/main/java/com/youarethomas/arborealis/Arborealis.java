@@ -5,6 +5,7 @@ import com.mojang.logging.LogUtils;
 import com.youarethomas.arborealis.block_entities.*;
 import com.youarethomas.arborealis.blocks.*;
 import com.youarethomas.arborealis.items.*;
+import com.youarethomas.arborealis.items.lenses.InfusionLensItem;
 import com.youarethomas.arborealis.mixins.AxeItemAccessor;
 import com.youarethomas.arborealis.mixins.CreateLeavesBlockInvoker;
 import com.youarethomas.arborealis.misc.StencilBagDyeRecipe;
@@ -50,25 +51,25 @@ public class Arborealis implements ModInitializer {
 	public static final Logger LOGGER = LogUtils.getLogger();
 
 	// Tool Items
-	public static final CarvingKnife CARVING_KNIFE = new CarvingKnife(CopperKnifeMaterial.INSTANCE, new FabricItemSettings());
-	public static final LogDrill LOG_DRILL = new LogDrill(WoodDrillMaterial.INSTANCE, new FabricItemSettings().maxCount(1));
-	public static final RegrowthSpoon REGROWTH_SPOON = new RegrowthSpoon(RegrowthSpoonMaterial.INSTANCE, new FabricItemSettings().maxCount(1));
+	public static final CarvingKnife CARVING_KNIFE = new CarvingKnife(CopperKnifeMaterial.INSTANCE, new FabricItemSettings().group(ItemGroup.SEARCH));
+	public static final LogDrill LOG_DRILL = new LogDrill(WoodDrillMaterial.INSTANCE, new FabricItemSettings().maxCount(1).group(ItemGroup.SEARCH));
+	public static final RegrowthSpoon REGROWTH_SPOON = new RegrowthSpoon(RegrowthSpoonMaterial.INSTANCE, new FabricItemSettings().maxCount(1).group(ItemGroup.SEARCH));
 
 	// Items
-	public static final TreeCore TREE_CORE = new TreeCore(new FabricItemSettings().maxCount(8).rarity(Rarity.UNCOMMON));
+	public static final TreeCore TREE_CORE = new TreeCore(new FabricItemSettings().maxCount(8).rarity(Rarity.UNCOMMON).group(ItemGroup.SEARCH));
 
-	public static final Item BOTTLED_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE));
-	public static final InfusedSap INFUSED_SAP = new InfusedSap(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE).rarity(Rarity.UNCOMMON));
-	public static final Item GLOWING_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE));
-	public static final Item CONDUCTIVE_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE));
+	public static final Item BOTTLED_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE).group(ItemGroup.SEARCH));
+	public static final InfusedSap INFUSED_SAP = new InfusedSap(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE).rarity(Rarity.UNCOMMON).group(ItemGroup.SEARCH));
+	public static final Item GLOWING_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE).group(ItemGroup.SEARCH));
+	public static final Item CONDUCTIVE_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE).group(ItemGroup.SEARCH));
 
-	public static final Item BLANK_STENCIL = new StencilBlank(new FabricItemSettings());
+	public static final Item BLANK_STENCIL = new StencilBlank(new FabricItemSettings().group(ItemGroup.SEARCH));
 	public static final Item CARVED_STENCIL = new StencilCarved(new FabricItemSettings().maxCount(1));
-	public static final Item STENCIL_BAG = new StencilBag(new FabricItemSettings().maxCount(1));
+	public static final Item STENCIL_BAG = new StencilBag(new FabricItemSettings().maxCount(1).group(ItemGroup.SEARCH));
 
-	public static final Item WARP_GRAFT = new Item(new FabricItemSettings());
+	public static final Item WARP_GRAFT = new Item(new FabricItemSettings().group(ItemGroup.SEARCH));
 
-	public static final InfusionLensItem INFUSION_LENS = new InfusionLensItem(new FabricItemSettings());
+	public static final InfusionLensItem INFUSION_LENS = new InfusionLensItem(new FabricItemSettings().group(ItemGroup.SEARCH));
 
 	// Blocks
 	public static final CarvedLog CARVED_LOG = new CarvedLog(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD));
@@ -173,17 +174,17 @@ public class Arborealis implements ModInitializer {
 		PROJECTOR_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "projector_entity"), FabricBlockEntityTypeBuilder.create(ProjectorBlockEntity::new, PROJECTOR).build(null));
 
 		// Block item registration
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_sapling"), new BlockItem(WARP_SAPLING, new FabricItemSettings()));
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_leaves"), new BlockItem(WARP_LEAVES, new FabricItemSettings()));
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_wood"), new BlockItem(WARP_WOOD, new FabricItemSettings()));
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_log"), new BlockItem(WARP_LOG, new FabricItemSettings()));
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stripped_warp_log"), new BlockItem(STRIPPED_WARP_LOG, new FabricItemSettings()));
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stripped_warp_wood"), new BlockItem(STRIPPED_WARP_WOOD, new FabricItemSettings()));
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_core"), new BlockItem(WARP_CORE, new FabricItemSettings()));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_sapling"), new BlockItem(WARP_SAPLING, new FabricItemSettings().group(ItemGroup.SEARCH)));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_leaves"), new BlockItem(WARP_LEAVES, new FabricItemSettings().group(ItemGroup.SEARCH)));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_wood"), new BlockItem(WARP_WOOD, new FabricItemSettings().group(ItemGroup.SEARCH)));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_log"), new BlockItem(WARP_LOG, new FabricItemSettings().group(ItemGroup.SEARCH)));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stripped_warp_log"), new BlockItem(STRIPPED_WARP_LOG, new FabricItemSettings().group(ItemGroup.SEARCH)));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stripped_warp_wood"), new BlockItem(STRIPPED_WARP_WOOD, new FabricItemSettings().group(ItemGroup.SEARCH)));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_core"), new BlockItem(WARP_CORE, new FabricItemSettings().group(ItemGroup.SEARCH)));
 
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tree_tap"), new BlockItem(TREE_TAP, new FabricItemSettings().maxCount(16)));
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wooden_bucket"), new BlockItem(WOODEN_BUCKET, new FabricItemSettings().maxCount(16)));
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "projector"), new BlockItem(PROJECTOR, new FabricItemSettings()));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tree_tap"), new BlockItem(TREE_TAP, new FabricItemSettings().maxCount(16).group(ItemGroup.SEARCH)));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wooden_bucket"), new BlockItem(WOODEN_BUCKET, new FabricItemSettings().maxCount(16).group(ItemGroup.SEARCH)));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "projector"), new BlockItem(PROJECTOR, new FabricItemSettings().group(ItemGroup.SEARCH)));
 
 		// Tool Item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "carving_knife"), CARVING_KNIFE);
@@ -205,6 +206,8 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_graft"), WARP_GRAFT);
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "infusion_lens"), INFUSION_LENS);
+
+
 
 		// Screen Handler
 		STENCIL_BAG_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(new Identifier(MOD_ID, "stencil_bag"), StencilBagScreenHandler::new);

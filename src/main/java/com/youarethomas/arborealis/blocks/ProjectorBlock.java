@@ -93,8 +93,11 @@ public class ProjectorBlock extends BlockWithEntity implements BlockEntityProvid
 
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        // Remove stencil or lens and update projector beam to remove any light stencils
         ProjectorBlockEntity pbe = (ProjectorBlockEntity) world.getBlockEntity(pos);
         ItemScatterer.spawn(world, pos, pbe.getItems());
+        pbe.removeStack(0);
+        pbe.updateProjector();
         super.onBreak(world, pos, state, player);
     }
 
