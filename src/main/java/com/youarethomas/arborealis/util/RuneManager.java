@@ -37,6 +37,7 @@ public class RuneManager {
     public static final Extinguish EXTINGUISH = new Extinguish();
     public static final Grow GROW = new Grow();
     public static final Diffuse DIFFUSE = new Diffuse();
+    public static final Breeding BREEDING = new Breeding();
 
     private static HashMap<Identifier, Rune> RuneRegistry = new HashMap<>();
     private static final Gson GSON = new Gson();
@@ -89,6 +90,7 @@ public class RuneManager {
         RuneManager.register(new Identifier(Arborealis.MOD_ID, "extinguish"), EXTINGUISH);
         RuneManager.register(new Identifier(Arborealis.MOD_ID, "grow"), GROW);
         RuneManager.register(new Identifier(Arborealis.MOD_ID, "diffuse"), DIFFUSE);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "breeding"), BREEDING);
     }
 
     public static void register(Identifier path, Rune rune) {

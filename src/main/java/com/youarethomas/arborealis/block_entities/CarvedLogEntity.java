@@ -27,7 +27,6 @@ public class CarvedLogEntity extends BlockEntity {
     private final int BASE_RADIUS = 10;
     public int radius = 10;
     private boolean showRadius;
-    private boolean reload = true;
 
     public List<Rune> runesPresentLastCheck = new ArrayList<>();
     public Timer chopTimer = new Timer();
@@ -62,11 +61,6 @@ public class CarvedLogEntity extends BlockEntity {
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, CarvedLogEntity be) {
-        if (be.reload) {
-            be.setRunesPresentLastCheck(new ArrayList<>());
-            be.reload = false;
-        }
-
         for (Rune rune : be.getRunesPresentLastCheck()) {
             rune.onServerTick(world, pos, be);
         }
@@ -89,7 +83,6 @@ public class CarvedLogEntity extends BlockEntity {
             projectedPattern[i] = (projectedPattern[i] == 2 && runeToProject[i] == 2) ? 3 : projectedPattern[i]; // Set all highlighted to light
         }
 
-        reload = false; // TODO: This is jank. Fix later
         setFaceArray(dir, projectedPattern);
 
         checkForRunes();

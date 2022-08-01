@@ -26,9 +26,9 @@ public class Rune {
 
     public void onRuneLost(World world, BlockPos pos, CarvedLogEntity be) {}
 
-    public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {}
-
     public void onClientTick(World world, BlockPos pos, CarvedLogEntity be) {}
+
+    public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {}
 
     public boolean showRadiusEffect() {
         return false;
