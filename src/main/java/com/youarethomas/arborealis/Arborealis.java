@@ -107,8 +107,10 @@ public class Arborealis implements ModInitializer {
 	public static DefaultParticleType WARP_TREE_PARTICLE = FabricParticleTypes.simple();
 
 	// Tags
+	public static final TagKey<Block> CARVED_LOGS = TagKey.of(Registry.BLOCK_KEY, new Identifier(MOD_ID, "carved_logs"));
 	public static final TagKey<Block> MODIFIED_LOGS = TagKey.of(Registry.BLOCK_KEY, new Identifier(MOD_ID, "modified_logs"));
 	public static final TagKey<Block> WARP_LOGS = TagKey.of(Registry.BLOCK_KEY, new Identifier(MOD_ID, "warp_logs"));
+	public static final TagKey<Block> PROJECTOR_TRANSPARENT = TagKey.of(Registry.BLOCK_KEY, new Identifier(MOD_ID, "projector_transparent"));
 
 	// Item Groups
 	public static final ItemGroup ARBOREALIS_GROUP = FabricItemGroupBuilder.create(

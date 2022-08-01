@@ -116,15 +116,16 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
     }
 
     public void updateProjector() {
-        System.out.println("updating projector");
         Direction facing = getCachedState().get(HorizontalFacingBlock.FACING);
 
         ItemStack itemStack = getStack(0);
 
         // Clear the previous block
-        BlockState lastState = world.getBlockState(getLastBlock());
-        if (lastState.isOf(Arborealis.CARVED_LOG) || lastState.isOf(Arborealis.CARVED_NETHER_LOG)) {
-            resetProjectedRune(getLastBlock(), facing);
+        if (getLastBlock() != null) {
+            BlockState lastState = world.getBlockState(getLastBlock());
+            if (lastState.isOf(Arborealis.CARVED_LOG) || lastState.isOf(Arborealis.CARVED_NETHER_LOG)) {
+                resetProjectedRune(getLastBlock(), facing);
+            }
         }
 
         if (itemStack.isOf(Arborealis.CARVED_STENCIL) && getLightLevel() > 0 && getThrowDistance() > 0) {
@@ -157,7 +158,7 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
                         }
 
                         setLastBlock(testPos); // Store block that was last rune'd
-                    } else if (stateAtPos.isOf(Arborealis.CARVED_LOG) || stateAtPos.isOf(Arborealis.CARVED_NETHER_LOG)) {
+                    } else if (stateAtPos.isIn(Arborealis.CARVED_LOGS)) {
                         CarvedLogEntity carvedLog = (CarvedLogEntity) world.getBlockEntity(testPos);
 
                         if (carvedLog != null) {
@@ -209,37 +210,34 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, ProjectorBlockEntity pbe) {
-        // TODO: Change to lit and unlit server tick like in CampfireBlock
         BlockPos blockBehind = pos.offset(state.get(HorizontalFacingBlock.FACING).getOpposite());
         Direction facing = state.get(HorizontalFacingBlock.FACING);
 
         if (!world.getBlockState(blockBehind).isOf(Blocks.AIR)) {
             int lightBehind = world.getLightLevel(LightType.BLOCK, blockBehind);
             if (lightBehind != pbe.getLightLevel()) {
-                // TODO: Would be nice to move this into neighbour update, but the light level doesn't update before it's called
-                System.out.println("light level");
                 pbe.setLightLevel(lightBehind);
             }
         } else {
             if (pbe.getLightLevel() != 0) {
-                System.out.println("light level 0");
                 pbe.setLightLevel(0);
             }
         }
 
         if (pbe.getLightLevel() != 0) {
-            int blockFound = 0;
+            int beamRange = -1;
             for (int i = 0; i < pbe.getLightLevel(); i++) {
                 BlockPos testPos = pos.offset(facing, i + 1);
 
-                if (!world.getBlockState(testPos).isOf(Blocks.AIR)) {
-                    blockFound = i;
+                if (!world.getBlockState(testPos).isIn(Arborealis.PROJECTOR_TRANSPARENT)) {
+                    beamRange = i;
                     break;
                 }
             }
 
-            if (blockFound != 0 && pbe.getThrowDistance() != blockFound)
-                pbe.setThrowDistance(blockFound);
+            // Set beam length to distance, otherwise if it was never blockers cap it at the light source level
+            if (pbe.getThrowDistance() != beamRange)
+                pbe.setThrowDistance(beamRange == -1 ? pbe.getLightLevel() : beamRange);
         }
 
         // Project the light map thing onto the blocko
@@ -278,7 +276,8 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
         tag.putInt("infusion_time", infusionTime);
         tag.putInt("light_level", lightLevel);
         tag.putInt("throw_distance", throwDistance);
-        tag.put("last_block", NbtHelper.fromBlockPos(lastBlock));
+        if (lastBlock != null)
+            tag.put("last_block", NbtHelper.fromBlockPos(lastBlock));
     }
 
     // Deserialize the BlockEntity - retrieving data
@@ -292,7 +291,8 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
         infusionTime = tag.getInt("infusion_time");
         lightLevel = tag.getInt("light_level");
         throwDistance = tag.getInt("throw_distance");
-        lastBlock = NbtHelper.toBlockPos(tag.getCompound("last_block"));
+        if (tag.contains("last_block"))
+            lastBlock = NbtHelper.toBlockPos(tag.getCompound("last_block"));
 
         this.markDirty();
     }

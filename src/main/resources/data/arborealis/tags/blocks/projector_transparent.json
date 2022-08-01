@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:air",
+    "minecraft:glass",
+    "minecraft:glass_pane",
+    "minecraft:water"
+  ]
+}
