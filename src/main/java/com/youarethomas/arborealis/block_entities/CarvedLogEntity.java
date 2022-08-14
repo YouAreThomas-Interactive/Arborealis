@@ -23,6 +23,7 @@ public class CarvedLogEntity extends BlockEntity {
 
     private BlockState logState = Blocks.OAK_LOG.getDefaultState();
     private boolean runesActive = true;
+    private boolean reload = true;
 
     private final int BASE_RADIUS = 10;
     public int radius = 10;
@@ -61,6 +62,13 @@ public class CarvedLogEntity extends BlockEntity {
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, CarvedLogEntity be) {
+        if (be.reload) {
+            for (Rune rune : be.getRunesPresentLastCheck()) {
+                rune.onRuneFound(world, pos, be);
+            }
+            be.reload = false;
+        }
+
         for (Rune rune : be.getRunesPresentLastCheck()) {
             rune.onServerTick(world, pos, be);
         }

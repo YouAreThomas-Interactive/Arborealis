@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class Breeding extends Rune {
+public class Breed extends Rune {
 
     boolean runeFound = false;
 

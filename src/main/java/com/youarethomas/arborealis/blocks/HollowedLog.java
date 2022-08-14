@@ -1,6 +1,7 @@
 package com.youarethomas.arborealis.blocks;
 
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
 import com.youarethomas.arborealis.util.TreeManager;
 import net.minecraft.block.*;
@@ -22,6 +23,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
@@ -70,6 +72,12 @@ public class HollowedLog extends HorizontalFacingBlock implements BlockEntityPro
         }
 
         return ActionResult.PASS;
+    }
+
+    @Override
+    public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+        HollowedLogEntity logEntity = (HollowedLogEntity) world.getBlockEntity(pos);
+        return new ItemStack(logEntity.getLogState().getBlock().asItem());
     }
 
     @Nullable
