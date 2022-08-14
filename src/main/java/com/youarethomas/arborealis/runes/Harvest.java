@@ -11,22 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class Harvest extends Rune {
-
-    boolean runeActive = false;
     final int SPEED = 10;
-
-    @Override
-    public void onRuneFound(World world, BlockPos pos, CarvedLogEntity be) {
-        runeActive = true;
-
-        // Call a tick immediately when the rune is carved
-        onServerTick(world, pos, be);
-    }
-
-    @Override
-    public void onRuneLost(World world, BlockPos pos, CarvedLogEntity be) {
-        runeActive = false;
-    }
 
     @Override
     public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {
@@ -49,11 +34,6 @@ public class Harvest extends Rune {
                 world.breakBlock(blockPos, true);
             }
         });
-    }
-
-    @Override
-    public void onClientTick(World world, BlockPos pos, CarvedLogEntity be) {
-
     }
 
     @Override

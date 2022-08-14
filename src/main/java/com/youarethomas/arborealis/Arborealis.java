@@ -209,8 +209,6 @@ public class Arborealis implements ModInitializer {
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "infusion_lens"), INFUSION_LENS);
 
-
-
 		// Screen Handler
 		STENCIL_BAG_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(new Identifier(MOD_ID, "stencil_bag"), StencilBagScreenHandler::new);
 

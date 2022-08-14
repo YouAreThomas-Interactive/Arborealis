@@ -8,23 +8,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class Extinguish extends Rune {
-
-    boolean runeActive = false;
     final int SPEED = 500;
 
     @Override
     public boolean showRadiusEffect() {
         return true;
-    }
-
-    @Override
-    public void onRuneFound(World world, BlockPos pos, CarvedLogEntity be) {
-        runeActive = true;
-    }
-
-    @Override
-    public void onRuneLost(World world, BlockPos pos, CarvedLogEntity be) {
-        runeActive = false;
     }
 
     @Override
@@ -37,10 +25,5 @@ public class Extinguish extends Rune {
                 world.removeBlock(blockPos, false);
             }
         });
-    }
-
-    @Override
-    public void onClientTick(World world, BlockPos pos, CarvedLogEntity be) {
-
     }
 }

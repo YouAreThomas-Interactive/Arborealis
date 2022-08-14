@@ -20,21 +20,9 @@ import java.util.List;
 public class Diffuse extends Rune {
     List<CreeperEntity> diffusedCreepers = new ArrayList<>();
 
-    boolean runeFound = false;
-
     @Override
     public boolean showRadiusEffect() {
         return true;
-    }
-
-    @Override
-    public void onRuneFound(World world, BlockPos pos, CarvedLogEntity be) {
-        runeFound = true;
-    }
-
-    @Override
-    public void onRuneLost(World world, BlockPos pos, CarvedLogEntity be) {
-        runeFound = false;
     }
 
     @Override
@@ -74,10 +62,5 @@ public class Diffuse extends Rune {
                 diffusedCreepers.remove(creeper);
             }
         }
-    }
-
-    @Override
-    public void onClientTick(World world, BlockPos pos, CarvedLogEntity be) {
-
     }
 }

@@ -16,14 +16,4 @@ public class Light extends Rune {
     public void onRuneLost(World world, BlockPos pos, CarvedLogEntity be) {
         world.setBlockState(pos, world.getBlockState(pos).with(CarvedLog.LIT, false));
     }
-
-    @Override
-    public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {
-
-    }
-
-    @Override
-    public void onClientTick(World world, BlockPos pos, CarvedLogEntity be) {
-
-    }
 }

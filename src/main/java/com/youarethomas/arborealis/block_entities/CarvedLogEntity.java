@@ -27,7 +27,6 @@ public class CarvedLogEntity extends BlockEntity {
     private final int BASE_RADIUS = 10;
     public int radius = 10;
     private boolean showRadius;
-    private boolean reload = true;
 
     public List<Rune> runesPresentLastCheck = new ArrayList<>();
     public Timer chopTimer = new Timer();
@@ -50,9 +49,11 @@ public class CarvedLogEntity extends BlockEntity {
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState state, CarvedLogEntity be) {
-        for (Rune rune : be.getRunesPresentLastCheck()) {
-            if (rune != null) {
-                rune.onClientTick(world, pos, be);
+        // Call client tick for active runes
+        for (Direction dir : Direction.values()) {
+            Rune faceRune = be.getFaceRune(dir);
+            if (faceRune != null && be.getRunesPresentLastCheck().contains(faceRune) && be.areRunesActive() && be.isFaceCatalysed(dir)) {
+                faceRune.onClientTick(world, pos, be);
             }
         }
 
@@ -62,13 +63,12 @@ public class CarvedLogEntity extends BlockEntity {
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, CarvedLogEntity be) {
-        if (be.reload) {
-            be.setRunesPresentLastCheck(new ArrayList<>());
-            be.reload = false;
-        }
-
-        for (Rune rune : be.getRunesPresentLastCheck()) {
-            rune.onServerTick(world, pos, be);
+        // Call server tick for active runes
+        for (Direction dir : Direction.values()) {
+            Rune faceRune = be.getFaceRune(dir);
+            if (faceRune != null && be.getRunesPresentLastCheck().contains(faceRune) && be.areRunesActive() && be.isFaceCatalysed(dir)) {
+                faceRune.onServerTick(world, pos, be);
+            }
         }
     }
 
@@ -89,7 +89,6 @@ public class CarvedLogEntity extends BlockEntity {
             projectedPattern[i] = (projectedPattern[i] == 2 && runeToProject[i] == 2) ? 3 : projectedPattern[i]; // Set all highlighted to light
         }
 
-        reload = false; // TODO: This is jank. Fix later
         setFaceArray(dir, projectedPattern);
 
         checkForRunes();

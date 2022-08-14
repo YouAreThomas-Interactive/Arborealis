@@ -10,19 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class AreaChop extends Rune {
-
-    boolean runeActive = false;
     final int SPEED = 2;
-
-    @Override
-    public void onRuneFound(World world, BlockPos pos, CarvedLogEntity be) {
-        runeActive = true;
-    }
-
-    @Override
-    public void onRuneLost(World world, BlockPos pos, CarvedLogEntity be) {
-        runeActive = false;
-    }
 
     @Override
     public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {
