@@ -23,7 +23,6 @@ public class CarvedLogEntity extends BlockEntity {
 
     private BlockState logState = Blocks.OAK_LOG.getDefaultState();
     private boolean runesActive = true;
-    private boolean reload = true;
 
     private final int BASE_RADIUS = 10;
     public int radius = 10;
@@ -50,9 +49,11 @@ public class CarvedLogEntity extends BlockEntity {
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState state, CarvedLogEntity be) {
-        for (Rune rune : be.getRunesPresentLastCheck()) {
-            if (rune != null) {
-                rune.onClientTick(world, pos, be);
+        // Call client tick for active runes
+        for (Direction dir : Direction.values()) {
+            Rune faceRune = be.getFaceRune(dir);
+            if (faceRune != null && be.getRunesPresentLastCheck().contains(faceRune) && be.areRunesActive() && be.isFaceCatalysed(dir)) {
+                faceRune.onClientTick(world, pos, be);
             }
         }
 
@@ -62,15 +63,12 @@ public class CarvedLogEntity extends BlockEntity {
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, CarvedLogEntity be) {
-        if (be.reload) {
-            for (Rune rune : be.getRunesPresentLastCheck()) {
-                rune.onRuneFound(world, pos, be);
+        // Call server tick for active runes
+        for (Direction dir : Direction.values()) {
+            Rune faceRune = be.getFaceRune(dir);
+            if (faceRune != null && be.getRunesPresentLastCheck().contains(faceRune) && be.areRunesActive() && be.isFaceCatalysed(dir)) {
+                faceRune.onServerTick(world, pos, be);
             }
-            be.reload = false;
-        }
-
-        for (Rune rune : be.getRunesPresentLastCheck()) {
-            rune.onServerTick(world, pos, be);
         }
     }
 

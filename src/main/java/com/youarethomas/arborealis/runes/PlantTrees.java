@@ -41,18 +41,7 @@ public class PlantTrees extends Rune {
         }
     }
 
-    boolean runeActive = false;
     final int SPEED = 100;
-
-    @Override
-    public void onRuneFound(World world, BlockPos pos, CarvedLogEntity be) {
-        runeActive = true;
-    }
-
-    @Override
-    public void onRuneLost(World world, BlockPos pos, CarvedLogEntity be) {
-        runeActive = false;
-    }
 
     @Override
     public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {
@@ -134,7 +123,7 @@ public class PlantTrees extends Rune {
                 for (int north = -1; north <= 1; north++) {
                     for (int east = -1; east <= 1; east++) {
                         if (!(north == 0 && east == 0))
-                        world.setBlockState(topLogPos.offset(Direction.NORTH, north).offset(Direction.EAST, east), Blocks.OAK_LEAVES.getDefaultState());
+                            world.setBlockState(topLogPos.offset(Direction.NORTH, north).offset(Direction.EAST, east), Blocks.OAK_LEAVES.getDefaultState());
                     }
                 }
 

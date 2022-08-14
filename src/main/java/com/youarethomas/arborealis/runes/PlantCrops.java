@@ -9,19 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class PlantCrops extends Rune {
-
-    boolean runeActive = false;
     final int SPEED = 20;
-
-    @Override
-    public void onRuneFound(World world, BlockPos pos, CarvedLogEntity be) {
-        runeActive = true;
-    }
-
-    @Override
-    public void onRuneLost(World world, BlockPos pos, CarvedLogEntity be) {
-        runeActive = false;
-    }
 
     @Override
     public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {
@@ -33,11 +21,6 @@ public class PlantCrops extends Rune {
                 world.setBlockState(blockPos.up(), getCrop().getDefaultState());
             }
         });
-    }
-
-    @Override
-    public void onClientTick(World world, BlockPos pos, CarvedLogEntity be) {
-
     }
 
     @Override

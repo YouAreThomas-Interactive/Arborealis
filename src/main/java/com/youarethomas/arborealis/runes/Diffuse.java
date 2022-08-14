@@ -20,66 +20,47 @@ import java.util.List;
 public class Diffuse extends Rune {
     List<CreeperEntity> diffusedCreepers = new ArrayList<>();
 
-    boolean runeFound = false;
-
     @Override
     public boolean showRadiusEffect() {
         return true;
     }
 
     @Override
-    public void onRuneFound(World world, BlockPos pos, CarvedLogEntity be) {
-        runeFound = true;
-    }
-
-    @Override
-    public void onRuneLost(World world, BlockPos pos, CarvedLogEntity be) {
-        runeFound = false;
-    }
-
-    @Override
     public void onServerTick(World world, BlockPos pos, CarvedLogEntity be) {
-        if (runeFound) {
-            List<Entity> entities = ArborealisUtil.getEntitiesInRadius(world, Vec3d.ofCenter(pos), be.radius, false);
+        List<Entity> entities = ArborealisUtil.getEntitiesInRadius(world, Vec3d.ofCenter(pos), be.radius, false);
 
-            for (Entity entity : entities) {
-                if (entity instanceof CreeperEntity creeper) {
-                    if (!diffusedCreepers.contains(creeper)) {
-                        diffusedCreepers.add(creeper);
-                        System.out.println("Creepers diffused: " + diffusedCreepers.size());
-                    }
-                } else if (entity instanceof TntEntity tntEntity) {
-                    // Get data from the Tnt entity
-                    Vec3d tntPos = tntEntity.getPos();
-                    Vec3d tntVelocity = tntEntity.getVelocity();
-
-                    // Make sound
-                    world.playSound(tntPos.x, tntPos.y, tntPos.z, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 1f, 1f, false);
-
-                    // Remove it and replace with the item
-                    tntEntity.discard();
-                    world.spawnEntity(new ItemEntity(world, tntPos.x, tntPos.y, tntPos.z, Items.TNT.getDefaultStack(), tntVelocity.x, tntVelocity.y, tntVelocity.z));
+        for (Entity entity : entities) {
+            if (entity instanceof CreeperEntity creeper) {
+                if (!diffusedCreepers.contains(creeper)) {
+                    diffusedCreepers.add(creeper);
+                    System.out.println("Creepers diffused: " + diffusedCreepers.size());
                 }
+            } else if (entity instanceof TntEntity tntEntity) {
+                // Get data from the Tnt entity
+                Vec3d tntPos = tntEntity.getPos();
+                Vec3d tntVelocity = tntEntity.getVelocity();
+
+                // Make sound
+                world.playSound(tntPos.x, tntPos.y, tntPos.z, SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, 1f, 1f, false);
+
+                // Remove it and replace with the item
+                tntEntity.discard();
+                world.spawnEntity(new ItemEntity(world, tntPos.x, tntPos.y, tntPos.z, Items.TNT.getDefaultStack(), tntVelocity.x, tntVelocity.y, tntVelocity.z));
             }
+        }
 
-            for (int i = diffusedCreepers.size() - 1; i >= 0; i--) {
-                CreeperEntity creeper = diffusedCreepers.get(i);
+        for (int i = diffusedCreepers.size() - 1; i >= 0; i--) {
+            CreeperEntity creeper = diffusedCreepers.get(i);
 
-                if (ArborealisUtil.isWithinRadius(creeper.getPos(), Vec3d.ofCenter(pos), be.radius)) {
-                    if (creeper.isAlive()) {
-                        creeper.setFuseSpeed(-1);
-                    } else {
-                        diffusedCreepers.remove(creeper);
-                    }
+            if (ArborealisUtil.isWithinRadius(creeper.getPos(), Vec3d.ofCenter(pos), be.radius)) {
+                if (creeper.isAlive()) {
+                    creeper.setFuseSpeed(-1);
                 } else {
                     diffusedCreepers.remove(creeper);
                 }
+            } else {
+                diffusedCreepers.remove(creeper);
             }
         }
-    }
-
-    @Override
-    public void onClientTick(World world, BlockPos pos, CarvedLogEntity be) {
-
     }
 }
