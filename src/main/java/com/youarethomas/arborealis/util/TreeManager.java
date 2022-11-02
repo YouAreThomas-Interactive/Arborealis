@@ -323,9 +323,9 @@ public class TreeManager extends PersistentState {
         if(this.treeStructureMapping.containsKey(pos)) {
             // Get the structure that is stored at that position.
             return this.treeStructureRegistry.get(this.treeStructureMapping.get(pos));
+        } else {
+            return constructTreeStructureFromBlock(pos, (ServerWorld)world);
         }
-
-        return null;
     }
 
     public TreeStructure constructTreeStructureFromBlock(BlockPos startingPos, ServerWorld world) {

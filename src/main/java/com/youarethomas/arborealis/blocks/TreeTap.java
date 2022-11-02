@@ -101,18 +101,21 @@ public class TreeTap extends HorizontalFacingBlock {
 
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        WoodenBucketEntity bucketEntity = (WoodenBucketEntity)world.getBlockEntity(pos.down());
-
         if (random.nextInt(2) == 0) {
-            TreeManager treeManager = ((ServerWorldMixinAccess)world).getTreeManager();
-            if (treeManager.getTreeStructureFromPos(pos.offset(state.get(Properties.HORIZONTAL_FACING), -1), world).isNatural())
-            {
-                if (bucketEntity != null && bucketEntity.getSapAmount() < 12) {
-                    WoodenBucket.changeSapLevel(world, pos.down(), 1);
-                } else {
-                    world.setBlockState(pos, state.with(READY, true), Block.NOTIFY_LISTENERS);
+            BlockPos.iterate(pos, pos.down(3)).forEach(checkPos -> {
+                if (world.getBlockState(checkPos).isOf(Arborealis.WOODEN_BUCKET)) {
+                    WoodenBucketEntity bucketEntity = (WoodenBucketEntity)world.getBlockEntity(checkPos);
+
+                    TreeManager treeManager = ((ServerWorldMixinAccess)world).getTreeManager();
+                    if (treeManager.getTreeStructureFromPos(pos.offset(state.get(Properties.HORIZONTAL_FACING), -1), world).isNatural()) {
+                        if (bucketEntity != null && bucketEntity.getSapAmount() < 12) {
+                            WoodenBucket.changeSapLevel(world, checkPos, 1);
+                        } else {
+                            world.setBlockState(pos, state.with(READY, true), Block.NOTIFY_LISTENERS);
+                        }
+                    }
                 }
-            }
+            });
         }
     }
 
