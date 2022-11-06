@@ -1,6 +1,7 @@
 package com.youarethomas.arborealis.util;
 
 import com.youarethomas.arborealis.runes.Rune;
+import com.youarethomas.arborealis.runes.RuneManager;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;

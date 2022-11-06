@@ -14,7 +14,7 @@ import com.youarethomas.arborealis.items.tool_materials.CopperKnifeMaterial;
 import com.youarethomas.arborealis.items.tool_materials.RegrowthSpoonMaterial;
 import com.youarethomas.arborealis.items.tool_materials.WoodDrillMaterial;
 import com.youarethomas.arborealis.util.ArborealisConstants;
-import com.youarethomas.arborealis.util.RuneManager;
+import com.youarethomas.arborealis.runes.RuneManager;
 import com.youarethomas.arborealis.gui.StencilBagScreenHandler;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;

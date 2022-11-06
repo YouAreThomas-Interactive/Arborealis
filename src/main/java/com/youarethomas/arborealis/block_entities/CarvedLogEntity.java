@@ -2,13 +2,18 @@ package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.runes.Rune;
+import com.youarethomas.arborealis.runes.RuneManager;
 import com.youarethomas.arborealis.util.*;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.nbt.*;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -238,7 +243,6 @@ public class CarvedLogEntity extends BlockEntity {
      * All the logic for each rune if detected. Called randomly every 2 seconds or so.
      */
     public void checkForRunes() {
-        if (world != null && !world.isClient()) {
             System.out.println("Checking for runes");
             List<Rune> foundRunes = new ArrayList<>();
 
@@ -280,7 +284,6 @@ public class CarvedLogEntity extends BlockEntity {
             }
 
             setShowRadius(displayRadiusParticles);
-        }
     }
 
     private static void createParticleRadiusBorder(World world, BlockPos pos, float radius, int numberOfPoints) {

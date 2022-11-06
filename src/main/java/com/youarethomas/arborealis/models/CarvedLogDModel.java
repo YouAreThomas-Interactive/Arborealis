@@ -6,7 +6,6 @@ import com.youarethomas.arborealis.mixins.AxeItemAccessor;
 import com.youarethomas.arborealis.models.model_utils.DynamicCuboid;
 import com.youarethomas.arborealis.models.model_utils.DynamicModel;
 import com.youarethomas.arborealis.runes.Rune;
-import com.youarethomas.arborealis.util.RuneManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;

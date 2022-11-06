@@ -66,9 +66,10 @@ public class RegrowthSpoon extends ToolItem {
                 if (world.isClient) {
                     world.playSound(player, blockPos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1.0F, 0.5F);
                 } else {
-                    be.checkForRunes();
                     //TreeManager.checkLifeForce(world, blockPos);
                 }
+
+                be.checkForRunes();
 
                 // Check to see if any sides are carved
                 boolean blockReset = true;
