@@ -6,6 +6,7 @@ import com.youarethomas.arborealis.block_entities.*;
 import com.youarethomas.arborealis.blocks.*;
 import com.youarethomas.arborealis.items.*;
 import com.youarethomas.arborealis.items.lenses.InfusionLensItem;
+import com.youarethomas.arborealis.items.tool_materials.TuningForkMaterial;
 import com.youarethomas.arborealis.mixins.AxeItemAccessor;
 import com.youarethomas.arborealis.mixins.CreateLeavesBlockInvoker;
 import com.youarethomas.arborealis.misc.StencilBagDyeRecipe;
@@ -13,7 +14,7 @@ import com.youarethomas.arborealis.items.tool_materials.CopperKnifeMaterial;
 import com.youarethomas.arborealis.items.tool_materials.RegrowthSpoonMaterial;
 import com.youarethomas.arborealis.items.tool_materials.WoodDrillMaterial;
 import com.youarethomas.arborealis.util.ArborealisConstants;
-import com.youarethomas.arborealis.util.RuneManager;
+import com.youarethomas.arborealis.runes.RuneManager;
 import com.youarethomas.arborealis.gui.StencilBagScreenHandler;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.itemgroup.FabricItemGroupBuilder;
@@ -54,6 +55,7 @@ public class Arborealis implements ModInitializer {
 	public static final CarvingKnife CARVING_KNIFE = new CarvingKnife(CopperKnifeMaterial.INSTANCE, new FabricItemSettings().group(ItemGroup.SEARCH));
 	public static final LogDrill LOG_DRILL = new LogDrill(WoodDrillMaterial.INSTANCE, new FabricItemSettings().maxCount(1).group(ItemGroup.SEARCH));
 	public static final RegrowthSpoon REGROWTH_SPOON = new RegrowthSpoon(RegrowthSpoonMaterial.INSTANCE, new FabricItemSettings().maxCount(1).group(ItemGroup.SEARCH));
+	public static final TuningForkItem TUNING_FORK = new TuningForkItem(TuningForkMaterial.INSTANCE, new FabricItemSettings().maxCount(1).group(ItemGroup.SEARCH));
 
 	// Items
 	public static final TreeCore TREE_CORE = new TreeCore(new FabricItemSettings().maxCount(8).rarity(Rarity.UNCOMMON).group(ItemGroup.SEARCH));
@@ -118,19 +120,19 @@ public class Arborealis implements ModInitializer {
 			.icon(() -> new ItemStack(CARVING_KNIFE))
 			.appendItems(stacks -> {
 				stacks.add(new ItemStack(CARVING_KNIFE));
-				stacks.add(new ItemStack(LOG_DRILL));
 				stacks.add(new ItemStack(REGROWTH_SPOON));
+				stacks.add(new ItemStack(TUNING_FORK));
+				stacks.add(new ItemStack(LOG_DRILL));
 				stacks.add(new ItemStack(TREE_CORE));
-				stacks.add(new ItemStack(TREE_TAP));
 				stacks.add(new ItemStack(BOTTLED_SAP));
 				stacks.add(new ItemStack(INFUSED_SAP));
 				stacks.add(new ItemStack(GLOWING_SAP));
 				stacks.add(new ItemStack(CONDUCTIVE_SAP));
 
 				stacks.add(new ItemStack(WOODEN_BUCKET));
+				stacks.add(new ItemStack(TREE_TAP));
 				stacks.add(new ItemStack(BLANK_STENCIL));
 				stacks.add(new ItemStack(STENCIL_BAG));
-				stacks.add(new ItemStack(PROJECTOR));
 				stacks.add(new ItemStack(WARP_GRAFT));
 				stacks.add(new ItemStack(WARP_SAPLING));
 				stacks.add(new ItemStack(WARP_LEAVES));
@@ -140,6 +142,7 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(WARP_LOG));
 				stacks.add(new ItemStack(STRIPPED_WARP_LOG));
 				stacks.add(new ItemStack(STRIPPED_WARP_WOOD));
+				stacks.add(new ItemStack(PROJECTOR));
 				stacks.add(new ItemStack(INFUSION_LENS));
 			})
 			.build();
@@ -192,6 +195,7 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "carving_knife"), CARVING_KNIFE);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "log_drill"), LOG_DRILL);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "regrowth_spoon"), REGROWTH_SPOON);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tuning_fork"), TUNING_FORK);
 
 		// Item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tree_core"), TREE_CORE);

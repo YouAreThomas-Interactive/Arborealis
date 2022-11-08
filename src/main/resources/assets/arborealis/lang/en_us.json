@@ -36,6 +36,11 @@
   "item.arborealis.regrowth_spoon.tooltip3": "§8side to its original state. §2Shift + right",
   "item.arborealis.regrowth_spoon.tooltip4": "§8click to clear all sides.",
 
+  "item.arborealis.tuning_fork": "Tuning Fork",
+  "item.arborealis.tuning_fork.tooltip1": "§7Used for re-orienting blocks.",
+  "item.arborealis.tuning_fork.tooltip2": "§2Right click §8to make a block face the",
+  "item.arborealis.tuning_fork.tooltip3": "§8the direction clicked.",
+
   "item.arborealis.tree_core": "Life Core",
   "item.arborealis.tree_core.tooltip1": "§7Increases a tree's life force.",
   "item.arborealis.tree_core.tooltip2": "§8Place inside a §2Hollowed Log §8to increase",

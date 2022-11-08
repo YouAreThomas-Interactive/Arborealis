@@ -20,7 +20,8 @@
     "WorldRendererMixin",
     "BufferBuilderAccessor",
     "BufferBuilderStorageMixin",
-    "GameRendererMixin"
+    "GameRendererMixin",
+    "ClientWorldMixin"
   ],
   "server": [
   ],

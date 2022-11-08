@@ -37,11 +37,6 @@ public class AreaChop extends Rune {
     }
 
     @Override
-    public void onClientTick(World world, BlockPos pos, CarvedLogEntity be) {
-
-    }
-
-    @Override
     public boolean showRadiusEffect() {
         return true;
     }
