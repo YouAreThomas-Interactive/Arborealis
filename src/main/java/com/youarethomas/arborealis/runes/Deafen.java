@@ -8,7 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class Muffle extends Rune {
+public class Deafen extends Rune {
 
     @Override
     public boolean showRadiusEffect() {

@@ -10,6 +10,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.item.ItemModels;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
+import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
@@ -57,6 +59,11 @@ public class ProjectorDModel extends DynamicModel {
 
     @Override
     public void createItemQuads(CuboidBuilder builder, ItemStack itemStack) {
+        // No.
+    }
 
+    @Override
+    public SpriteIdentifier getParticleSpriteId() {
+        return new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(Arborealis.MOD_ID, "block/projector_base"));
     }
 }

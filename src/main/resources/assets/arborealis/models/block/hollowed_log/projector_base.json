@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench",
-	"texture_size": [32, 32],
+	"texture_size": [64, 64],
 	"textures": {
 		"0": "arborealis:block/projector_base",
 		"particle": "arborealis:block/projector_base"
