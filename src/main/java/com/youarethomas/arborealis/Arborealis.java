@@ -9,7 +9,9 @@ import com.youarethomas.arborealis.items.lenses.InfusionLensItem;
 import com.youarethomas.arborealis.items.tool_materials.TuningForkMaterial;
 import com.youarethomas.arborealis.mixins.AxeItemAccessor;
 import com.youarethomas.arborealis.mixins.CreateLeavesBlockInvoker;
-import com.youarethomas.arborealis.misc.StencilBagDyeRecipe;
+import com.youarethomas.arborealis.recipes.InfusionRecipe;
+import com.youarethomas.arborealis.recipes.InfusionRecipeSerializer;
+import com.youarethomas.arborealis.recipes.StencilBagDyeRecipe;
 import com.youarethomas.arborealis.items.tool_materials.CopperKnifeMaterial;
 import com.youarethomas.arborealis.items.tool_materials.RegrowthSpoonMaterial;
 import com.youarethomas.arborealis.items.tool_materials.WoodDrillMaterial;
@@ -218,6 +220,10 @@ public class Arborealis implements ModInitializer {
 
 		// Recipe Serializers
 		STENCIL_BAG_DYE =  RecipeSerializer.register("crafting_special_bag_dye", new SpecialRecipeSerializer<>(StencilBagDyeRecipe::new));
+		Registry.register(Registry.RECIPE_SERIALIZER, InfusionRecipeSerializer.ID, InfusionRecipeSerializer.INSTANCE);
+
+		// Recipe Types
+		Registry.register(Registry.RECIPE_TYPE, new Identifier(MOD_ID, InfusionRecipe.Type.ID), InfusionRecipe.Type.INSTANCE);
 
 		// Particles
 		Registry.register(Registry.PARTICLE_TYPE, new Identifier(MOD_ID, "warp_tree_particle"), WARP_TREE_PARTICLE);

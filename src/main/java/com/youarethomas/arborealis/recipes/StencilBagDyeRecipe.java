@@ -1,4 +1,4 @@
-package com.youarethomas.arborealis.misc;
+package com.youarethomas.arborealis.recipes;
 
 import com.google.common.collect.Lists;
 import com.youarethomas.arborealis.Arborealis;
