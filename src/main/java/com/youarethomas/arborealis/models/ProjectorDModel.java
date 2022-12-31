@@ -59,7 +59,8 @@ public class ProjectorDModel extends DynamicModel {
 
     @Override
     public void createItemQuads(CuboidBuilder builder, ItemStack itemStack) {
-        // No.
+        BakedModel projectorBase = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/projector/projector_base"));
+        builder.addBakedModel(projectorBase);
     }
 
     @Override
