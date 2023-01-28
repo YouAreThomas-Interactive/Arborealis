@@ -89,8 +89,8 @@ public class ArborealisClient implements ClientModInitializer {
         ParticleFactoryRegistry.getInstance().register(Arborealis.WARP_TREE_PARTICLE, WarpTreeParticle.Factory::new);
 
         // Networking
-        ClientPlayNetworking.registerGlobalReceiver(ArborealisConstants.TREE_MAP_INIT, TreeManager::treeMapInit);
-        ClientPlayNetworking.registerGlobalReceiver(ArborealisConstants.TREE_MAP_UPDATE, TreeManager::treeMapUpdate);
+        ClientPlayNetworking.registerGlobalReceiver(ArborealisConstants.INIT_DOWNLOAD_TREE_STRUCTURES, TreeManagerClient::downloadTreeStructures);
+        ClientPlayNetworking.registerGlobalReceiver(ArborealisConstants.UPDATE_TREE_STRUCTURES, TreeManagerClient::updateTreeStructures);
         ClientPlayNetworking.registerGlobalReceiver(ArborealisConstants.CLIENT_RUNE_PUSH, RuneManager::clientRunePush);
     }
 }

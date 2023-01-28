@@ -75,45 +75,6 @@ public class TreeManager extends PersistentState {
         markDirty();
     }
 
-    public static void treeMapInit(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        List<String> structureIDs = buf.readCollection(PacketByteBuf.getMaxValidator(Lists::newArrayListWithCapacity, 10000), PacketByteBuf::readString);
-        List<TreeStructure> structures = buf.readCollection(PacketByteBuf.getMaxValidator(Lists::newArrayListWithCapacity, 10000), packetByteBuf -> {
-            NbtCompound nbt = packetByteBuf.readNbt();
-            if (nbt != null) {
-                return TreeStructure.fromNbt(nbt);
-            } else {
-                return null;
-            }
-        });
-        RegistryKey<World> worldKey = RegistryKey.of(Registry.WORLD_KEY, new Identifier(buf.readString()));
-
-        // Recreates the mappings from the structure IDs and the structures.
-        Hashtable<String, TreeStructure> treeStructureMappings = new Hashtable<>(IntStream.range(0, structureIDs.size()).boxed()
-                .collect(Collectors.toMap(structureIDs::get, structures::get)));
-
-        client.execute(() -> TreeManagerRenderer.initTreeStructure(worldKey, treeStructureMappings));
-    }
-
-    public static void treeMapUpdate(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        List<String> removedStructureIDs = buf.readCollection(PacketByteBuf.getMaxValidator(Lists::newArrayListWithCapacity, 10000), PacketByteBuf::readString);
-        List<String> addedStructureIDs = buf.readCollection(PacketByteBuf.getMaxValidator(Lists::newArrayListWithCapacity, 10000), PacketByteBuf::readString);
-        List<TreeStructure> addedStructures = buf.readCollection(PacketByteBuf.getMaxValidator(Lists::newArrayListWithCapacity, 10000), packetByteBuf -> {
-            NbtCompound nbt = packetByteBuf.readNbt();
-            if (nbt != null) {
-                return TreeStructure.fromNbt(nbt);
-            } else {
-                return null;
-            }
-        });
-        RegistryKey<World> worldKey = RegistryKey.of(Registry.WORLD_KEY, new Identifier(buf.readString()));
-
-        // Recreates the mappings from the structure IDs and the structures.
-        Hashtable<String, TreeStructure> treeStructureMappings = new Hashtable<>(IntStream.range(0, addedStructureIDs.size()).boxed()
-                .collect(Collectors.toMap(addedStructureIDs::get, addedStructures::get)));
-
-        client.execute(() -> TreeManagerRenderer.updateTreeStructures(worldKey, removedStructureIDs, treeStructureMappings));
-    }
-
     public HashSet<TreeStructure> getTreeStructures() {
         return new HashSet<>(treeStructureRegistry.values());
     }
@@ -407,7 +368,7 @@ public class TreeManager extends PersistentState {
         buf.writeString(worldKey.getValue().toString());
 
         // Send to the player.
-        ServerPlayNetworking.send(player, ArborealisConstants.TREE_MAP_INIT, buf);
+        ServerPlayNetworking.send(player, ArborealisConstants.INIT_DOWNLOAD_TREE_STRUCTURES, buf);
     }
 
     private void updateAllPlayers(ServerWorld world, List<String> removedStructures, Hashtable<String, TreeStructure> addedStructures) {
@@ -427,7 +388,7 @@ public class TreeManager extends PersistentState {
 
             // Iterate over all players tracking a position in the world and send the packet to each player
             for (ServerPlayerEntity player : PlayerLookup.all(world.getServer())) {
-                ServerPlayNetworking.send(player, ArborealisConstants.TREE_MAP_UPDATE, buf);
+                ServerPlayNetworking.send(player, ArborealisConstants.UPDATE_TREE_STRUCTURES, buf);
             }
 
             markDirty();

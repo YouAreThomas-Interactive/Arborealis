@@ -7,8 +7,8 @@ public record ArborealisConstants() {
 
     // Client Receivers (Executed on the client)
     public static final Identifier UPDATE_PROJECTOR = new Identifier(MOD_ID, "update_projector");
-    public static final Identifier TREE_MAP_INIT = new Identifier(MOD_ID, "tree_map_init");
-    public static final Identifier TREE_MAP_UPDATE = new Identifier(MOD_ID, "tree_map_update");
+    public static final Identifier INIT_DOWNLOAD_TREE_STRUCTURES = new Identifier(MOD_ID, "init_download_tree_structures");
+    public static final Identifier UPDATE_TREE_STRUCTURES = new Identifier(MOD_ID, "update_tree_structures");
     public static final Identifier CLIENT_RUNE_PUSH = new Identifier(MOD_ID, "client_rune_push");
 
     // Server Receivers (Executed on the server)
