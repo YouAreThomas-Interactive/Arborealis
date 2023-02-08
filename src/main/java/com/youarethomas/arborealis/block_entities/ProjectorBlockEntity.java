@@ -111,11 +111,14 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
 
         ItemStack itemStack = getStack(0);
 
-        // Clear the previous block
+        // Clear the run off a carved log, or stop a lens infusion
         if (getLastBlock() != null) {
             BlockState lastState = world.getBlockState(getLastBlock());
             if (lastState.isOf(Arborealis.CARVED_LOG) || lastState.isOf(Arborealis.CARVED_NETHER_LOG)) {
                 resetProjectedRune(getLastBlock(), facing);
+            } else if (lastState.isOf(Arborealis.HOLLOWED_LOG)) {
+                HollowedLogEntity entity = (HollowedLogEntity) world.getBlockEntity(getLastBlock());
+                entity.setXpRequired(0);
             }
         }
 
@@ -198,6 +201,8 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
                 world.setBlockState(pos, carvedLog.getLogState());
             }
         }
+
+        setLastBlock(null);
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, ProjectorBlockEntity pbe) {

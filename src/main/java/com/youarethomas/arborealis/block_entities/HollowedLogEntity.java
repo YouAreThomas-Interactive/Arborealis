@@ -162,19 +162,29 @@ public class HollowedLogEntity extends BlockEntity implements ImplementedInvento
                         }
                     }
                 }
-            } else if (playersAround.size() > 0){
-                // Redistribute XP to all surrounding players if item removed
-                int divideXp = hollowedLogEntity.getXpConsumed() / playersAround.size();
-
-                for (Entity entity : playersAround) {
-                    if (entity instanceof PlayerEntity player) {
-                        player.addExperience(divideXp);
-                    }
-                }
-
-                hollowedLogEntity.setXpRequired(0);
-                hollowedLogEntity.setXpConsumed(0);
+            } else {
+                divideXP(hollowedLogEntity, playersAround);
             }
+        } else if (hollowedLogEntity.getXpConsumed() != 0) {
+            // If the required is zero, but there is XP consumed (infusion cancelled)
+            List<Entity> playersAround = ArborealisUtil.getEntitiesInRadius(world, Vec3d.ofCenter(pos), CarvedLogEntity.RUNE_BASE_RADIUS, true);
+            divideXP(hollowedLogEntity, playersAround);
+        }
+    }
+
+    private static void divideXP(HollowedLogEntity hollowedLogEntity, List<Entity> playersAround) {
+        // Redistribute XP to all surrounding players
+        if (playersAround.size() > 0) {
+            int divideXp = hollowedLogEntity.getXpConsumed() / playersAround.size();
+
+            for (Entity entity : playersAround) {
+                if (entity instanceof PlayerEntity player) {
+                    player.addExperience(divideXp);
+                }
+            }
+
+            hollowedLogEntity.setXpRequired(0);
+            hollowedLogEntity.setXpConsumed(0);
         }
     }
 }
