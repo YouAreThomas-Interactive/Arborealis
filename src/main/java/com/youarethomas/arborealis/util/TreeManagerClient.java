@@ -77,10 +77,6 @@ public class TreeManagerClient {
     }
 
     public static Collection<TreeStructure> getAllTreeStructures(RegistryKey<World> worldKey) {
-        if(treeStructureMappings.get(worldKey) == null) {
-            return Collections.emptyList();
-        }
-
-        return treeStructureMappings.get(worldKey).values();
+        return treeStructureMappings.get(worldKey) == null ? Collections.emptyList() : treeStructureMappings.get(worldKey).values();
     }
 }
