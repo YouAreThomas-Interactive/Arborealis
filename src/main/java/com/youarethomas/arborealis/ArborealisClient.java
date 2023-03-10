@@ -41,7 +41,7 @@ public class ArborealisClient implements ClientModInitializer {
             registry.register(new Identifier(Arborealis.MOD_ID, "block/pumpkin_side_lit"));
             registry.register(new Identifier(Arborealis.MOD_ID, "rune/rune"));
             registry.register(new Identifier(Arborealis.MOD_ID, "item/stencil_carved"));
-            registry.register(new Identifier(Arborealis.MOD_ID, "invisible"));
+            registry.register(new Identifier(Arborealis.MOD_ID, "block/invisible"));
             registry.register(new Identifier(Arborealis.MOD_ID, "particle/warp_tree_particle"));
         });
 

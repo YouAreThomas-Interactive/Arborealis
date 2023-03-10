@@ -1,0 +1,10 @@
+{
+  "type": "arborealis:infusion_recipe",
+  "xp_required": 10,
+  "ingredients": [
+    {
+      "item": "arborealis:bottled_sap"
+    }
+  ],
+  "result": "arborealis:infused_sap"
+}

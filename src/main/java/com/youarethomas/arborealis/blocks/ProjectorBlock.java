@@ -52,7 +52,38 @@ public class ProjectorBlock extends BlockWithEntity implements BlockEntityProvid
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         VoxelShape baseShape = Block.createCuboidShape(0, 0, 0, 16, 1, 16);
 
-        return VoxelShapes.union(baseShape);
+        VoxelShape funnel1 = baseShape;
+        VoxelShape funnel2 = baseShape;
+        VoxelShape funnel3 = baseShape;
+        VoxelShape funnel4 = baseShape;
+        switch (state.get(HorizontalFacingBlock.FACING)) {
+            case NORTH -> {
+                funnel1 = Block.createCuboidShape(0, 1, 4, 16, 16, 7);
+                funnel2 = Block.createCuboidShape(1, 1, 7, 15, 15, 10);
+                funnel3 = Block.createCuboidShape(3, 3, 10, 13, 13, 13);
+                funnel4 = Block.createCuboidShape(5, 5, 13, 11, 11, 16);
+            }
+            case SOUTH -> {
+                funnel1 = Block.createCuboidShape(0, 1, 9, 16, 16, 12);
+                funnel2 = Block.createCuboidShape(1, 1, 6, 15, 15, 9);
+                funnel3 = Block.createCuboidShape(3, 3, 3, 13, 13, 6);
+                funnel4 = Block.createCuboidShape(5, 5, 0, 11, 11, 3);
+            }
+            case EAST -> {
+                funnel1 = Block.createCuboidShape(9, 1, 0, 12, 16, 16);
+                funnel2 = Block.createCuboidShape(6, 1, 1, 9, 15, 15);
+                funnel3 = Block.createCuboidShape(3, 3, 3, 6,13, 13);
+                funnel4 = Block.createCuboidShape(0, 5, 5, 3, 11, 11);
+            }
+            case WEST -> {
+                funnel1 = Block.createCuboidShape(4, 1, 0, 7, 16, 16);
+                funnel2 = Block.createCuboidShape(7, 1, 1, 10, 15, 15);
+                funnel3 = Block.createCuboidShape(10, 3, 3, 13, 13, 13);
+                funnel4 = Block.createCuboidShape(13, 5, 5, 16, 11, 11);
+            }
+        }
+
+        return VoxelShapes.union(baseShape, funnel1, funnel2, funnel3, funnel4);
 
     }
 

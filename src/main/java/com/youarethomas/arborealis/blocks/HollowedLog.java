@@ -3,9 +3,12 @@ package com.youarethomas.arborealis.blocks;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
+import com.youarethomas.arborealis.block_entities.ProjectorBlockEntity;
 import com.youarethomas.arborealis.util.TreeManager;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -13,6 +16,7 @@ import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -30,7 +34,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public class HollowedLog extends HorizontalFacingBlock implements BlockEntityProvider {
+public class HollowedLog extends BlockWithEntity implements BlockEntityProvider {
+    public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 
     public HollowedLog(Settings settings) {
         super(settings.nonOpaque().strength(2.0F));
@@ -92,5 +97,15 @@ public class HollowedLog extends HorizontalFacingBlock implements BlockEntityPro
         world.setBlockState(pos, be.getLogState());
 
         world.breakBlock(pos, !player.isCreative());
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
+    }
+
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return checkType(type, Arborealis.HOLLOWED_LOG_ENTITY, world.isClient ? HollowedLogEntity::clientTick : HollowedLogEntity::serverTick);
     }
 }

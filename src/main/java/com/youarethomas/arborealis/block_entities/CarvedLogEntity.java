@@ -4,16 +4,12 @@ import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.runes.Rune;
 import com.youarethomas.arborealis.runes.RuneManager;
 import com.youarethomas.arborealis.util.*;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.nbt.*;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -29,7 +25,7 @@ public class CarvedLogEntity extends BlockEntity {
     private BlockState logState = Blocks.OAK_LOG.getDefaultState();
     private boolean runesActive = true;
 
-    private final int BASE_RADIUS = 10;
+    public static final int RUNE_BASE_RADIUS = 10;
     public int radius = 10;
     private boolean showRadius;
 

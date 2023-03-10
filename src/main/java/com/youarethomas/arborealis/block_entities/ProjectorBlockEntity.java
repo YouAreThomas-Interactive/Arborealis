@@ -2,6 +2,7 @@ package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.misc.ImplementedInventory;
+import com.youarethomas.arborealis.recipes.InfusionRecipe;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -27,27 +28,17 @@ import net.minecraft.world.event.GameEvent;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 public class ProjectorBlockEntity extends BlockEntity implements ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
 
     private int lightLevel;
     private int throwDistance;
-    private int infusionTime = 0;
     private BlockPos lastBlock;
-    private static final int INFUSION_TOTAL_TIME = 16 * 20; // Time in ticks
 
     public ProjectorBlockEntity(BlockPos pos, BlockState state) {
         super(Arborealis.PROJECTOR_ENTITY, pos, state);
-    }
-
-    public void setInfusionTime(int infusionTime) {
-        this.infusionTime = infusionTime;
-        markDirty();
-    }
-
-    public int getInfusionTime() {
-        return this.infusionTime;
     }
 
     public void setLightLevel(int lightLevel) {
@@ -120,11 +111,14 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
 
         ItemStack itemStack = getStack(0);
 
-        // Clear the previous block
+        // Clear the run off a carved log, or stop a lens infusion
         if (getLastBlock() != null) {
             BlockState lastState = world.getBlockState(getLastBlock());
             if (lastState.isOf(Arborealis.CARVED_LOG) || lastState.isOf(Arborealis.CARVED_NETHER_LOG)) {
                 resetProjectedRune(getLastBlock(), facing);
+            } else if (lastState.isOf(Arborealis.HOLLOWED_LOG)) {
+                HollowedLogEntity entity = (HollowedLogEntity) world.getBlockEntity(getLastBlock());
+                entity.setXpRequired(0);
             }
         }
 
@@ -207,6 +201,8 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
                 world.setBlockState(pos, carvedLog.getLogState());
             }
         }
+
+        setLastBlock(null);
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, ProjectorBlockEntity pbe) {
@@ -240,7 +236,8 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
                 pbe.setThrowDistance(beamRange == -1 ? pbe.getLightLevel() : beamRange);
         }
 
-        // Project the light map thing onto the blocko
+        // Infusion crafting
+        // TODO: Doesn't stop when projector is turned off
         if (pbe.getLightLevel() > 0 && pbe.getThrowDistance() > 0 && pbe.getStack(0).isOf(Arborealis.INFUSION_LENS)) {
             BlockPos posInFront = pos.offset(facing, 1);
             BlockPos endPos = posInFront.offset(facing, pbe.getThrowDistance() + 1);
@@ -251,15 +248,11 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
                 if (stateAtPos.isOf(Arborealis.HOLLOWED_LOG)) {
                     HollowedLogEntity hollowedLogEntity = (HollowedLogEntity) world.getBlockEntity(testPos);
 
-                    if (hollowedLogEntity != null && hollowedLogEntity.getStack(0).isOf(Arborealis.BOTTLED_SAP)) {
-                        pbe.setInfusionTime(pbe.getInfusionTime() + 1);
-                        if (pbe.getInfusionTime() > INFUSION_TOTAL_TIME) {
-                            hollowedLogEntity.setStack(0, Arborealis.INFUSED_SAP.getDefaultStack().split(1));
-                            pbe.setInfusionTime(0);
-                            world.updateListeners(testPos, stateAtPos, stateAtPos, Block.NOTIFY_ALL);
-                            world.emitGameEvent(GameEvent.BLOCK_CHANGE, testPos, GameEvent.Emitter.of(stateAtPos));
-                        }
+                    if (hollowedLogEntity != null) {
+                        Optional<InfusionRecipe> recipeMatch = world.getRecipeManager().getFirstMatch(InfusionRecipe.Type.INSTANCE, hollowedLogEntity, world);
+                        recipeMatch.ifPresent(infusionRecipe -> hollowedLogEntity.setXpRequired(infusionRecipe.getXpRequired()));
                     }
+
                     break;
                 }
             }
@@ -273,7 +266,6 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
 
         Inventories.writeNbt(tag, inventory);
 
-        tag.putInt("infusion_time", infusionTime);
         tag.putInt("light_level", lightLevel);
         tag.putInt("throw_distance", throwDistance);
         if (lastBlock != null)
@@ -288,7 +280,6 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
         inventory.clear(); // Got to clear the inventory first
         Inventories.readNbt(tag, inventory);
 
-        infusionTime = tag.getInt("infusion_time");
         lightLevel = tag.getInt("light_level");
         throwDistance = tag.getInt("throw_distance");
         if (tag.contains("last_block"))

@@ -38,7 +38,7 @@ public class RuneManager {
     public static final Diffuse DIFFUSE = new Diffuse();
     public static final Breed BREED = new Breed();
     public static final Load LOAD = new Load();
-    public static final Muffle MUFFLE = new Muffle();
+    public static final Deafen DEAFEN = new Deafen();
 
     private static HashMap<Identifier, Rune> RuneRegistry = new HashMap<>();
     private static final Gson GSON = new Gson();
@@ -93,7 +93,7 @@ public class RuneManager {
         RuneManager.register(new Identifier(Arborealis.MOD_ID, "diffuse"), DIFFUSE);
         RuneManager.register(new Identifier(Arborealis.MOD_ID, "breed"), BREED);
         RuneManager.register(new Identifier(Arborealis.MOD_ID, "load"), LOAD);
-        RuneManager.register(new Identifier(Arborealis.MOD_ID, "muffle"), MUFFLE);
+        RuneManager.register(new Identifier(Arborealis.MOD_ID, "deafen"), DEAFEN);
     }
 
     public static void register(Identifier path, Rune rune) {
