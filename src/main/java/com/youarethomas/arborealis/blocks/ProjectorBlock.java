@@ -4,6 +4,7 @@ import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.block_entities.ProjectorBlockEntity;
 import com.youarethomas.arborealis.block_entities.WoodenBucketEntity;
+import com.youarethomas.arborealis.items.lenses.LensItem;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -109,7 +110,7 @@ public class ProjectorBlock extends BlockWithEntity implements BlockEntityProvid
         ItemStack stackInHand = player.getStackInHand(Hand.MAIN_HAND);
 
         if (pbe.getStack(0).isEmpty()) {
-            if (stackInHand.isOf(Arborealis.CARVED_STENCIL) || stackInHand.isOf(Arborealis.INFUSION_LENS)) {
+            if (stackInHand.isOf(Arborealis.CARVED_STENCIL) || stackInHand.getItem() instanceof LensItem) {
                 if (world.isClient) {
                     world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.3F);
                 } else {

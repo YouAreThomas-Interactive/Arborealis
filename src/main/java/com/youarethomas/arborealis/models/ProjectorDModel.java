@@ -2,14 +2,12 @@ package com.youarethomas.arborealis.models;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.ProjectorBlockEntity;
+import com.youarethomas.arborealis.items.lenses.LensItem;
 import com.youarethomas.arborealis.models.model_utils.DynamicCuboid;
 import com.youarethomas.arborealis.models.model_utils.DynamicModel;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.item.ItemModels;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.ItemStack;
@@ -51,9 +49,13 @@ public class ProjectorDModel extends DynamicModel {
                     }
                 }
             }
-        } else if (itemStack.isOf(Arborealis.INFUSION_LENS)) {
-            BakedModel lensModel = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/infusion_lens"));
-            builder.addBakedModel(lensModel);
+        } else if (itemStack.getItem() instanceof LensItem) {
+            // Loads lens model by name
+            String[] lensPieces = itemStack.getItem().getTranslationKey().split("\\.");
+            if (lensPieces.length > 0) {
+                BakedModel lensModel = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/" + lensPieces[lensPieces.length - 1]));
+                builder.addBakedModel(lensModel);
+            }
         }
     }
 
