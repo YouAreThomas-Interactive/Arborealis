@@ -1,7 +1,7 @@
 package com.youarethomas.arborealis;
 
-import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.block_entity_renderers.HollowedLogEntityRenderer;
+import com.youarethomas.arborealis.block_entity_renderers.PrismBlockEntityRenderer;
 import com.youarethomas.arborealis.block_entity_renderers.ProjectorBlockEntityRenderer;
 import com.youarethomas.arborealis.block_entity_renderers.WarpCoreEntityRenderer;
 import com.youarethomas.arborealis.models.*;
@@ -74,6 +74,7 @@ public class ArborealisClient implements ClientModInitializer {
         BlockEntityRendererRegistry.register(Arborealis.HOLLOWED_LOG_ENTITY, HollowedLogEntityRenderer::new);
         BlockEntityRendererRegistry.register(Arborealis.WARP_CORE_ENTITY, WarpCoreEntityRenderer::new);
         BlockEntityRendererRegistry.register(Arborealis.PROJECTOR_ENTITY, ProjectorBlockEntityRenderer::new);
+        BlockEntityRendererRegistry.register(Arborealis.PRISM_ENTITY, PrismBlockEntityRenderer::new);
 
         // Colour providers
         ColorProviderRegistry.ITEM.register((stack, tintIndex) -> tintIndex > 0 ? -1 : ((DyeableItem)stack.getItem()).getColor(stack), Arborealis.STENCIL_BAG);
@@ -83,6 +84,8 @@ public class ArborealisClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(Arborealis.WARP_SAPLING, RenderLayer.getCutout());
         BlockRenderLayerMap.INSTANCE.putBlock(Arborealis.WOODEN_BUCKET, RenderLayer.getTranslucent());
         BlockRenderLayerMap.INSTANCE.putBlock(Arborealis.PROJECTOR, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putBlock(Arborealis.PRISM_BLOCK, RenderLayer.getTranslucent());
+
         BlockRenderLayerMap.INSTANCE.putItem(Arborealis.INFUSION_LENS, RenderLayer.getTranslucent());
 
         // Particles

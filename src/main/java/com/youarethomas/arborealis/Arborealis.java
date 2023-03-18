@@ -92,6 +92,7 @@ public class Arborealis implements ModInitializer {
 	public static final TreeTap TREE_TAP = new TreeTap(FabricBlockSettings.of(Material.METAL));
 	public static final WoodenBucket WOODEN_BUCKET = new WoodenBucket(FabricBlockSettings.of(Material.WOOD));
 	public static final ProjectorBlock PROJECTOR = new ProjectorBlock(FabricBlockSettings.of(Material.METAL));
+	public static final PrismBlock PRISM_BLOCK = new PrismBlock(FabricBlockSettings.of(Material.METAL).emissiveLighting((state, world, pos) -> true).luminance(state -> 3).postProcess((state, world, pos) -> true));
 
 	// Block Entities
 	public static BlockEntityType<CarvedLogEntity> CARVED_LOG_ENTITY;
@@ -100,6 +101,7 @@ public class Arborealis implements ModInitializer {
 	public static BlockEntityType<WoodenBucketEntity> WOODEN_BUCKET_ENTITY;
 	public static BlockEntityType<WarpCoreEntity> WARP_CORE_ENTITY;
 	public static BlockEntityType<ProjectorBlockEntity> PROJECTOR_ENTITY;
+	public static BlockEntityType<PrismBlockEntity> PRISM_ENTITY;
 
 	// Screen Handlers
 	public static ScreenHandlerType<StencilBagScreenHandler> STENCIL_BAG_SCREEN_HANDLER;
@@ -145,6 +147,7 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(STRIPPED_WARP_LOG));
 				stacks.add(new ItemStack(STRIPPED_WARP_WOOD));
 				stacks.add(new ItemStack(PROJECTOR));
+				stacks.add(new ItemStack(PRISM_BLOCK));
 				stacks.add(new ItemStack(INFUSION_LENS));
 			})
 			.build();
@@ -171,6 +174,7 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "tree_tap"), TREE_TAP);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "wooden_bucket"), WOODEN_BUCKET);
 		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "projector"), PROJECTOR);
+		Registry.register(Registry.BLOCK, new Identifier(MOD_ID, "prism"), PRISM_BLOCK);
 
 		// Block entity registration
 		CARVED_LOG_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "carved_log_entity"), FabricBlockEntityTypeBuilder.create(CarvedLogEntity::new, CARVED_LOG).build(null));
@@ -179,6 +183,7 @@ public class Arborealis implements ModInitializer {
 		WOODEN_BUCKET_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "wooden_bucket_entity"), FabricBlockEntityTypeBuilder.create(WoodenBucketEntity::new, WOODEN_BUCKET).build(null));
 		WARP_CORE_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "warp_core_entity"), FabricBlockEntityTypeBuilder.create(WarpCoreEntity::new, WARP_CORE).build(null));
 		PROJECTOR_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "projector_entity"), FabricBlockEntityTypeBuilder.create(ProjectorBlockEntity::new, PROJECTOR).build(null));
+		PRISM_ENTITY = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(MOD_ID, "prism_entity"), FabricBlockEntityTypeBuilder.create(PrismBlockEntity::new, PRISM_BLOCK).build(null));
 
 		// Block item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_sapling"), new BlockItem(WARP_SAPLING, new FabricItemSettings().group(ItemGroup.SEARCH)));
@@ -192,6 +197,7 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tree_tap"), new BlockItem(TREE_TAP, new FabricItemSettings().maxCount(16).group(ItemGroup.SEARCH)));
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "wooden_bucket"), new BlockItem(WOODEN_BUCKET, new FabricItemSettings().maxCount(16).group(ItemGroup.SEARCH)));
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "projector"), new BlockItem(PROJECTOR, new FabricItemSettings().group(ItemGroup.SEARCH)));
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "prism"), new BlockItem(PRISM_BLOCK, new FabricItemSettings().group(ItemGroup.SEARCH)));
 
 		// Tool Item registration
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "carving_knife"), CARVING_KNIFE);
@@ -236,6 +242,7 @@ public class Arborealis implements ModInitializer {
 		FlammableBlockRegistry.getDefaultInstance().add(WARP_LOG, 5, 5);
 		FlammableBlockRegistry.getDefaultInstance().add(STRIPPED_WARP_WOOD, 5, 5);
 		FlammableBlockRegistry.getDefaultInstance().add(STRIPPED_WARP_LOG, 5, 5);
+		FlammableBlockRegistry.getDefaultInstance().add(PRISM_BLOCK, 5, 5);
 		FlammableBlockRegistry.getDefaultInstance().add(WARP_LEAVES, 60, 30);
 
 		// Add wood stripping
