@@ -1,6 +1,5 @@
 package com.youarethomas.arborealis.util;
 
-import com.google.common.collect.Lists;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
@@ -8,24 +7,19 @@ import com.youarethomas.arborealis.runes.Rune;
 import com.youarethomas.arborealis.mixin_access.ServerWorldMixinAccess;
 import com.youarethomas.arborealis.runes.RuneManager;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.nbt.*;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
@@ -514,7 +508,7 @@ public class TreeManager extends PersistentState {
                     }
                 }
             } else if (be instanceof HollowedLogEntity hollowEntity) {
-                if (hollowEntity.getStack(0).isOf(Arborealis.TREE_CORE)) {
+                if (hollowEntity.getStack(0).isOf(Arborealis.LIFE_CORE)) {
                     lifeForceTotal -= 5;
                 }
             }

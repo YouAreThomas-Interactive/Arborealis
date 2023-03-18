@@ -1,16 +1,24 @@
 package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.items.lenses.LensItem;
 import com.youarethomas.arborealis.misc.ImplementedInventory;
+import com.youarethomas.arborealis.mixin_access.ServerWorldMixinAccess;
 import com.youarethomas.arborealis.recipes.InfusionRecipe;
+import com.youarethomas.arborealis.runes.Rune;
+import com.youarethomas.arborealis.util.ArborealisNbt;
+import com.youarethomas.arborealis.util.TreeManager;
+import com.youarethomas.arborealis.util.TreeStructure;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -21,13 +29,15 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 public class ProjectorBlockEntity extends BlockEntity implements ImplementedInventory {
@@ -237,8 +247,7 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
         }
 
         // Infusion crafting
-        // TODO: Doesn't stop when projector is turned off
-        if (pbe.getLightLevel() > 0 && pbe.getThrowDistance() > 0 && pbe.getStack(0).isOf(Arborealis.INFUSION_LENS)) {
+        if (pbe.getLightLevel() > 0 && pbe.getThrowDistance() > 0 && pbe.getStack(0).getItem() instanceof LensItem) {
             BlockPos posInFront = pos.offset(facing, 1);
             BlockPos endPos = posInFront.offset(facing, pbe.getThrowDistance() + 1);
 
@@ -249,8 +258,50 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
                     HollowedLogEntity hollowedLogEntity = (HollowedLogEntity) world.getBlockEntity(testPos);
 
                     if (hollowedLogEntity != null) {
-                        Optional<InfusionRecipe> recipeMatch = world.getRecipeManager().getFirstMatch(InfusionRecipe.Type.INSTANCE, hollowedLogEntity, world);
-                        recipeMatch.ifPresent(infusionRecipe -> hollowedLogEntity.setXpRequired(infusionRecipe.getXpRequired()));
+                        ItemStack lensStack = pbe.getStack(0);
+
+                        // Infusion Lens
+                        if (lensStack.isOf(Arborealis.INFUSION_LENS)) {
+                            Optional<InfusionRecipe> recipeMatch = world.getRecipeManager().getFirstMatch(InfusionRecipe.Type.INSTANCE, hollowedLogEntity, world);
+                            recipeMatch.ifPresent(infusionRecipe -> hollowedLogEntity.setXpRequired(infusionRecipe.getXpRequired()));
+                        // Implosion Lens
+                        } else if (lensStack.isOf(Arborealis.IMPLOSION_LENS) && hollowedLogEntity.getStack(0).isOf(Arborealis.LIFE_CORE)) {
+                            ServerWorldMixinAccess serverWorld = (ServerWorldMixinAccess) world;
+
+                            TreeManager treeManager = serverWorld.getTreeManager();
+
+                            TreeStructure tree;
+                            if (treeManager.isBlockInTreeStructure(testPos))
+                                tree = treeManager.getTreeStructureFromPos(testPos, world);
+                            else
+                                tree = treeManager.constructTreeStructureFromBlock(testPos, (ServerWorld) world);
+
+                            if (tree != null && tree.isNatural()) {
+                                // Get all runes from the tree
+                                List<Rune> runesOnTree = new ArrayList<>();
+                                for (BlockPos logPos : tree.logs) {
+                                    if (world.getBlockState(logPos).isIn(Arborealis.CARVED_LOGS)) {
+                                        CarvedLogEntity carvedLog = (CarvedLogEntity)world.getBlockEntity(logPos);
+                                        runesOnTree.addAll(carvedLog.runesPresentLastCheck.stream().filter(newRune -> runesOnTree.stream().noneMatch(rune -> newRune.name.equals(rune.name))).toList());
+                                    }
+                                }
+
+                                // Build core item with all runes stored on it
+                                ItemStack implodedCore = Arborealis.LIFE_CORE.getDefaultStack().split(1);
+
+                                if (runesOnTree.size() > 0) {
+                                    NbtCompound nbt = implodedCore.getOrCreateNbt();
+                                    NbtElement runeList = ArborealisNbt.serializeRuneList(runesOnTree);
+                                    nbt.put("rune_list", runeList);
+                                    implodedCore.setNbt(nbt);
+                                }
+
+                                // Chop tree and drop core
+                                tree.chopTreeStructure(world, false);
+                                Vec3d coreSpawnPos = Vec3d.ofCenter(testPos);
+                                world.spawnEntity(new ItemEntity(world, coreSpawnPos.x, coreSpawnPos.y, coreSpawnPos.z, implodedCore));
+                            }
+                        }
                     }
 
                     break;

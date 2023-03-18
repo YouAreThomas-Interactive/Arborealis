@@ -1,9 +1,13 @@
 package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
+import com.youarethomas.arborealis.mixin_access.ServerWorldMixinAccess;
+import com.youarethomas.arborealis.util.TreeManager;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.*;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.BlockPos;
 
 public class InfusedSap extends Item {
 
@@ -19,7 +23,7 @@ public class InfusedSap extends Item {
     // Test Method
     @Override
     public ActionResult useOnBlock(ItemUsageContext context) {
-        /*if (!context.getWorld().isClient) {
+        if (!context.getWorld().isClient) {
             ServerWorldMixinAccess serverWorld = (ServerWorldMixinAccess) context.getWorld();
 
             TreeManager treeManager = serverWorld.getTreeManager();
@@ -30,9 +34,9 @@ public class InfusedSap extends Item {
                 treeManager.deconstructTreeStructureFromBlock(pos, world);
             else
                 treeManager.constructTreeStructureFromBlock(pos, world);
-        }*/
+        }
 
-        BlockEntity be = context.getWorld().getBlockEntity(context.getBlockPos());
+        /*BlockEntity be = context.getWorld().getBlockEntity(context.getBlockPos());
         if (be instanceof CarvedLogEntity) {
             System.out.printf("== %s ==%n", context.getWorld().isClient() ? "Client" : "Server");
             System.out.println(" Runes found: " + ((CarvedLogEntity) be).getRunesPresentLastCheck());
@@ -42,7 +46,7 @@ public class InfusedSap extends Item {
             System.out.println(" Show radius: " + ((CarvedLogEntity) be).getShowRadius());
 
             return ActionResult.SUCCESS;
-        }
+        }*/
 
         return ActionResult.PASS;
     }

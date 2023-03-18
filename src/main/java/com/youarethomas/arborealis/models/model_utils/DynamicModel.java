@@ -41,7 +41,7 @@ public abstract class DynamicModel implements UnbakedModel {
     private static final Identifier DEFAULT_ITEM_MODEL = new Identifier("minecraft:item/generated");
 
     // A blank invisible texture
-    private static final SpriteIdentifier INVISIBLE_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(Arborealis.MOD_ID, "invisible"));
+    private static final SpriteIdentifier INVISIBLE_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(Arborealis.MOD_ID, "block/invisible"));
 
     private ModelTransformation transformation;
 
