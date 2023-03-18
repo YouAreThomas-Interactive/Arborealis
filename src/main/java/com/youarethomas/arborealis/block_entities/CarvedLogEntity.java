@@ -81,7 +81,7 @@ public class CarvedLogEntity extends BlockEntity {
         checkForRunes();
     }
 
-    public void projectLightRune(Direction dir, int[] runeToProject) {
+    public void showProjectedRune(Direction dir, int[] runeToProject) {
         int[] removeOldLight = Arrays.stream(getFaceArray(dir)).map(i -> i == 3 ? 0 : i).toArray(); // Set all existing light to uncarved
         int[] projectedPattern = removeOldLight.clone();
 

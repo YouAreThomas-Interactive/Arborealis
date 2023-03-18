@@ -118,74 +118,53 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
 
     public void updateProjector() {
         Direction facing = getCachedState().get(HorizontalFacingBlock.FACING);
-
         ItemStack itemStack = getStack(0);
 
-        // Clear the run off a carved log, or stop a lens infusion
-        if (getLastBlock() != null) {
+        if (getLightLevel() > 0 && getThrowDistance() > 0) {
+            NbtCompound nbt = itemStack.getNbt();
+            BlockPos lastBlockPos = pos.offset(facing, getThrowDistance() + 1);
+            BlockState lastBlockState = world.getBlockState(lastBlockPos);
+
+            if (itemStack.isOf(Arborealis.CARVED_STENCIL) && nbt != null && nbt.contains("pattern")) {
+                int[] pattern = nbt.getIntArray("pattern");
+
+                // If the block projected on is wood, create a new carved wood block
+                if (lastBlockState.isIn(BlockTags.LOGS) || lastBlockState.isOf(Blocks.PUMPKIN)) {
+                    // Swap the block out with a carved wood block...
+                    if (lastBlockState.isIn(BlockTags.LOGS_THAT_BURN)) {
+                        world.setBlockState(lastBlockPos, Arborealis.CARVED_LOG.getDefaultState());
+                    } else {
+                        world.setBlockState(lastBlockPos, Arborealis.CARVED_NETHER_LOG.getDefaultState());
+                    }
+
+                    CarvedLogEntity carvedLog = (CarvedLogEntity) world.getBlockEntity(lastBlockPos);
+
+                    // ... and assign relevant NBT data
+                    if (carvedLog != null) {
+                        carvedLog.setLogState(lastBlockState);
+
+                        carvedLog.setFaceCatalysed(facing.getOpposite(), true);
+                        carvedLog.showProjectedRune(facing.getOpposite(), pattern);
+                    }
+                } else if (lastBlockState.isIn(Arborealis.CARVED_LOGS)) {
+                    CarvedLogEntity carvedLog = (CarvedLogEntity) world.getBlockEntity(lastBlockPos);
+
+                    if (carvedLog != null) {
+                        carvedLog.setFaceCatalysed(facing.getOpposite(), true);
+                        carvedLog.showProjectedRune(facing.getOpposite(), pattern);
+                    }
+                }
+            }
+
+            setLastBlock(lastBlockPos); // set found block for checking later
+
+        } else if (getLastBlock() != null) {
             BlockState lastState = world.getBlockState(getLastBlock());
-            if (lastState.isOf(Arborealis.CARVED_LOG) || lastState.isOf(Arborealis.CARVED_NETHER_LOG)) {
+            if (lastState.isIn(Arborealis.CARVED_LOGS)) {
                 resetProjectedRune(getLastBlock(), facing);
             } else if (lastState.isOf(Arborealis.HOLLOWED_LOG)) {
                 HollowedLogEntity entity = (HollowedLogEntity) world.getBlockEntity(getLastBlock());
                 entity.setXpRequired(0);
-            }
-        }
-
-        if (itemStack.isOf(Arborealis.CARVED_STENCIL) && getLightLevel() > 0 && getThrowDistance() > 0) {
-            NbtCompound nbt = itemStack.getNbt();
-
-            if (nbt != null && nbt.contains("pattern")) {
-                int[] pattern = nbt.getIntArray("pattern");
-
-                for (int offset = 1; offset <= getThrowDistance() + 1; offset++) {
-                    BlockPos testPos = pos.offset(facing, offset);
-                    BlockState stateAtPos = world.getBlockState(testPos);
-
-                    // If the block clicked on is wood, create a new carved wood block
-                    if (stateAtPos.isIn(BlockTags.LOGS) || stateAtPos.isOf(Blocks.PUMPKIN)) {
-                        // Swap the block out with a carved wood block...
-                        if (stateAtPos.isIn(BlockTags.LOGS_THAT_BURN)) {
-                            world.setBlockState(testPos, Arborealis.CARVED_LOG.getDefaultState());
-                        } else {
-                            world.setBlockState(testPos, Arborealis.CARVED_NETHER_LOG.getDefaultState());
-                        }
-
-                        CarvedLogEntity carvedLog = (CarvedLogEntity) world.getBlockEntity(testPos);
-
-                        // ... and assign relevant NBT data
-                        if (carvedLog != null) {
-                            carvedLog.setLogState(stateAtPos);
-
-                            carvedLog.setFaceCatalysed(facing.getOpposite(), true);
-                            carvedLog.projectLightRune(facing.getOpposite(), pattern);
-                        }
-
-                        setLastBlock(testPos); // Store block that was last rune'd
-                    } else if (stateAtPos.isIn(Arborealis.CARVED_LOGS)) {
-                        CarvedLogEntity carvedLog = (CarvedLogEntity) world.getBlockEntity(testPos);
-
-                        if (carvedLog != null) {
-                            carvedLog.setFaceCatalysed(facing.getOpposite(), true);
-                            carvedLog.projectLightRune(facing.getOpposite(), pattern);
-                        }
-
-                        setLastBlock(testPos); // Store block that was last rune'd
-                    }
-                }
-            }
-        } else {
-            // If no light, remove all light carvings from blocks
-            BlockPos posInFront = pos.offset(facing, 1);
-            BlockPos endPos = posInFront.offset(facing, getThrowDistance() + 1);
-            for (BlockPos testPos : BlockPos.iterate(posInFront, endPos)) {
-                BlockState stateAtPos = world.getBlockState(testPos);
-
-                // If the block clicked on is wood, create a new carved wood block
-                if (stateAtPos.isOf(Arborealis.CARVED_LOG) || stateAtPos.isOf(Arborealis.CARVED_NETHER_LOG)) {
-                    resetProjectedRune(testPos, facing);
-                    break;
-                }
             }
         }
     }
@@ -195,7 +174,7 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
 
         if (carvedLog != null) {
             carvedLog.setFaceCatalysed(projectorFacing.getOpposite(), false);
-            carvedLog.projectLightRune(projectorFacing.getOpposite(), new int[49]);
+            carvedLog.showProjectedRune(projectorFacing.getOpposite(), new int[49]);
         }
 
         boolean blockReset = true;
@@ -246,7 +225,7 @@ public class ProjectorBlockEntity extends BlockEntity implements ImplementedInve
                 pbe.setThrowDistance(beamRange == -1 ? pbe.getLightLevel() : beamRange);
         }
 
-        // Infusion crafting
+        // Lenses
         if (pbe.getLightLevel() > 0 && pbe.getThrowDistance() > 0 && pbe.getStack(0).getItem() instanceof LensItem) {
             BlockPos posInFront = pos.offset(facing, 1);
             BlockPos endPos = posInFront.offset(facing, pbe.getThrowDistance() + 1);
