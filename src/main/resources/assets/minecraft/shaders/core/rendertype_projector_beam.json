@@ -2,9 +2,11 @@
   "blend": {
     "func": "add",
     "srcrgb": "srcalpha",
-    "dstrgb": "1-srcalpha"
+    "dstrgb": "1-srcalpha",
+    "srcalpha": "1",
+    "dstalpha": "1-srcalpha"
   },
-  "vertex": "rendertype_entity_translucent_cull",
+  "vertex": "rendertype_projector_beam",
   "fragment": "rendertype_projector_beam",
   "attributes": [
     "Position",

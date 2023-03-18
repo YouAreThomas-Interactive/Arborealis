@@ -92,7 +92,7 @@ public class Arborealis implements ModInitializer {
 	public static final TreeTap TREE_TAP = new TreeTap(FabricBlockSettings.of(Material.METAL));
 	public static final WoodenBucket WOODEN_BUCKET = new WoodenBucket(FabricBlockSettings.of(Material.WOOD));
 	public static final ProjectorBlock PROJECTOR = new ProjectorBlock(FabricBlockSettings.of(Material.METAL));
-	public static final PrismBlock PRISM_BLOCK = new PrismBlock(FabricBlockSettings.of(Material.METAL).emissiveLighting((state, world, pos) -> true).luminance(state -> 3).postProcess((state, world, pos) -> true));
+	public static final PrismBlock PRISM_BLOCK = new PrismBlock(FabricBlockSettings.of(Material.METAL));
 
 	// Block Entities
 	public static BlockEntityType<CarvedLogEntity> CARVED_LOG_ENTITY;

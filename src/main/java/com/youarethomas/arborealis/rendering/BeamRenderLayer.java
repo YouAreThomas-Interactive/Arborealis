@@ -21,8 +21,8 @@ public class BeamRenderLayer extends RenderLayer{
     }
 
     private static final Function<Identifier, RenderLayer> BEAM_RENDER_LAYER = Util.memoize(texture -> {
-        RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder().shader(PROJECTOR_BEAM_SHADER).texture(new RenderPhase.Texture((Identifier)texture, false, false)).transparency(TRANSLUCENT_TRANSPARENCY).lightmap(ENABLE_LIGHTMAP).overlay(ENABLE_OVERLAY_COLOR).build(true);
-        return RenderLayer.of("beam_render_layer", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256, true, true, multiPhaseParameters);
+        RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder().shader(PROJECTOR_BEAM_SHADER).texture(new RenderPhase.Texture((Identifier)texture, false, false)).transparency(TRANSLUCENT_TRANSPARENCY).build(true);
+        return RenderLayer.of("beam_render_layer", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256, false, true, multiPhaseParameters);
     });
     public static final RenderLayer BEAM_RENDER_LAYER_TEXTURED = getBeamRenderLayer(BEAM_TEXTURE);
 
