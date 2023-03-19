@@ -5,17 +5,19 @@ import com.youarethomas.arborealis.block_entities.PrismBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +41,17 @@ public class PrismBlock extends Block implements BlockEntityProvider {
         ItemStack stackInHand = player.getStackInHand(Hand.MAIN_HAND);
 
         if (stackInHand.isOf(Arborealis.TUNING_FORK)) {
-            // TODO: Open and close sides
+            PrismBlockEntity prismBlockEntity = (PrismBlockEntity) world.getBlockEntity(pos);
+
+            if (prismBlockEntity != null) {
+                // Toggle face state for clicked sides
+                Direction side = hit.getSide();
+                prismBlockEntity.setFaceClosed(side, !prismBlockEntity.getFaceClosed(side));
+
+                if (world.isClient) {
+                    world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1.0F, 0.5F);
+                }
+            }
 
             return ActionResult.SUCCESS;
         }

@@ -2,14 +2,12 @@ package com.youarethomas.arborealis.models;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.ProjectorBlockEntity;
+import com.youarethomas.arborealis.models.model_utils.DynamicBakedModel;
 import com.youarethomas.arborealis.models.model_utils.DynamicCuboid;
 import com.youarethomas.arborealis.models.model_utils.DynamicModel;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.item.ItemModels;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.ItemStack;
@@ -21,7 +19,7 @@ import net.minecraft.world.BlockRenderView;
 
 public class ProjectorDModel extends DynamicModel {
     @Override
-    public void createBlockQuads(CuboidBuilder builder, BlockRenderView renderView, BlockPos pos) {
+    public void createBlockQuads(DynamicModelBuilder builder, BlockRenderView renderView, BlockPos pos) {
         Direction facing = renderView.getBlockState(pos).get(HorizontalFacingBlock.FACING);
 
         BakedModel projectorBase = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/projector/projector_base"));
@@ -44,7 +42,7 @@ public class ProjectorDModel extends DynamicModel {
                             DynamicCuboid cuboid = new DynamicCuboid(x, y, 1, 2, 2, 1);
                             cuboid.applyTexturesFromBlock(Blocks.STRIPPED_OAK_LOG.getDefaultState());
 
-                            builder.addCuboid(cuboid, new CuboidBuilder.RotateToFacing(facing));
+                            builder.addCuboid(cuboid, new DynamicModelBuilder.RotateToFacing(facing));
                         }
 
                         segmentCount++;
@@ -58,7 +56,7 @@ public class ProjectorDModel extends DynamicModel {
     }
 
     @Override
-    public void createItemQuads(CuboidBuilder builder, ItemStack itemStack) {
+    public void createItemQuads(DynamicModelBuilder builder, ItemStack itemStack) {
         BakedModel projectorBase = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/projector/projector_base"));
         builder.addBakedModel(projectorBase);
     }

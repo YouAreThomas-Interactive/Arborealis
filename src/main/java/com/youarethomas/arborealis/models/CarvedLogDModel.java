@@ -3,6 +3,7 @@ package com.youarethomas.arborealis.models;
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.mixins.AxeItemAccessor;
+import com.youarethomas.arborealis.models.model_utils.DynamicBakedModel;
 import com.youarethomas.arborealis.models.model_utils.DynamicCuboid;
 import com.youarethomas.arborealis.models.model_utils.DynamicModel;
 import com.youarethomas.arborealis.runes.Rune;
@@ -26,7 +27,7 @@ import java.util.Objects;
 public class CarvedLogDModel extends DynamicModel {
 
     @Override
-    public void createBlockQuads(CuboidBuilder builder, BlockRenderView renderView, BlockPos pos) {
+    public void createBlockQuads(DynamicModelBuilder builder, BlockRenderView renderView, BlockPos pos) {
         CarvedLogEntity be = (CarvedLogEntity)renderView.getBlockEntity(pos);
 
         if (be == null) {
@@ -38,7 +39,7 @@ public class CarvedLogDModel extends DynamicModel {
 
         // Frame
         BakedModel carvedLogFrame = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/carved_log/carved_log_frame"));
-        builder.addBakedModel(carvedLogFrame, new CuboidBuilder.RetextureFromBlock(logState, true));
+        builder.addBakedModel(carvedLogFrame, new DynamicModelBuilder.RetextureFromBlock(logState, true));
 
         // Core
         DynamicCuboid core = new DynamicCuboid(1, 1, 1, 14, 14, 14);
@@ -269,7 +270,7 @@ public class CarvedLogDModel extends DynamicModel {
     }
 
     @Override
-    public void createItemQuads(CuboidBuilder builder, ItemStack itemStack) {
+    public void createItemQuads(DynamicModelBuilder builder, ItemStack itemStack) {
 
     }
 }

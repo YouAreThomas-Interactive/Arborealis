@@ -16,6 +16,9 @@ public class PrismBlockEntityRenderer extends LightBlockEntityRenderer implement
     @Override
     public void render(PrismBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         for (Direction dir : Direction.values()) {
+            if (entity.getFaceClosed(dir))
+                continue;
+
             matrices.push();
             // Default is SOUTH.
             float zAngle = 0.0f;
@@ -37,7 +40,7 @@ public class PrismBlockEntityRenderer extends LightBlockEntityRenderer implement
 
             matrices.push();
             matrices.translate(6 * PIXEL_SIZE, 0.0f, 6 * PIXEL_SIZE);
-            renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, 1f, 0.0f, -(PIXEL_SIZE * 2), 4, -(PIXEL_SIZE * 7), -(PIXEL_SIZE * 7), PIXEL_SIZE * 7, -(PIXEL_SIZE * 7), -(PIXEL_SIZE * 7), PIXEL_SIZE * 7, PIXEL_SIZE * 7, PIXEL_SIZE * 7, 0, 1, 0, 1);
+            renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, 1f, 0.0f, -PIXEL_SIZE, 4, -(PIXEL_SIZE * 7), -(PIXEL_SIZE * 7), PIXEL_SIZE * 7, -(PIXEL_SIZE * 7), -(PIXEL_SIZE * 7), PIXEL_SIZE * 7, PIXEL_SIZE * 7, PIXEL_SIZE * 7, 0, 1, 0, 1);
             matrices.pop();
 
             matrices.pop();

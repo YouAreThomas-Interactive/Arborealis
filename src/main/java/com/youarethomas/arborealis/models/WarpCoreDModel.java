@@ -1,6 +1,7 @@
 package com.youarethomas.arborealis.models;
 
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.models.model_utils.DynamicBakedModel;
 import com.youarethomas.arborealis.models.model_utils.DynamicCuboid;
 import com.youarethomas.arborealis.models.model_utils.DynamicModel;
 import net.minecraft.block.BlockState;
@@ -15,7 +16,7 @@ import net.minecraft.world.BlockRenderView;
 
 public class WarpCoreDModel extends DynamicModel {
     @Override
-    public void createBlockQuads(CuboidBuilder builder, BlockRenderView renderView, BlockPos pos) {
+    public void createBlockQuads(DynamicModelBuilder builder, BlockRenderView renderView, BlockPos pos) {
         BlockState lodestoneState = Blocks.LODESTONE.getDefaultState();
         BlockState warpWoodState = Arborealis.WARP_WOOD.getDefaultState();
 
@@ -24,11 +25,11 @@ public class WarpCoreDModel extends DynamicModel {
         builder.addCuboid(core);
 
         BakedModel frame = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/warp_core_frame"));
-        builder.addBakedModel(frame, new CuboidBuilder.RetextureFromBlock(warpWoodState, false));
+        builder.addBakedModel(frame, new DynamicModelBuilder.RetextureFromBlock(warpWoodState, false));
     }
 
     @Override
-    public void createItemQuads(CuboidBuilder builder, ItemStack itemStack) {
+    public void createItemQuads(DynamicModelBuilder builder, ItemStack itemStack) {
         BlockState lodestoneState = Blocks.LODESTONE.getDefaultState();
         BlockState warpWoodState = Arborealis.WARP_WOOD.getDefaultState();
 
@@ -37,7 +38,7 @@ public class WarpCoreDModel extends DynamicModel {
         builder.addCuboid(core);
 
         BakedModel frame = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/warp_core_frame"));
-        builder.addBakedModel(frame, new CuboidBuilder.RetextureFromBlock(warpWoodState, false));
+        builder.addBakedModel(frame, new DynamicModelBuilder.RetextureFromBlock(warpWoodState, false));
     }
 
     @Override

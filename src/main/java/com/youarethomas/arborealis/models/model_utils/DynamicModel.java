@@ -29,7 +29,6 @@ import net.minecraft.world.BlockRenderView;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -53,9 +52,9 @@ public abstract class DynamicModel implements UnbakedModel {
     @Override
     public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences) { return Arrays.asList(INVISIBLE_TEXTURE); }
 
-    public abstract void createBlockQuads(CuboidBuilder builder, BlockRenderView renderView, BlockPos pos);
+    public abstract void createBlockQuads(DynamicModelBuilder builder, BlockRenderView renderView, BlockPos pos);
 
-    public abstract void createItemQuads(CuboidBuilder builder, ItemStack itemStack);
+    public abstract void createItemQuads(DynamicModelBuilder builder, ItemStack itemStack);
 
     public boolean renderItemAsBlock() { return true; }
 
@@ -81,17 +80,17 @@ public abstract class DynamicModel implements UnbakedModel {
 
         @Override
         public void emitBlockQuads(BlockRenderView blockView, BlockState state, BlockPos pos, Supplier<Random> randomSupplier, RenderContext context) {
-            CuboidBuilder builder = new CuboidBuilder();
+            DynamicModelBuilder builder = new DynamicModelBuilder();
             createBlockQuads(builder, blockView, pos);
 
             // Render out the pre-baked models, doing the retexture after the rotation transform
-            for (var model : builder.models.get().entrySet()) {
-                if (state.contains(HorizontalFacingBlock.FACING)) context.pushTransform(new CuboidBuilder.RotateToFacing(state.get(HorizontalFacingBlock.FACING))); // Rotation transform
-                if (model.getValue() != null) context.pushTransform(model.getValue()); // Retexture transform
+            for (var model : builder.models.get()) {
+                if (state.contains(HorizontalFacingBlock.FACING)) context.pushTransform(new DynamicModelBuilder.RotateToFacing(state.get(HorizontalFacingBlock.FACING))); // Rotation transform
+                if (model.getTransform() != null) context.pushTransform(model.getTransform()); // Misc transform
 
-                context.fallbackConsumer().accept(model.getKey());
+                context.fallbackConsumer().accept(model.getModel());
 
-                if (model.getValue() != null) context.popTransform(); // Retexture transform
+                if (model.getTransform() != null) context.popTransform(); // Misc transform
                 if (state.contains(HorizontalFacingBlock.FACING)) context.popTransform(); // Rotation transform
             }
 
@@ -100,24 +99,22 @@ public abstract class DynamicModel implements UnbakedModel {
 
         @Override
         public void emitItemQuads(ItemStack stack, Supplier<Random> randomSupplier, RenderContext context) {
-            CuboidBuilder builder = new CuboidBuilder();
+            DynamicModelBuilder builder = new DynamicModelBuilder();
             createItemQuads(builder, stack);
 
             // Render out the pre-baked models
-            for (var model : builder.models.get().entrySet()) {
-                if (model.getValue() != null) {
-                    context.pushTransform(model.getValue());
-                    context.fallbackConsumer().accept(model.getKey());
-                    context.popTransform();
-                } else {
-                    context.fallbackConsumer().accept(model.getKey());
-                }
+            for (var model : builder.models.get()) {
+                if (model.getTransform() != null) context.pushTransform(model.getTransform());
+
+                context.fallbackConsumer().accept(model.getModel());
+
+                if (model.getTransform() != null) context.popTransform();
             }
 
             loadDynamicModels(builder, context);
         }
 
-        private void loadDynamicModels(CuboidBuilder builder, RenderContext context) {
+        private void loadDynamicModels(DynamicModelBuilder builder, RenderContext context) {
             for (var cuboid : builder.cuboids.get().entrySet()) {
                 if (cuboid.getValue() != null) context.pushTransform(cuboid.getValue());
 
@@ -135,7 +132,6 @@ public abstract class DynamicModel implements UnbakedModel {
 
                 if (plane.getValue() != null) context.popTransform();
             }
-
         }
 
         @Override
@@ -185,10 +181,10 @@ public abstract class DynamicModel implements UnbakedModel {
         }
     }
 
-    protected class CuboidBuilder {
+    protected class DynamicModelBuilder {
         ThreadLocal<Map<DynamicCuboid, RenderContext.QuadTransform>> cuboids = ThreadLocal.withInitial(HashMap::new);
         ThreadLocal<Map<DynamicPlane, RenderContext.QuadTransform>> planes = ThreadLocal.withInitial(HashMap::new);
-        ThreadLocal<Map<BakedModel, RenderContext.QuadTransform>> models = ThreadLocal.withInitial(HashMap::new);
+        ThreadLocal<List<DynamicBakedModel>> models = ThreadLocal.withInitial(ArrayList::new);
 
         public BakedModel getModel(Identifier identifier) {
             return BakedModelManagerHelper.getModel(MinecraftClient.getInstance().getBakedModelManager(), identifier);
@@ -215,11 +211,11 @@ public abstract class DynamicModel implements UnbakedModel {
         }
 
         public void addBakedModel(BakedModel model) {
-            models.get().put(model, null);
+            models.get().add(new DynamicBakedModel(model));
         }
 
         public void addBakedModel(BakedModel model, RenderContext.QuadTransform transform) {
-            models.get().put(model, transform);
+            models.get().add(new DynamicBakedModel(model, transform));
         }
 
         public static class RetextureFromBlock implements RenderContext.QuadTransform {
@@ -288,6 +284,10 @@ public abstract class DynamicModel implements UnbakedModel {
         public static class RotateToFacing implements RenderContext.QuadTransform {
             private final Direction facing;
 
+            /**
+             * Rotates the model to face the given direction.
+             * @param facing The direction to orient the model.
+             */
             public RotateToFacing(Direction facing) {
                 this.facing = facing;
             }
@@ -301,8 +301,10 @@ public abstract class DynamicModel implements UnbakedModel {
                     float y = Float.intBitsToFloat(bakedQuad.getVertexData()[1 + (v * 8)]);
                     float z = Float.intBitsToFloat(bakedQuad.getVertexData()[2 + (v * 8)]);
 
+                    // Default: NORTH
                     float newX = x;
                     float newZ = z;
+                    float newY = y;
 
                     switch (facing) {
                         case SOUTH -> {
@@ -317,9 +319,17 @@ public abstract class DynamicModel implements UnbakedModel {
                             newX = -(z - 0.5f) + 0.5f;
                             newZ = x;
                         }
+                        case UP -> {
+                            newZ = y;
+                            newY = -(z - 0.5f) + 0.5f;
+                        }
+                        case DOWN -> {
+                            newZ = -(y - 0.5f) + 0.5f;
+                            newY = z;
+                        }
                     }
 
-                    quad.pos(v, newX, y, newZ);
+                    quad.pos(v, newX, newY, newZ);
                     quad.nominalFace(quad.lightFace()); // Random bullshit go! No but seriously this fixes the lighting on south facing rotations... idk why
                 }
 

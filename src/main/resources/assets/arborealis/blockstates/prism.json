@@ -1,5 +1,5 @@
 {
   "variants": {
-    "": { "model": "arborealis:block/prism_block" }
+    "": { "model": "arborealis:block/prism" }
   }
 }

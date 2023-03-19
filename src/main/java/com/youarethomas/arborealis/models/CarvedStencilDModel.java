@@ -17,12 +17,12 @@ public class CarvedStencilDModel extends DynamicModel {
     private final SpriteIdentifier STENCIL_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(Arborealis.MOD_ID, "item/stencil_carved"));
 
     @Override
-    public void createBlockQuads(CuboidBuilder builder, BlockRenderView renderView, BlockPos pos) {
+    public void createBlockQuads(DynamicModelBuilder builder, BlockRenderView renderView, BlockPos pos) {
         // Nope! Item time
     }
 
     @Override
-    public void createItemQuads(CuboidBuilder builder, ItemStack itemStack) {
+    public void createItemQuads(DynamicModelBuilder builder, ItemStack itemStack) {
         builder.addBakedModel(builder.getModelFromItem(Arborealis.BLANK_STENCIL));
 
         NbtCompound nbt = itemStack.getNbt();
