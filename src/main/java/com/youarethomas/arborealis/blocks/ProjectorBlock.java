@@ -84,7 +84,6 @@ public class ProjectorBlock extends BlockWithEntity implements BlockEntityProvid
         }
 
         return VoxelShapes.union(baseShape, funnel1, funnel2, funnel3, funnel4);
-
     }
 
     @Nullable
@@ -143,7 +142,8 @@ public class ProjectorBlock extends BlockWithEntity implements BlockEntityProvid
         ProjectorBlockEntity pbe = (ProjectorBlockEntity) world.getBlockEntity(pos);
         ItemScatterer.spawn(world, pos, pbe.getItems());
         pbe.removeStack(0);
-        pbe.updateProjector();
+        pbe.setLightLevel(0);
+        pbe.recalculateBeams();
         super.onBreak(world, pos, state, player);
     }
 

@@ -2,7 +2,6 @@ package com.youarethomas.arborealis.block_entity_renderers;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.ProjectorBlockEntity;
-import com.youarethomas.arborealis.items.lenses.InfusionLensItem;
 import com.youarethomas.arborealis.items.lenses.LensItem;
 import com.youarethomas.arborealis.rendering.BeamRenderLayer;
 import com.youarethomas.arborealis.util.ArborealisUtil;
@@ -16,7 +15,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 
-public class ProjectorBlockEntityRenderer extends LightBlockEntityRenderer implements BlockEntityRenderer<ProjectorBlockEntity> {
+public class ProjectorBlockEntityRenderer extends BeamEmittingBlockEntityRenderer implements BlockEntityRenderer<ProjectorBlockEntity> {
     public static final Identifier BEAM_TEXTURE = new Identifier(Arborealis.MOD_ID, "textures/block/blank.png");
 
     public ProjectorBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {    }
@@ -44,7 +43,7 @@ public class ProjectorBlockEntityRenderer extends LightBlockEntityRenderer imple
             ItemStack itemStack = entity.getStack(0);
 
             float alphaStart = ((0.2f / 15f) * entity.getLightLevel()); // Create light level based on light level
-            float alphaEnd = alphaStart - ((0.2f / 15f) * entity.getThrowDistance());
+            float alphaEnd = alphaStart - ((0.2f / 15f) * entity.getThrowDistance(facing));
 
             // Render the initial beam inside the projector block
             matrices.push();
@@ -61,7 +60,7 @@ public class ProjectorBlockEntityRenderer extends LightBlockEntityRenderer imple
                     for(int ii = 0; ii < 49; ii++) {
                         matrices.push();
                         matrices.translate((float)(ii / 7) * PIXEL_SIZE * 2, 0.0f, (ii % 7) * PIXEL_SIZE * 2);
-                        if(pattern[ii] == 2) renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, alphaStart, alphaEnd, -PIXEL_SIZE, entity.getThrowDistance(), -PIXEL_SIZE, -PIXEL_SIZE, PIXEL_SIZE, -PIXEL_SIZE, -PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE, 0, 1, 0, 1);
+                        if(pattern[ii] == 2) renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, alphaStart, alphaEnd, -PIXEL_SIZE, entity.getThrowDistance(facing), -PIXEL_SIZE, -PIXEL_SIZE, PIXEL_SIZE, -PIXEL_SIZE, -PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE, 0, 1, 0, 1);
                         matrices.pop();
                     }
                 }
@@ -70,13 +69,13 @@ public class ProjectorBlockEntityRenderer extends LightBlockEntityRenderer imple
                 matrices.push();
                 matrices.translate(6 * PIXEL_SIZE, 0.0f, 6 * PIXEL_SIZE);
                 ArborealisUtil.Colour lensColour = ((LensItem) itemStack.getItem()).getLensColor();
-                renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), lensColour.red / 255f, lensColour.green / 255f, lensColour.blue / 255f, alphaStart, alphaEnd, -PIXEL_SIZE, entity.getThrowDistance(), -(PIXEL_SIZE * 6), -(PIXEL_SIZE * 6), PIXEL_SIZE * 6, -(PIXEL_SIZE * 6), -(PIXEL_SIZE * 6), PIXEL_SIZE * 6, PIXEL_SIZE * 6, PIXEL_SIZE * 6, 0, 1, 0, 1);
+                renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), lensColour.red / 255f, lensColour.green / 255f, lensColour.blue / 255f, alphaStart, alphaEnd, -PIXEL_SIZE, entity.getThrowDistance(facing), -(PIXEL_SIZE * 6), -(PIXEL_SIZE * 6), PIXEL_SIZE * 6, -(PIXEL_SIZE * 6), -(PIXEL_SIZE * 6), PIXEL_SIZE * 6, PIXEL_SIZE * 6, PIXEL_SIZE * 6, 0, 1, 0, 1);
                 matrices.pop();
             } else if (itemStack.isEmpty()) {
                 // Render the default full
                 matrices.push();
                 matrices.translate(6 * PIXEL_SIZE, 0.0f, 6 * PIXEL_SIZE);
-                renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, alphaStart, alphaEnd, -(PIXEL_SIZE * 2), entity.getThrowDistance(), -(PIXEL_SIZE * 7), -(PIXEL_SIZE * 7), PIXEL_SIZE * 7, -(PIXEL_SIZE * 7), -(PIXEL_SIZE * 7), PIXEL_SIZE * 7, PIXEL_SIZE * 7, PIXEL_SIZE * 7, 0, 1, 0, 1);
+                renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, alphaStart, alphaEnd, -(PIXEL_SIZE * 2), entity.getThrowDistance(facing), -(PIXEL_SIZE * 7), -(PIXEL_SIZE * 7), PIXEL_SIZE * 7, -(PIXEL_SIZE * 7), -(PIXEL_SIZE * 7), PIXEL_SIZE * 7, PIXEL_SIZE * 7, PIXEL_SIZE * 7, 0, 1, 0, 1);
                 matrices.pop();
             }
         }

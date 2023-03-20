@@ -34,38 +34,35 @@ public class HollowedLogEntity extends BlockEntity implements ImplementedInvento
     public DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
 
     private BlockState logState = Blocks.OAK_LOG.getDefaultState();
-    private int xpRequired = 0;
     private int xpConsumed = 0;
+    private boolean hasInfusionBeam = false;
 
     public HollowedLogEntity(BlockPos pos, BlockState state) {
         super(Arborealis.HOLLOWED_LOG_ENTITY, pos, state);
     }
 
+    public BlockState getLogState() {
+        return logState;
+    }
     public void setLogState(BlockState logState) {
         this.logState = logState;
         this.markDirty();
     }
 
-    public BlockState getLogState() {
-        return logState;
+    public int getXpConsumed() {
+        return xpConsumed;
     }
-
-    public void setXpRequired(int xpRequired) {
-        this.xpRequired = xpRequired;
-        this.markDirty();
-    }
-
-    public int getXpRequired() {
-        return xpRequired;
-    }
-
     public void setXpConsumed(int xpConsumed) {
         this.xpConsumed = xpConsumed;
         this.markDirty();
     }
 
-    public int getXpConsumed() {
-        return xpConsumed;
+    public boolean getHasInfusionBeam() {
+        return hasInfusionBeam;
+    }
+    public void setHasInfusionBeam(boolean hasInfusionBeam) {
+        this.hasInfusionBeam = hasInfusionBeam;
+        this.markDirty();
     }
 
     // Serialize the BlockEntity - storing data
@@ -76,7 +73,7 @@ public class HollowedLogEntity extends BlockEntity implements ImplementedInvento
         Inventories.writeNbt(tag, inventory, true);
 
         tag.put("log_state", NbtHelper.fromBlockState(logState));
-        tag.putInt("xp_required", xpRequired);
+        tag.putBoolean("has_infusion_beam", hasInfusionBeam);
         tag.putInt("xp_consumed", xpConsumed);
     }
 
@@ -89,7 +86,7 @@ public class HollowedLogEntity extends BlockEntity implements ImplementedInvento
         Inventories.readNbt(tag, inventory);
 
         logState = NbtHelper.toBlockState(tag.getCompound("log_state"));
-        xpRequired = tag.getInt("xp_required");
+        hasInfusionBeam = tag.getBoolean("has_infusion_beam");
         xpConsumed = tag.getInt("xp_consumed");
     }
 
@@ -131,20 +128,29 @@ public class HollowedLogEntity extends BlockEntity implements ImplementedInvento
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState blockState, HollowedLogEntity hollowedLogEntity) {
-        PlayerEntity player = MinecraftClient.getInstance().player;
+        if (!hollowedLogEntity.getStack(0).isEmpty() && hollowedLogEntity.getHasInfusionBeam()) {
+            PlayerEntity player = MinecraftClient.getInstance().player;
+            Optional<InfusionRecipe> recipeMatch = world.getRecipeManager().getFirstMatch(InfusionRecipe.Type.INSTANCE, hollowedLogEntity, world);
 
-        if (hollowedLogEntity.getXpRequired() != 0 && player.totalExperience > 0) {
-            world.playSound(player, pos, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.BLOCKS, 0.3f, (Arborealis.RANDOM.nextFloat() - Arborealis.RANDOM.nextFloat()) * 0.35f + 0.6f);
+            if (recipeMatch.isPresent()) {
+                int requiredXP = recipeMatch.get().getXpRequired();
+
+                if (requiredXP != 0 && player.totalExperience > 0) {
+                    world.playSound(player, pos, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP, SoundCategory.BLOCKS, 0.3f, (Arborealis.RANDOM.nextFloat() - Arborealis.RANDOM.nextFloat()) * 0.35f + 0.6f);
+                }
+            }
         }
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState blockState, HollowedLogEntity hollowedLogEntity) {
         // If an item is trying to be infused...
-        if (hollowedLogEntity.getXpRequired() != 0) {
+        if (hollowedLogEntity.getHasInfusionBeam()) {
             List<Entity> playersAround = ArborealisUtil.getEntitiesInRadius(world, Vec3d.ofCenter(pos), CarvedLogEntity.RUNE_BASE_RADIUS, true);
             Optional<InfusionRecipe> recipeMatch = world.getRecipeManager().getFirstMatch(InfusionRecipe.Type.INSTANCE, hollowedLogEntity, world);
 
             if (recipeMatch.isPresent()) {
+                int requiredXP = recipeMatch.get().getXpRequired();
+
                 for (Entity entity : playersAround) {
                     if (entity instanceof PlayerEntity player) {
                         if (player.totalExperience > 0) {
@@ -152,10 +158,9 @@ public class HollowedLogEntity extends BlockEntity implements ImplementedInvento
                             hollowedLogEntity.setXpConsumed(hollowedLogEntity.getXpConsumed() + 1);
                         }
 
-                        if (hollowedLogEntity.getXpConsumed() >= hollowedLogEntity.getXpRequired()) {
+                        if (hollowedLogEntity.getXpConsumed() >= requiredXP) {
                             hollowedLogEntity.setStack(0, recipeMatch.get().getOutput().copy());
 
-                            hollowedLogEntity.setXpRequired(0);
                             hollowedLogEntity.setXpConsumed(0);
                             world.updateListeners(pos, blockState, blockState, Block.NOTIFY_ALL);
                             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(blockState));
@@ -183,7 +188,6 @@ public class HollowedLogEntity extends BlockEntity implements ImplementedInvento
                 }
             }
 
-            hollowedLogEntity.setXpRequired(0);
             hollowedLogEntity.setXpConsumed(0);
         }
     }

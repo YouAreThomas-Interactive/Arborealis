@@ -9,14 +9,14 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Quaternion;
 
-public class PrismBlockEntityRenderer extends LightBlockEntityRenderer implements BlockEntityRenderer<PrismBlockEntity> {
+public class PrismBlockEntityRenderer extends BeamEmittingBlockEntityRenderer implements BlockEntityRenderer<PrismBlockEntity> {
 
     public PrismBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {    }
 
     @Override
     public void render(PrismBlockEntity entity, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         for (Direction dir : Direction.values()) {
-            if (entity.getFaceClosed(dir))
+            if (!entity.getBeamActive(dir))
                 continue;
 
             matrices.push();

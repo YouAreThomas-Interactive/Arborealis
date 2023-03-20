@@ -7,7 +7,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 
-public abstract class LightBlockEntityRenderer {
+public abstract class BeamEmittingBlockEntityRenderer {
     final float PIXEL_SIZE = 0.0625f;
 
     void renderBeamSegment(MatrixStack matrices, VertexConsumer vertices, float r, float g, float b, float alphaStart, float alphaEnd, float yOffset, float ySize, float x1, float z1, float x2, float z2, float x3, float z3, float x4, float z4, float u1, float u2, float v1, float v2) {

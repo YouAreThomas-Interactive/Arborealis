@@ -1,7 +1,9 @@
 package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
+import com.youarethomas.arborealis.block_entities.HollowedLogEntity;
 import com.youarethomas.arborealis.block_entities.PrismBlockEntity;
+import com.youarethomas.arborealis.block_entities.ProjectorBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.*;
 import net.minecraft.util.ActionResult;
@@ -45,7 +47,21 @@ public class InfusedSap extends Item {
             return ActionResult.SUCCESS;
         } else if (be instanceof PrismBlockEntity prismBlockEntity) {
             System.out.println("Face: " + context.getSide());
-            System.out.println("State: " + prismBlockEntity.getFaceClosed(context.getSide()));
+            System.out.println("State: " + prismBlockEntity.getBeamActive(context.getSide()));
+
+            return ActionResult.SUCCESS;
+        } else if (be instanceof ProjectorBlockEntity projectorBlockEntity) {
+            System.out.println("Face: " + context.getSide());
+            System.out.println("State: " + projectorBlockEntity.getBeamActive(context.getSide()));
+            System.out.println("Light Level: " + projectorBlockEntity.getLightLevel());
+            System.out.println("Throw Distance: " + projectorBlockEntity.getThrowDistance(context.getSide()));
+            System.out.println("Item: " + projectorBlockEntity.getStack(0).getName());
+            System.out.println("Current Mod: " + projectorBlockEntity.getBeamModifier());
+            System.out.println("Last Mod: " + projectorBlockEntity.getBeamModifierLastCheck());
+
+            return ActionResult.SUCCESS;
+        } else if (be instanceof HollowedLogEntity hollowedLogEntity) {
+            System.out.println("State: " + hollowedLogEntity.getHasInfusionBeam());
 
             return ActionResult.SUCCESS;
         }
