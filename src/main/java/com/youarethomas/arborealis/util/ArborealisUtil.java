@@ -80,9 +80,9 @@ public class ArborealisUtil {
     }
 
     public static class Colour {
-        public int red;
-        public int green;
-        public int blue;
+        public float red;
+        public float green;
+        public float blue;
 
         public Colour(int hex) {
             red = (hex & 0xFF0000) >> 16;
@@ -90,10 +90,10 @@ public class ArborealisUtil {
             blue = (hex & 0xFF);
         }
 
-        public Colour(int r, int g, int b) {
+        public Colour(float r, float g, float b) {
             red = r;
             green = g;
-            blue = g;
+            blue = b;
         }
     }
 }

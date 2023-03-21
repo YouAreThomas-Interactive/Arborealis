@@ -2,33 +2,17 @@ package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.misc.ImplementedInventory;
-import com.youarethomas.arborealis.recipes.InfusionRecipe;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
-import org.apache.commons.lang3.ArrayUtils;
-
-import java.util.Arrays;
-import java.util.Optional;
 
 public class ProjectorBlockEntity extends BeamEmittingBlockEntity implements ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
@@ -59,7 +43,7 @@ public class ProjectorBlockEntity extends BeamEmittingBlockEntity implements Imp
             setBeamModifier(BeamModifier.INFUSION);
         }
 
-        recalculateBeams();
+        markDirty();
     }
 
     @Override
@@ -67,7 +51,8 @@ public class ProjectorBlockEntity extends BeamEmittingBlockEntity implements Imp
         ItemStack removedStack = Inventories.removeStack(getItems(), slot);
         setStencilPattern(new int[49]);
         setBeamModifier(BeamModifier.NONE);
-        recalculateBeams();
+        markDirty();
+        recalculateAllBeams();
         return removedStack;
     }
 
@@ -89,7 +74,7 @@ public class ProjectorBlockEntity extends BeamEmittingBlockEntity implements Imp
             }
         }
 
-        pbe.recalculateBeams();
+        pbe.recalculateAllBeams();
     }
 
     // Serialize the BlockEntity - storing data

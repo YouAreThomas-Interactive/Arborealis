@@ -106,4 +106,22 @@ public class ArborealisNbt {
 
         return map;
     }
+
+    public static NbtCompound serializeColour(ArborealisUtil.Colour colour) {
+        NbtCompound nbt = new NbtCompound();
+
+        nbt.putFloat("red", colour.red);
+        nbt.putFloat("green", colour.green);
+        nbt.putFloat("blue", colour.blue);
+
+        return nbt;
+    }
+
+    public static ArborealisUtil.Colour deserializeColour(NbtCompound nbt) {
+        float r = nbt.getFloat("red");
+        float g = nbt.getFloat("green");
+        float b = nbt.getFloat("blue");
+
+        return new ArborealisUtil.Colour(r, g, b);
+    }
 }

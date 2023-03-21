@@ -1,25 +1,21 @@
 package com.youarethomas.arborealis.blocks;
 
 import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import com.youarethomas.arborealis.block_entities.ProjectorBlockEntity;
-import com.youarethomas.arborealis.block_entities.WoodenBucketEntity;
+import com.youarethomas.arborealis.items.lenses.LensItem;
+import com.youarethomas.arborealis.util.ArborealisUtil;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -27,13 +23,10 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.SimpleVoxelShape;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -108,30 +101,31 @@ public class ProjectorBlock extends BlockWithEntity implements BlockEntityProvid
         ItemStack stackInHand = player.getStackInHand(Hand.MAIN_HAND);
 
         if (pbe.getStack(0).isEmpty()) {
-            if (stackInHand.isOf(Arborealis.CARVED_STENCIL) || stackInHand.isOf(Arborealis.INFUSION_LENS)) {
+            if (stackInHand.isOf(Arborealis.CARVED_STENCIL) || stackInHand.getItem() instanceof LensItem) {
                 if (world.isClient) {
                     world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.3F);
-                } else {
-                    pbe.setStack(0, stackInHand.copy().split(1));
-                    stackInHand.decrement(1);
-                    pbe.markDirty();
                 }
+
+                if (stackInHand.getItem() instanceof LensItem lensItem)
+                    pbe.setBeamColour(lensItem.getLensColor());
+                pbe.setStack(0, stackInHand.copy().split(1));
+                stackInHand.decrement(1);
+                pbe.recalculateAllBeams();
 
                 return ActionResult.SUCCESS;
             }
         } else {
             if (world.isClient) {
                 world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.6F);
-            } else {
-                player.getInventory().offerOrDrop(pbe.getStack(0).copy());
-                pbe.removeStack(0);
-                pbe.markDirty();
             }
+
+            player.getInventory().offerOrDrop(pbe.getStack(0).copy());
+            pbe.removeStack(0);
+            pbe.setBeamColour(new ArborealisUtil.Colour(0xFFFFFF));
+            pbe.recalculateAllBeams();
 
             return ActionResult.SUCCESS;
         }
-
-        pbe.markDirty();
 
         return ActionResult.PASS;
     }
@@ -143,7 +137,7 @@ public class ProjectorBlock extends BlockWithEntity implements BlockEntityProvid
         ItemScatterer.spawn(world, pos, pbe.getItems());
         pbe.removeStack(0);
         pbe.setLightLevel(0);
-        pbe.recalculateBeams();
+        pbe.recalculateAllBeams();
         super.onBreak(world, pos, state, player);
     }
 

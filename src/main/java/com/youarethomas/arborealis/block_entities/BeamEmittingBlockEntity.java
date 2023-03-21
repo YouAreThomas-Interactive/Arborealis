@@ -1,14 +1,13 @@
 package com.youarethomas.arborealis.block_entities;
 
 import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.recipes.InfusionRecipe;
+import com.youarethomas.arborealis.util.ArborealisNbt;
+import com.youarethomas.arborealis.util.ArborealisUtil;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -24,11 +23,10 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 public class BeamEmittingBlockEntity extends BlockEntity {
 
-    enum BeamModifier {
+    public enum BeamModifier {
         NONE,
         STENCIL,
         INFUSION,
@@ -64,6 +62,7 @@ public class BeamEmittingBlockEntity extends BlockEntity {
     private BeamModifier beamModifier = BeamModifier.NONE;
     private BeamModifier beamModifierLastCheck = BeamModifier.NONE;
     private int[] stencilPattern;
+    private ArborealisUtil.Colour beamColour;
 
     public BeamEmittingBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -125,6 +124,14 @@ public class BeamEmittingBlockEntity extends BlockEntity {
         this.beamModifierLastCheck = beamModifierLastCheck;
         markDirty();
     }
+
+    public ArborealisUtil.Colour getBeamColour() {
+        return beamColour;
+    }
+    public void setBeamColour(ArborealisUtil.Colour beamColour) {
+        this.beamColour = beamColour;
+        markDirty();
+    }
     // endregion
 
     /**
@@ -147,51 +154,68 @@ public class BeamEmittingBlockEntity extends BlockEntity {
         }
     }
 
-    public void recalculateBeams() {
-        for (Direction dir : Direction.values()) {
-            // Recalculate beam lengths
-            boolean beamChanged = false;
+    public void recalculateBeam(Direction dir) {
+        // Recalculate beam lengths
+        boolean beamChanged = false;
 
-            if (getBeamActive(dir) && getLightLevel() > 0) {
-                int beamRange = -1;
-                boolean hitBlock = false;
-                for (int i = 0; i < getLightLevel(); i++) {
-                    BlockPos testPos = pos.offset(dir, i + 1);
+        if (getBeamActive(dir) && getLightLevel() > 0) {
+            int beamRange = -1;
+            boolean hitBlock = false;
+            for (int i = 0; i < getLightLevel(); i++) {
+                BlockPos testPos = pos.offset(dir, i + 1);
 
-                    if (!world.getBlockState(testPos).isIn(Arborealis.PROJECTOR_TRANSPARENT)) {
-                        beamRange = i;
-                        setBeamEndBlock(dir, testPos); // Save blockpos hit
-                        hitBlock = true;
-                        break;
-                    }
+                if (!world.getBlockState(testPos).isIn(Arborealis.PROJECTOR_TRANSPARENT)) {
+                    beamRange = i;
+                    setBeamEndBlock(dir, testPos); // Save blockpos hit
+                    hitBlock = true;
+                    break;
                 }
+            }
 
-                if (!hitBlock) setBeamEndBlock(dir, null);
+            if (!hitBlock) setBeamEndBlock(dir, null);
 
-                int throwDist = getThrowDistance(dir);
-                int light = getLightLevel();
-
-                // Set beam length to distance, otherwise if it was never blocked cap it at the light source level
-                if ((beamRange != -1 && getThrowDistance(dir) != beamRange) || (beamRange == -1 && getThrowDistance(dir) != getLightLevel())) {
-                    setThrowDistance(dir, beamRange == -1 ? getLightLevel() : beamRange);
-                    beamChanged = true;
-                }
-            } else if (getThrowDistance(dir) != 0) {
-                setThrowDistance(dir, 0);
+            // Set beam length to distance, otherwise if it was never blocked cap it at the light source level
+            if ((beamRange != -1 && getThrowDistance(dir) != beamRange) || (beamRange == -1 && getThrowDistance(dir) != getLightLevel())) {
+                setThrowDistance(dir, beamRange == -1 ? getLightLevel() : beamRange);
                 beamChanged = true;
             }
-
-            if (!beamChanged && beamModifier == beamModifierLastCheck) {
-                continue;  // Bail if nothing has changed - re-process not necessary
-            } else {
-                resetModfiers(beamModifier, dir); // Handles resetting blocks if the project is turned off or blocked
-                System.out.println("Beam changed. Resetting modifiers");
-            }
-
-            if (getThrowDistance(dir) > 0) {
-                processModifiers(dir);
-            }
+        } else if (getThrowDistance(dir) != 0) {
+            setThrowDistance(dir, 0);
+            beamChanged = true;
         }
+
+        if (!beamChanged && beamModifier == beamModifierLastCheck) {
+            return;  // Bail if nothing has changed - re-process not necessary
+        } else {
+            // Handle prisms
+            BlockPos endPos = getBeamEndBlock(dir);
+            if (endPos != null && world.getBlockState(endPos).isOf(Arborealis.PRISM_BLOCK)) {
+                PrismBlockEntity prismBlockEntity = (PrismBlockEntity) world.getBlockEntity(endPos);
+
+                if (prismBlockEntity != null) {
+                    prismBlockEntity.setLightLevel(getLightLevel() - getThrowDistance(dir) - 1);
+                    prismBlockEntity.setBeamModifier(beamModifier);
+                    prismBlockEntity.setBeamColour(beamColour);
+                    prismBlockEntity.setStencilPattern(stencilPattern);
+                    prismBlockEntity.recalculateAllBeams();
+                }
+            }
+
+            resetProjection(beamModifier, dir); // Handles resetting blocks if the project is turned off or blocked
+            System.out.println("Beam changed. Resetting modifiers");
+        }
+
+        if (getThrowDistance(dir) > 0) {
+            processModifiers(dir);
+        }
+    }
+
+    public void recalculateAllBeams() {
+        for (Direction dir : Direction.values()) {
+            recalculateBeam(dir);
+        }
+
+        setBeamModifierLastCheck(beamModifier);
     }
 
     private void processModifiers(Direction dir) {
@@ -236,13 +260,11 @@ public class BeamEmittingBlockEntity extends BlockEntity {
                 }
             }
         } else if (beamModifier == BeamModifier.NONE) {
-            resetModfiers(beamModifierLastCheck, dir);
+            resetProjection(beamModifierLastCheck, dir);
         }
-
-        setBeamModifierLastCheck(beamModifier);
     }
 
-    private void resetModfiers(BeamModifier lastModifier, Direction dir) {
+    private void resetProjection(BeamModifier lastModifier, Direction dir) {
         if (getBeamEndBlock(dir) == null) {
             return;
         }
@@ -292,6 +314,7 @@ public class BeamEmittingBlockEntity extends BlockEntity {
         tag.putString("beam_modifier", beamModifier.toString());
         tag.putString("beam_modifier_last", beamModifierLastCheck.toString());
         tag.putInt("light_level", lightLevel);
+        if (beamColour != null) tag.put("beam_colour", ArborealisNbt.serializeColour(beamColour));
     }
 
     // Deserialize the BlockEntity - retrieving data
@@ -309,6 +332,7 @@ public class BeamEmittingBlockEntity extends BlockEntity {
         beamModifier = Enum.valueOf(BeamModifier.class, tag.getString("beam_modifier"));
         beamModifierLastCheck = Enum.valueOf(BeamModifier.class, tag.getString("beam_modifier_last"));
         lightLevel = tag.getInt("light_level");
+        if (tag.contains("beam_colour")) beamColour = ArborealisNbt.deserializeColour(tag.getCompound("beam_colour"));
 
         this.markDirty();
     }

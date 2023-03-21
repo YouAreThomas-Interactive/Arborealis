@@ -2,10 +2,11 @@ package com.youarethomas.arborealis.blocks;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.PrismBlockEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockState;
+import com.youarethomas.arborealis.block_entities.ProjectorBlockEntity;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class PrismBlock extends Block implements BlockEntityProvider {
+public class PrismBlock extends BlockWithEntity implements BlockEntityProvider {
 
     public PrismBlock(Settings settings) {
         super(settings.nonOpaque());
@@ -47,6 +48,7 @@ public class PrismBlock extends Block implements BlockEntityProvider {
                 // Toggle face state for clicked sides
                 Direction side = hit.getSide();
                 prismBlockEntity.setBeamActive(side, !prismBlockEntity.getBeamActive(side));
+                prismBlockEntity.recalculateBeam(side);
 
                 if (world.isClient) {
                     world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1.0F, 0.5F);
@@ -69,5 +71,15 @@ public class PrismBlock extends Block implements BlockEntityProvider {
         } else {
             tooltip.add(Text.translatable("item.arborealis.hidden_tooltip"));
         }
+    }
+
+    @Override
+    public BlockRenderType getRenderType(BlockState state) {
+        return BlockRenderType.MODEL;
+    }
+
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+        return checkType(type, Arborealis.PRISM_ENTITY, world.isClient ? PrismBlockEntity::clientTick : PrismBlockEntity::serverTick);
     }
 }
