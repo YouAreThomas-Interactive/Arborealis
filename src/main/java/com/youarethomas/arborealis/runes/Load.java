@@ -58,8 +58,6 @@ public class Load extends Rune {
         }
 
         for (Vec2f point : points) {
-            System.out.println(point.x + ", " + point.y);
-
             int randomParticle = random.nextInt(100);
 
             // With a 1% chance to display a particle...
@@ -77,8 +75,6 @@ public class Load extends Rune {
                         break;
                     }
                 }
-
-                System.out.println("x: " + particlePos.getX() + " y: " + particlePos.getY() + " z: " + particlePos.getZ());
 
                 world.addParticle(ParticleTypes.COMPOSTER, particlePos.getX(), particlePos.getY(), particlePos.getZ(), -0.5 + random.nextFloat(), random.nextFloat() / 3, -0.5 + random.nextFloat());
             }

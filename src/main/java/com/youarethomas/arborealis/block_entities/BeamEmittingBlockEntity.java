@@ -140,14 +140,14 @@ public class BeamEmittingBlockEntity extends BlockEntity {
     public void createBeamParticles(World world, BlockPos pos, BlockState state, BeamEmittingBlockEntity be) {
         // Beam particles
         for (Direction dir : Direction.values()) {
-            if (be.getBeamActive(dir) && be.getLightLevel() > 0 && be.getThrowDistance(dir) > 0 && Arborealis.RANDOM.nextInt(be.getLightLevel() * 4) < be.getThrowDistance(dir)) {
+            if (be.getBeamActive(dir) && be.getLightLevel() > 0 && be.getThrowDistance(dir) > 0 && world.random.nextInt(be.getLightLevel() * 4) < be.getThrowDistance(dir)) {
                 // Get the box for the beam
                 Box beamBox = new Box(pos.offset(dir, 1), pos.offset(dir, 1 + be.getThrowDistance(dir)));
 
                 // Calculate a random coordinate within that box
-                double randX = beamBox.minX + (((beamBox.maxX + 1) - beamBox.minX) * Arborealis.RANDOM.nextFloat());
-                double randY = beamBox.minY + (((beamBox.maxY + 1) - beamBox.minY) * Arborealis.RANDOM.nextFloat());
-                double randZ = beamBox.minZ + (((beamBox.maxZ + 1) - beamBox.minZ) * Arborealis.RANDOM.nextFloat());
+                double randX = beamBox.minX + (((beamBox.maxX + 1) - beamBox.minX) * world.random.nextFloat());
+                double randY = beamBox.minY + (((beamBox.maxY + 1) - beamBox.minY) * world.random.nextFloat());
+                double randZ = beamBox.minZ + (((beamBox.maxZ + 1) - beamBox.minZ) * world.random.nextFloat());
 
                 world.addParticle(ParticleTypes.END_ROD, randX, randY, randZ, 0, 0, 0);
             }
