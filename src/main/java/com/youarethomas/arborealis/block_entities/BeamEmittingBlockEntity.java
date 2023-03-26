@@ -314,6 +314,7 @@ public class BeamEmittingBlockEntity extends BlockEntity {
         tag.putString("beam_modifier", beamModifier.toString());
         tag.putString("beam_modifier_last", beamModifierLastCheck.toString());
         tag.putInt("light_level", lightLevel);
+        if (stencilPattern != null) tag.putIntArray("stencil_pattern", stencilPattern);
         if (beamColour != null) tag.put("beam_colour", ArborealisNbt.serializeColour(beamColour));
     }
 
@@ -332,6 +333,7 @@ public class BeamEmittingBlockEntity extends BlockEntity {
         beamModifier = Enum.valueOf(BeamModifier.class, tag.getString("beam_modifier"));
         beamModifierLastCheck = Enum.valueOf(BeamModifier.class, tag.getString("beam_modifier_last"));
         lightLevel = tag.getInt("light_level");
+        if (tag.contains("stencil_pattern")) stencilPattern = tag.getIntArray("stencil_pattern");
         if (tag.contains("beam_colour")) beamColour = ArborealisNbt.deserializeColour(tag.getCompound("beam_colour"));
 
         this.markDirty();

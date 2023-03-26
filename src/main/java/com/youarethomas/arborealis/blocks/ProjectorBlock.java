@@ -104,13 +104,13 @@ public class ProjectorBlock extends BlockWithEntity implements BlockEntityProvid
             if (stackInHand.isOf(Arborealis.CARVED_STENCIL) || stackInHand.getItem() instanceof LensItem) {
                 if (world.isClient) {
                     world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.3F);
+                } else {
+                    if (stackInHand.getItem() instanceof LensItem lensItem)
+                        pbe.setBeamColour(lensItem.getLensColor());
+                    pbe.setStack(0, stackInHand.copy().split(1));
+                    stackInHand.decrement(1);
+                    pbe.recalculateAllBeams();
                 }
-
-                if (stackInHand.getItem() instanceof LensItem lensItem)
-                    pbe.setBeamColour(lensItem.getLensColor());
-                pbe.setStack(0, stackInHand.copy().split(1));
-                stackInHand.decrement(1);
-                pbe.recalculateAllBeams();
 
                 return ActionResult.SUCCESS;
             }
