@@ -117,12 +117,12 @@ public class ProjectorBlock extends BlockWithEntity implements BlockEntityProvid
         } else {
             if (world.isClient) {
                 world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.6F);
+            } else {
+                player.getInventory().offerOrDrop(pbe.getStack(0).copy());
+                pbe.removeStack(0);
+                pbe.setBeamColour(new ArborealisUtil.Colour(0xFFFFFF));
+                pbe.recalculateAllBeams();
             }
-
-            player.getInventory().offerOrDrop(pbe.getStack(0).copy());
-            pbe.removeStack(0);
-            pbe.setBeamColour(new ArborealisUtil.Colour(0xFFFFFF));
-            pbe.recalculateAllBeams();
 
             return ActionResult.SUCCESS;
         }

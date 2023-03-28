@@ -52,6 +52,9 @@ public class ProjectorDModel extends DynamicModel {
         } else if (itemStack.isOf(Arborealis.INFUSION_LENS)) {
             BakedModel lensModel = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/infusion_lens"));
             builder.addBakedModel(lensModel);
+        } else if (itemStack.isOf(Arborealis.IMPLOSION_LENS)) {
+            BakedModel lensModel = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/implosion_lens"));
+            builder.addBakedModel(lensModel);
         }
     }
 

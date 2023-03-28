@@ -41,6 +41,8 @@ public class ProjectorBlockEntity extends BeamEmittingBlockEntity implements Imp
             setBeamModifier(BeamModifier.STENCIL);
         } else if (stack.isOf(Arborealis.INFUSION_LENS)) {
             setBeamModifier(BeamModifier.INFUSION);
+        } else if (stack.isOf(Arborealis.IMPLOSION_LENS)) {
+            setBeamModifier(BeamModifier.IMPLOSION);
         }
 
         markDirty();

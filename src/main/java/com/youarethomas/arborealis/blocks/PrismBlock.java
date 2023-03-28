@@ -2,7 +2,6 @@ package com.youarethomas.arborealis.blocks;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.PrismBlockEntity;
-import com.youarethomas.arborealis.block_entities.ProjectorBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
