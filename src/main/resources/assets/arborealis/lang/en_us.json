@@ -42,10 +42,10 @@
   "item.arborealis.tuning_fork.tooltip2": "§2Right click §8to make a block face the",
   "item.arborealis.tuning_fork.tooltip3": "§8the direction clicked.",
 
-  "item.arborealis.tree_core": "Life Core",
-  "item.arborealis.tree_core.tooltip1": "§7Increases a tree's life force.",
-  "item.arborealis.tree_core.tooltip2": "§8Place inside a §2Hollowed Log §8to increase",
-  "item.arborealis.tree_core.tooltip3": "§8energy available to carved runes.",
+  "item.arborealis.life_core": "Life Core",
+  "item.arborealis.life_core.tooltip1": "§7Increases a tree's life force.",
+  "item.arborealis.life_core.tooltip2": "§8Place inside a §2Hollowed Log §8to increase",
+  "item.arborealis.life_core.tooltip3": "§8energy available to carved runes.",
 
   "item.arborealis.bottled_sap": "Bottled Sap",
   "item.arborealis.glowing_sap": "Glowing Sap",
@@ -69,6 +69,11 @@
   "item.arborealis.infusion_lens.tooltip1": "§7Infuses objects with life force.",
   "item.arborealis.infusion_lens.tooltip2": "§8Place inside a §2Projector §8to infuse",
   "item.arborealis.infusion_lens.tooltip3": "§8items inside a hollowed log.",
+
+  "item.arborealis.implosion_lens": "Implosion Lens",
+  "item.arborealis.implosion_lens.tooltip1": "§7Collapses life cores in on themselves.",
+  "item.arborealis.implosion_lens.tooltip2": "§8Place inside a §2Projector §8to collapse",
+  "item.arborealis.implosion_lens.tooltip3": "§8a tree into its life core.",
 
   "block.arborealis.warp_sapling": "Warp Sapling",
   "block.arborealis.warp_leaves": "Warp Leaves",

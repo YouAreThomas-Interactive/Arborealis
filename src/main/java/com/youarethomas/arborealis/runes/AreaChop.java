@@ -28,7 +28,7 @@ public class AreaChop extends Rune {
 
                     // if the tree is mini natural, kill it >:)
                     if (foundTree.isNatural()) {
-                        foundTree.chopTreeStructure(world);
+                        foundTree.chopTreeStructure(world, true);
                     }
                 }
 

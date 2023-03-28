@@ -1,8 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "arborealis:block/tree_core",
-		"particle": "arborealis:block/tree_core"
+		"0": "arborealis:block/life_core",
+		"particle": "arborealis:block/life_core"
 	},
 	"elements": [
 		{

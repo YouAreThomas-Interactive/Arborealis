@@ -54,24 +54,22 @@ public class HollowedLog extends BlockWithEntity implements BlockEntityProvider 
 
         if (entity.getStack(0).isEmpty()) {
             if (!stackInHand.isEmpty()) {
-                if (world.isClient) {
+                if (world.isClient)
                     world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.3F);
-                } else {
-                    entity.setStack(0, stackInHand.copy().split(1));
-                    stackInHand.decrement(1);
-                    entity.markDirty();
-                }
+
+                entity.setStack(0, stackInHand.copy().split(1));
+                stackInHand.decrement(1);
+                entity.markDirty();
 
                 return ActionResult.SUCCESS;
             }
         } else {
-            if (world.isClient) {
+            if (world.isClient)
                 world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.6F);
-            } else {
-                player.getInventory().offerOrDrop(entity.getStack(0).copy());
-                entity.removeStack(0);
-                entity.markDirty();
-            }
+
+            player.getInventory().offerOrDrop(entity.getStack(0).copy());
+            entity.removeStack(0);
+            entity.markDirty();
 
             return ActionResult.SUCCESS;
         }

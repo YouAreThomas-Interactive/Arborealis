@@ -8,11 +8,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3f;
-import net.minecraft.util.registry.Registry;
 
 
 public class HollowedLogEntityRenderer implements BlockEntityRenderer<HollowedLogEntity> {
@@ -28,7 +24,7 @@ public class HollowedLogEntityRenderer implements BlockEntityRenderer<HollowedLo
 
         matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((entity.getWorld().getTime() + tickDelta) * 4));
 
-        if (!entity.getStack(0).isOf(Arborealis.TREE_CORE))
+        if (!entity.getStack(0).isOf(Arborealis.LIFE_CORE))
             MinecraftClient.getInstance().getItemRenderer().renderItem(entity.getStack(0), ModelTransformation.Mode.GROUND, light, overlay, matrices, vertexConsumers, 0);
 
         matrices.pop();

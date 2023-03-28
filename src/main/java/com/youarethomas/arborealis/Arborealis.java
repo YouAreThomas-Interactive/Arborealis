@@ -5,6 +5,7 @@ import com.mojang.logging.LogUtils;
 import com.youarethomas.arborealis.block_entities.*;
 import com.youarethomas.arborealis.blocks.*;
 import com.youarethomas.arborealis.items.*;
+import com.youarethomas.arborealis.items.lenses.ImplosionLensItem;
 import com.youarethomas.arborealis.items.lenses.InfusionLensItem;
 import com.youarethomas.arborealis.items.tool_materials.TuningForkMaterial;
 import com.youarethomas.arborealis.mixins.AxeItemAccessor;
@@ -60,7 +61,7 @@ public class Arborealis implements ModInitializer {
 	public static final TuningForkItem TUNING_FORK = new TuningForkItem(TuningForkMaterial.INSTANCE, new FabricItemSettings().maxCount(1).group(ItemGroup.SEARCH));
 
 	// Items
-	public static final TreeCore TREE_CORE = new TreeCore(new FabricItemSettings().maxCount(8).rarity(Rarity.UNCOMMON).group(ItemGroup.SEARCH));
+	public static final LifeCore LIFE_CORE = new LifeCore(new FabricItemSettings().maxCount(8).rarity(Rarity.UNCOMMON).group(ItemGroup.SEARCH));
 
 	public static final Item BOTTLED_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE).group(ItemGroup.SEARCH));
 	public static final InfusedSap INFUSED_SAP = new InfusedSap(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE).rarity(Rarity.UNCOMMON).group(ItemGroup.SEARCH));
@@ -74,6 +75,7 @@ public class Arborealis implements ModInitializer {
 	public static final Item WARP_GRAFT = new Item(new FabricItemSettings().group(ItemGroup.SEARCH));
 
 	public static final InfusionLensItem INFUSION_LENS = new InfusionLensItem(new FabricItemSettings().group(ItemGroup.SEARCH));
+	public static final ImplosionLensItem IMPLOSION_LENS = new ImplosionLensItem(new FabricItemSettings().group(ItemGroup.SEARCH));
 
 	// Blocks
 	public static final CarvedLog CARVED_LOG = new CarvedLog(FabricBlockSettings.of(Material.WOOD).sounds(BlockSoundGroup.WOOD));
@@ -127,7 +129,7 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(REGROWTH_SPOON));
 				stacks.add(new ItemStack(TUNING_FORK));
 				stacks.add(new ItemStack(LOG_DRILL));
-				stacks.add(new ItemStack(TREE_CORE));
+				stacks.add(new ItemStack(LIFE_CORE));
 				stacks.add(new ItemStack(BOTTLED_SAP));
 				stacks.add(new ItemStack(INFUSED_SAP));
 				stacks.add(new ItemStack(GLOWING_SAP));
@@ -149,6 +151,7 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(PROJECTOR));
 				stacks.add(new ItemStack(PRISM_BLOCK));
 				stacks.add(new ItemStack(INFUSION_LENS));
+				stacks.add(new ItemStack(IMPLOSION_LENS));
 			})
 			.build();
 
@@ -206,7 +209,7 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tuning_fork"), TUNING_FORK);
 
 		// Item registration
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "tree_core"), TREE_CORE);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "life_core"), LIFE_CORE);
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bottled_sap"), BOTTLED_SAP);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "infused_sap"), INFUSED_SAP);
@@ -220,6 +223,7 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "warp_graft"), WARP_GRAFT);
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "infusion_lens"), INFUSION_LENS);
+		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "implosion_lens"), IMPLOSION_LENS);
 
 		// Screen Handler
 		STENCIL_BAG_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(new Identifier(MOD_ID, "stencil_bag"), StencilBagScreenHandler::new);

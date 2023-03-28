@@ -51,11 +51,12 @@ public class ArborealisClient implements ClientModInitializer {
 
         ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/hollowed_log/hollowed_log_outside"))));
         ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/hollowed_log/hollowed_log_inside"))));
-        ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/hollowed_log/tree_core"))));
+        ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/hollowed_log/life_core"))));
         ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/hollowed_log/core_tether"))));
 
         ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/projector/projector_base"))));
         ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/infusion_lens"))));
+        ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/implosion_lens"))));
 
         ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/prism/prism_base"))));
         ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/prism/prism_cover"))));
@@ -91,13 +92,14 @@ public class ArborealisClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(Arborealis.PRISM_BLOCK, RenderLayer.getTranslucent());
 
         BlockRenderLayerMap.INSTANCE.putItem(Arborealis.INFUSION_LENS, RenderLayer.getTranslucent());
+        BlockRenderLayerMap.INSTANCE.putItem(Arborealis.IMPLOSION_LENS, RenderLayer.getTranslucent());
 
         // Particles
         ParticleFactoryRegistry.getInstance().register(Arborealis.WARP_TREE_PARTICLE, WarpTreeParticle.Factory::new);
 
         // Networking
-        ClientPlayNetworking.registerGlobalReceiver(ArborealisConstants.TREE_MAP_INIT, TreeManager::treeMapInit);
-        ClientPlayNetworking.registerGlobalReceiver(ArborealisConstants.TREE_MAP_UPDATE, TreeManager::treeMapUpdate);
+        ClientPlayNetworking.registerGlobalReceiver(ArborealisConstants.INIT_DOWNLOAD_TREE_STRUCTURES, TreeManagerClient::downloadTreeStructures);
+        ClientPlayNetworking.registerGlobalReceiver(ArborealisConstants.UPDATE_TREE_STRUCTURES, TreeManagerClient::updateTreeStructures);
         ClientPlayNetworking.registerGlobalReceiver(ArborealisConstants.CLIENT_RUNE_PUSH, RuneManager::clientRunePush);
     }
 }

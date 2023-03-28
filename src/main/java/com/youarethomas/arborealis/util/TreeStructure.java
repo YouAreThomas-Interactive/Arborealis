@@ -41,22 +41,14 @@ public class TreeStructure {
         return logs.isEmpty() && leaves.isEmpty();
     }
 
-    public void replaceLogStructure(World world) {
-        for (BlockPos pos : logs) {
-            world.breakBlock(pos, true);
-        }
-    }
-
-    public void replaceLeafStructure(World world) {
-        for (BlockPos pos : leaves) {
-            world.breakBlock(pos, true);
-        }
-    }
-
-    public void chopTreeStructure(World world) {
+    public void chopTreeStructure(World world, boolean dropItems) {
         if(isNatural()) {
-            replaceLogStructure(world);
-            replaceLeafStructure(world);
+            for (BlockPos pos : logs) {
+                world.breakBlock(pos, dropItems);
+            }
+            for (BlockPos pos : leaves) {
+                world.breakBlock(pos, dropItems);
+            }
         }
     }
 
