@@ -2,7 +2,7 @@
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
     {
-      "item": "minecraft:glowstone_dust"
+      "item": "minecraft:glow_berries"
     },
     {
       "item": "arborealis:bottled_sap"

@@ -63,10 +63,9 @@ public class Arborealis implements ModInitializer {
 	// Items
 	public static final LifeCore LIFE_CORE = new LifeCore(new FabricItemSettings().maxCount(8).rarity(Rarity.UNCOMMON).group(ItemGroup.SEARCH));
 
-	public static final Item BOTTLED_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE).group(ItemGroup.SEARCH));
-	public static final InfusedSap INFUSED_SAP = new InfusedSap(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE).rarity(Rarity.UNCOMMON).group(ItemGroup.SEARCH));
-	public static final Item GLOWING_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE).group(ItemGroup.SEARCH));
-	public static final Item CONDUCTIVE_SAP = new Item(new FabricItemSettings().recipeRemainder(Items.GLASS_BOTTLE).group(ItemGroup.SEARCH));
+	public static final Item BOTTLED_SAP = new Item(new FabricItemSettings().group(ItemGroup.SEARCH));
+	public static final InfusedSap INFUSED_SAP = new InfusedSap(new FabricItemSettings().rarity(Rarity.UNCOMMON).group(ItemGroup.SEARCH));
+	public static final Item GLOWING_SAP = new Item(new FabricItemSettings().group(ItemGroup.SEARCH));
 
 	public static final Item BLANK_STENCIL = new StencilBlank(new FabricItemSettings().group(ItemGroup.SEARCH));
 	public static final Item CARVED_STENCIL = new StencilCarved(new FabricItemSettings().maxCount(1));
@@ -119,6 +118,7 @@ public class Arborealis implements ModInitializer {
 	public static final TagKey<Block> MODIFIED_LOGS = TagKey.of(Registry.BLOCK_KEY, new Identifier(MOD_ID, "modified_logs"));
 	public static final TagKey<Block> WARP_LOGS = TagKey.of(Registry.BLOCK_KEY, new Identifier(MOD_ID, "warp_logs"));
 	public static final TagKey<Block> PROJECTOR_TRANSPARENT = TagKey.of(Registry.BLOCK_KEY, new Identifier(MOD_ID, "projector_transparent"));
+	public static final TagKey<Item> SAPS = TagKey.of(Registry.ITEM_KEY, new Identifier(MOD_ID, "saps"));
 
 	// Item Groups
 	public static final ItemGroup ARBOREALIS_GROUP = FabricItemGroupBuilder.create(
@@ -131,11 +131,10 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(LOG_DRILL));
 				stacks.add(new ItemStack(LIFE_CORE));
 				stacks.add(new ItemStack(BOTTLED_SAP));
-				stacks.add(new ItemStack(INFUSED_SAP));
 				stacks.add(new ItemStack(GLOWING_SAP));
-				stacks.add(new ItemStack(CONDUCTIVE_SAP));
-
+				stacks.add(new ItemStack(INFUSED_SAP));
 				stacks.add(new ItemStack(WOODEN_BUCKET));
+
 				stacks.add(new ItemStack(TREE_TAP));
 				stacks.add(new ItemStack(BLANK_STENCIL));
 				stacks.add(new ItemStack(STENCIL_BAG));
@@ -144,8 +143,8 @@ public class Arborealis implements ModInitializer {
 				stacks.add(new ItemStack(WARP_LEAVES));
 				stacks.add(new ItemStack(WARP_CORE));
 				stacks.add(new ItemStack(WARP_WOOD));
-
 				stacks.add(new ItemStack(WARP_LOG));
+
 				stacks.add(new ItemStack(STRIPPED_WARP_LOG));
 				stacks.add(new ItemStack(STRIPPED_WARP_WOOD));
 				stacks.add(new ItemStack(PROJECTOR));
@@ -214,7 +213,6 @@ public class Arborealis implements ModInitializer {
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "bottled_sap"), BOTTLED_SAP);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "infused_sap"), INFUSED_SAP);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "glowing_sap"), GLOWING_SAP);
-		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "conductive_sap"), CONDUCTIVE_SAP);
 
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stencil_blank"), BLANK_STENCIL);
 		Registry.register(Registry.ITEM, new Identifier(MOD_ID, "stencil_carved"), CARVED_STENCIL);
