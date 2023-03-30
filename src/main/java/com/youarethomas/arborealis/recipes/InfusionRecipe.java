@@ -9,10 +9,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.*;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class InfusionRecipe implements Recipe<ImplementedInventory> {
@@ -41,8 +41,12 @@ public class InfusionRecipe implements Recipe<ImplementedInventory> {
         return i == this.input.size() && recipeMatcher.match(this, null);
     }
 
+    public int getXpRequired() {
+        return xpRequired;
+    }
+
     @Override
-    public ItemStack craft(ImplementedInventory inventory) {
+    public ItemStack craft(ImplementedInventory inventory, DynamicRegistryManager registryManager) {
         return ItemStack.EMPTY;
     }
 
@@ -51,17 +55,13 @@ public class InfusionRecipe implements Recipe<ImplementedInventory> {
         return false;
     }
 
-    public int getXpRequired() {
-        return xpRequired;
-    }
-
     @Override
     public DefaultedList<Ingredient> getIngredients() {
         return this.input;
     }
 
     @Override
-    public ItemStack getOutput() {
+    public ItemStack getOutput(DynamicRegistryManager registryManager) {
         return this.output;
     }
 

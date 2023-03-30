@@ -10,9 +10,10 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Quaternion;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Quaternionfc;
 
 public abstract class BeamEmittingBlockEntityRenderer {
     final float PIXEL_SIZE = 0.0625f;
@@ -34,8 +35,8 @@ public abstract class BeamEmittingBlockEntityRenderer {
         }
 
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(Quaternion.fromEulerXyz(xAngle, 0.0f, zAngle));
-        matrices.multiply(Quaternion.fromEulerXyz(0.0f, -(float)(Math.PI / 2.0), 0.0f));
+        matrices.multiply(new Quaternionf().rotationXYZ(xAngle, 0.0f, zAngle));
+        matrices.multiply(new Quaternionf().rotationXYZ(0.0f, -(float)(Math.PI / 2.0), 0.0f));
         matrices.translate(-0.5 + PIXEL_SIZE * 2, 0.5, -0.5 + PIXEL_SIZE * 2);
 
         float alphaStart = ((0.2f / 15f) * entity.getLightLevel()); // Create light level based on light level

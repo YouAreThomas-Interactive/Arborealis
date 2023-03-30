@@ -9,6 +9,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
+import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -16,8 +18,9 @@ import java.util.ArrayList;
 
 public class StencilBagDyeRecipe extends SpecialCraftingRecipe {
 
-    public StencilBagDyeRecipe(Identifier id) {
-        super(id);
+
+    public StencilBagDyeRecipe(Identifier id, CraftingRecipeCategory category) {
+        super(id, category);
     }
 
     @Override
@@ -44,7 +47,7 @@ public class StencilBagDyeRecipe extends SpecialCraftingRecipe {
     }
 
     @Override
-    public ItemStack craft(CraftingInventory inventory) {
+    public ItemStack craft(CraftingInventory inventory, DynamicRegistryManager registryManager) {
         ArrayList<DyeItem> list = Lists.newArrayList();
         ItemStack itemStack = ItemStack.EMPTY;
         for (int i = 0; i < inventory.size(); ++i) {

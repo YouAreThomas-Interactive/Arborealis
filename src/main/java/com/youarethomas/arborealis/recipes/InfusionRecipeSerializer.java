@@ -3,16 +3,19 @@ package com.youarethomas.arborealis.recipes;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.registry.Registry;
 
 public class InfusionRecipeSerializer implements RecipeSerializer<InfusionRecipe> {
     private InfusionRecipeSerializer() {}
@@ -28,7 +31,7 @@ public class InfusionRecipeSerializer implements RecipeSerializer<InfusionRecipe
         DefaultedList<Ingredient> ingredients = getIngredients(JsonHelper.getArray(json, "ingredients"));
 
         String outputID = JsonHelper.getString(json, "result");
-        Item outputItem = Registry.ITEM.getOrEmpty(new Identifier(outputID)).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + outputID + "'"));
+        Item outputItem = Registries.ITEM.getOrEmpty(new Identifier(outputID)).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + outputID + "'"));
         if (outputItem == Items.AIR)
             throw new JsonSyntaxException("Invalid item: " + outputID);
         ItemStack output = new ItemStack(outputItem, 1);
@@ -53,7 +56,7 @@ public class InfusionRecipeSerializer implements RecipeSerializer<InfusionRecipe
         for (Ingredient ingredient : recipe.getIngredients()) {
             ingredient.write(buf);
         }
-        buf.writeItemStack(recipe.getOutput());
+        buf.writeItemStack(recipe.getOutput(DynamicRegistryManager.of(Registries.REGISTRIES)));
     }
 
     @Override

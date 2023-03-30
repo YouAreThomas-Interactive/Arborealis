@@ -29,6 +29,7 @@ import net.minecraft.world.BlockRenderView;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -45,12 +46,14 @@ public abstract class DynamicModel implements UnbakedModel {
     private ModelTransformation transformation;
 
     @Override
-    public Collection<Identifier> getModelDependencies() {
-        return Arrays.asList(DEFAULT_BLOCK_MODEL);
+    public void setParents(Function<Identifier, UnbakedModel> models) {
+
     }
 
     @Override
-    public Collection<SpriteIdentifier> getTextureDependencies(Function<Identifier, UnbakedModel> unbakedModelGetter, Set<Pair<String, String>> unresolvedTextureReferences) { return Arrays.asList(INVISIBLE_TEXTURE); }
+    public Collection<Identifier> getModelDependencies() {
+        return Arrays.asList(DEFAULT_BLOCK_MODEL);
+    }
 
     public abstract void createBlockQuads(DynamicModelBuilder builder, BlockRenderView renderView, BlockPos pos);
 
@@ -62,13 +65,13 @@ public abstract class DynamicModel implements UnbakedModel {
 
     @Nullable
     @Override
-    public BakedModel bake(ModelLoader loader, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
+    public BakedModel bake(Baker baker, Function<SpriteIdentifier, Sprite> textureGetter, ModelBakeSettings rotationContainer, Identifier modelId) {
         // If marked to render as block, use default block transformation. Otherwise, use item transformation
         JsonUnbakedModel defaultTransform;
         if (renderItemAsBlock()) {
-            defaultTransform = (JsonUnbakedModel) loader.getOrLoadModel(DEFAULT_BLOCK_MODEL);
+            defaultTransform = (JsonUnbakedModel) baker.getOrLoadModel(DEFAULT_BLOCK_MODEL);
         } else {
-            defaultTransform = (JsonUnbakedModel) loader.getOrLoadModel(DEFAULT_ITEM_MODEL);
+            defaultTransform = (JsonUnbakedModel) baker.getOrLoadModel(DEFAULT_ITEM_MODEL);
         }
 
         transformation = defaultTransform.getTransformations();

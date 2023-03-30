@@ -15,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
+import org.joml.Quaternionf;
 
 public class ProjectorBlockEntityRenderer extends BeamEmittingBlockEntityRenderer implements BlockEntityRenderer<ProjectorBlockEntity> {
     public static final Identifier BEAM_TEXTURE = new Identifier(Arborealis.MOD_ID, "textures/block/blank.png");
@@ -36,8 +37,8 @@ public class ProjectorBlockEntityRenderer extends BeamEmittingBlockEntityRendere
             }
 
             matrices.translate(0.5, 0.5, 0.5);
-            matrices.multiply(Quaternion.fromEulerXyz((float)(Math.PI / 2.0), 0.0f, angle));
-            matrices.multiply(Quaternion.fromEulerXyz(0.0f, -(float)(Math.PI / 2.0), 0.0f));
+            matrices.multiply(new Quaternionf().rotationXYZ((float)(Math.PI / 2.0), 0.0f, angle));
+            matrices.multiply(new Quaternionf().rotationXYZ(0.0f, -(float)(Math.PI / 2.0), 0.0f));
             matrices.translate(-0.5 + PIXEL_SIZE * 2, 0.5, -0.5 + PIXEL_SIZE * 2);
 
             float alphaStart = ((0.2f / 15f) * entity.getLightLevel()); // Create light level based on light level

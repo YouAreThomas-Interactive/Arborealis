@@ -15,17 +15,17 @@ import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.*;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -293,7 +293,7 @@ public class TreeManager extends PersistentState {
     private String _constructTreeStructureFromBlock(BlockPos startingPos,
                                                     @Nullable Collection<BlockPos> blackListPoses,
                                                     ServerWorld world,
-                                                    @Nonnull Hashtable<String, TreeStructure> additionTable) {
+                                                    @NotNull Hashtable<String, TreeStructure> additionTable) {
         BlockState clickedBlock = world.getBlockState(startingPos);
 
         if (isLogBlock(clickedBlock)) {

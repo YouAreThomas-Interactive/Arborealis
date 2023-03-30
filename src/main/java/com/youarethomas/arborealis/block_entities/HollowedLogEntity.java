@@ -16,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -85,7 +86,7 @@ public class HollowedLogEntity extends BlockEntity implements ImplementedInvento
         inventory.clear(); // Got to clear the inventory first
         Inventories.readNbt(tag, inventory);
 
-        logState = NbtHelper.toBlockState(tag.getCompound("log_state"));
+        logState = NbtHelper.toBlockState(Registries.BLOCK.getReadOnlyWrapper(), tag.getCompound("log_state"));
         hasInfusionBeam = tag.getBoolean("has_infusion_beam");
         xpConsumed = tag.getInt("xp_consumed");
     }
@@ -159,7 +160,7 @@ public class HollowedLogEntity extends BlockEntity implements ImplementedInvento
                         }
 
                         if (hollowedLogEntity.getXpConsumed() >= requiredXP) {
-                            hollowedLogEntity.setStack(0, recipeMatch.get().getOutput().copy());
+                            hollowedLogEntity.setStack(0, recipeMatch.get().getOutput(world.getRegistryManager()).copy());
 
                             hollowedLogEntity.setXpConsumed(0);
                             world.updateListeners(pos, blockState, blockState, Block.NOTIFY_ALL);

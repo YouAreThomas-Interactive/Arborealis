@@ -4,7 +4,7 @@ import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import net.minecraft.block.Blocks;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
@@ -52,7 +52,7 @@ public class PlantTrees extends Rune {
 
             // Get the spot around the tree
             int treeDistance = be.radius - 4;
-            BlockPos treeBasePos = new BlockPos(Vec3d.ofCenter(pos).getX() + treeDistance * treePos.X, pos.getY(), Vec3d.ofCenter(pos).getZ() + treeDistance * treePos.Z);
+            BlockPos treeBasePos = new BlockPos((int) (Vec3d.ofCenter(pos).getX() + treeDistance * treePos.X), pos.getY(), (int) (Vec3d.ofCenter(pos).getZ() + treeDistance * treePos.Z));
 
             // Iterate down to find ground
             Iterable<BlockPos> searchY = BlockPos.iterate(treeBasePos.offset(Direction.UP, be.radius), treeBasePos.offset(Direction.DOWN, be.radius));
@@ -90,7 +90,7 @@ public class PlantTrees extends Rune {
             int randomCheck = Arborealis.RANDOM.nextInt(10);
             if (randomCheck == 1) {
                 // Get the starting block
-                BlockPos treeBasePos = new BlockPos(Vec3d.ofCenter(pos).getX() + treeDistance * treePos.X, pos.getY(), Vec3d.ofCenter(pos).getZ() + treeDistance * treePos.Z);
+                BlockPos treeBasePos = new BlockPos((int) (Vec3d.ofCenter(pos).getX() + treeDistance * treePos.X), pos.getY(), (int) (Vec3d.ofCenter(pos).getZ() + treeDistance * treePos.Z));
                 Iterable<BlockPos> searchY = BlockPos.iterate(treeBasePos.offset(Direction.UP, be.radius), treeBasePos.offset(Direction.DOWN, be.radius));
 
                 // Search for the last dirt block

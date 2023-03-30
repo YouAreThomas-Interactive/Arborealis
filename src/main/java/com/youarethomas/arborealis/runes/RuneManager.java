@@ -10,12 +10,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.item.Item;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -157,7 +157,7 @@ public class RuneManager {
         if (isValidRune(faceArray)) {
             Rune rune = getRuneFromArray(faceArray);
 
-            Item catalyst = Registry.ITEM.get(rune.catalyst);
+            Item catalyst = Registries.ITEM.get(rune.catalyst);
 
             return catalyst;
         }

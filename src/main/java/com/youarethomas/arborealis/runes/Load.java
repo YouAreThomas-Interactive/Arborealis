@@ -3,8 +3,8 @@ package com.youarethomas.arborealis.runes;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
 import net.minecraft.block.Blocks;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -62,7 +62,7 @@ public class Load extends Rune {
 
             // With a 1% chance to display a particle...
             if (randomParticle == 1) {
-                BlockPos particlePos = new BlockPos(point.x, pos.getY(), point.y);
+                BlockPos particlePos = new BlockPos((int) point.x, pos.getY(), (int) point.y);
 
                 // Check from 10 blocks above rune to 10 below
                 for (int y = 10; y > -10; y--) {

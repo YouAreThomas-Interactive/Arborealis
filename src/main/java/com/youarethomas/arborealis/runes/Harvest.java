@@ -6,7 +6,7 @@ import net.minecraft.block.BeetrootsBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CropBlock;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -21,7 +21,7 @@ public class Harvest extends Rune {
 
             if (foundState.isIn(BlockTags.CROPS)) {
                 if (foundState.isOf(Blocks.BEETROOTS)) {
-                    if (foundState.get(BeetrootsBlock.AGE) == BeetrootsBlock.field_31013) {
+                    if (foundState.get(BeetrootsBlock.AGE) == BeetrootsBlock.BEETROOTS_MAX_AGE) {
                         world.breakBlock(blockPos, true);
                     }
                 } else {

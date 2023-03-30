@@ -12,8 +12,10 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.nbt.*;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryEntryLookup;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.*;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -200,7 +202,7 @@ public class CarvedLogEntity extends BlockEntity {
     public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
 
-        logState = NbtHelper.toBlockState(tag.getCompound("log_state"));
+        logState = NbtHelper.toBlockState(Registries.BLOCK.getReadOnlyWrapper(), tag.getCompound("log_state"));
         runesActive = tag.getBoolean("runes_active");
         showRadius = tag.getBoolean("show_radius");
         runesPresentLastCheck = ArborealisNbt.deserializeRuneList(tag.getList("runes_list", NbtElement.COMPOUND_TYPE));
@@ -302,7 +304,7 @@ public class CarvedLogEntity extends BlockEntity {
 
             // With a 1% chance to display a particle...
             if (randomParticle == 1) {
-                BlockPos particlePos = new BlockPos(pos.getX() + point.x + 0.5f, pos.getY(), pos.getZ() + point.y + 0.5f);
+                BlockPos particlePos = new BlockPos((int) (pos.getX() + point.x + 0.5f), pos.getY(), (int) (pos.getZ() + point.y + 0.5f));
 
                 // Check from 10 blocks above rune to 10 below
                 for (int y = 10; y > -10; y--) {

@@ -5,6 +5,10 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.collection.DefaultedList;
 import org.spongepowered.asm.mixin.Mixin;
@@ -30,7 +34,7 @@ public interface RecipeMixin {
                 }
             }
             // Bottled saps (only if the return item isn't another bottle)
-            else if (inventory.getStack(i).isIn(Arborealis.SAPS) && !((Recipe<?>)(Object)this).getOutput().isIn(Arborealis.SAPS)) {
+            else if (inventory.getStack(i).isIn(Arborealis.SAPS) && !((Recipe<?>)(Object)this).getOutput(DynamicRegistryManager.of(Registries.REGISTRIES)).isIn(Arborealis.SAPS)) {
                 defaultedList.set(i, Items.GLASS_BOTTLE.getDefaultStack().split(1));
             }
         }

@@ -12,16 +12,16 @@ import java.util.function.Function;
 public class BeamRenderLayer extends RenderLayer{
 
     public static final Identifier BEAM_TEXTURE = new Identifier(Arborealis.MOD_ID, "textures/block/blank.png");
-    public static net.minecraft.client.render.Shader projectorBeamShader;
-    protected static final Shader PROJECTOR_BEAM_SHADER = new Shader(BeamRenderLayer::getProjectorBeamShader);
+    public static net.minecraft.client.gl.ShaderProgram projectorBeamShader;
+    protected static final ShaderProgram PROJECTOR_BEAM_SHADER = new ShaderProgram(BeamRenderLayer::getProjectorBeamShader);
 
     @Nullable
-    public static net.minecraft.client.render.Shader getProjectorBeamShader() {
+    public static net.minecraft.client.gl.ShaderProgram getProjectorBeamShader() {
         return projectorBeamShader;
     }
 
     private static final Function<Identifier, RenderLayer> BEAM_RENDER_LAYER = Util.memoize(texture -> {
-        RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder().shader(PROJECTOR_BEAM_SHADER).texture(new RenderPhase.Texture((Identifier)texture, false, false)).transparency(TRANSLUCENT_TRANSPARENCY).build(true);
+        RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder().program(PROJECTOR_BEAM_SHADER).texture(new RenderPhase.Texture((Identifier)texture, false, false)).transparency(TRANSLUCENT_TRANSPARENCY).build(true);
         return RenderLayer.of("beam_render_layer", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256, false, true, multiPhaseParameters);
     });
     public static final RenderLayer BEAM_RENDER_LAYER_TEXTURED = getBeamRenderLayer(BEAM_TEXTURE);

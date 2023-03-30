@@ -20,9 +20,7 @@ import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockEntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.screenhandler.v1.ScreenRegistry;
-import net.fabricmc.fabric.api.event.client.ClientSpriteRegistryCallback;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.item.DyeableItem;
 import net.minecraft.util.Identifier;
@@ -33,17 +31,6 @@ public class ArborealisClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         RuneManager.registerRunes();
-
-        // Register pumpkin texture - super important for mod functionality x
-        ClientSpriteRegistryCallback.event(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).register((atlasTexture, registry) -> {
-            registry.register(new Identifier(Arborealis.MOD_ID, "block/invisible"));
-            registry.register(new Identifier(Arborealis.MOD_ID, "block/pumpkin_side_carved"));
-            registry.register(new Identifier(Arborealis.MOD_ID, "block/pumpkin_side_lit"));
-            registry.register(new Identifier(Arborealis.MOD_ID, "rune/rune"));
-            registry.register(new Identifier(Arborealis.MOD_ID, "item/stencil_carved"));
-            registry.register(new Identifier(Arborealis.MOD_ID, "block/invisible"));
-            registry.register(new Identifier(Arborealis.MOD_ID, "particle/warp_tree_particle"));
-        });
 
         // Load models
         ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/carved_log/carved_log_frame"))));
@@ -66,7 +53,7 @@ public class ArborealisClient implements ClientModInitializer {
         DynamicModelRegistry.register(new HollowedLogDModel(), new Identifier(Arborealis.MOD_ID, "block/hollowed_log"));
         DynamicModelRegistry.register(new WarpCoreDModel(), new Identifier(Arborealis.MOD_ID, "block/warp_core"));
         DynamicModelRegistry.register(new WarpCoreDModel(), new Identifier(Arborealis.MOD_ID, "item/warp_core"));
-        DynamicModelRegistry.register(new CarvedStencilDModel(), new ModelIdentifier("arborealis:item/stencil_carved#inventory"));
+        DynamicModelRegistry.register(new CarvedStencilDModel(), new ModelIdentifier(new Identifier("arborealis:item"), "stencil_carved#inventory"));
         DynamicModelRegistry.register(new ProjectorDModel(), new Identifier(Arborealis.MOD_ID, "block/projector"));
         DynamicModelRegistry.register(new PrismDModel(), new Identifier(Arborealis.MOD_ID, "block/prism"));
 
@@ -90,9 +77,6 @@ public class ArborealisClient implements ClientModInitializer {
         BlockRenderLayerMap.INSTANCE.putBlock(Arborealis.WOODEN_BUCKET, RenderLayer.getTranslucent());
         BlockRenderLayerMap.INSTANCE.putBlock(Arborealis.PROJECTOR, RenderLayer.getTranslucent());
         BlockRenderLayerMap.INSTANCE.putBlock(Arborealis.PRISM_BLOCK, RenderLayer.getTranslucent());
-
-        BlockRenderLayerMap.INSTANCE.putItem(Arborealis.INFUSION_LENS, RenderLayer.getTranslucent());
-        BlockRenderLayerMap.INSTANCE.putItem(Arborealis.IMPLOSION_LENS, RenderLayer.getTranslucent());
 
         // Particles
         ParticleFactoryRegistry.getInstance().register(Arborealis.WARP_TREE_PARTICLE, WarpTreeParticle.Factory::new);

@@ -8,10 +8,12 @@ import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
 import java.util.*;
@@ -32,7 +34,7 @@ public class TreeManagerClient {
                 return null;
             }
         });
-        RegistryKey<World> worldKey = RegistryKey.of(Registry.WORLD_KEY, new Identifier(buf.readString()));
+        RegistryKey<World> worldKey = RegistryKey.of(RegistryKeys.WORLD, new Identifier(buf.readString()));
 
         // Recreates the mappings from the structure IDs and the structures.
         Hashtable<String, TreeStructure> treeStructureMappings = new Hashtable<>(IntStream.range(0, structureIDs.size()).boxed()
@@ -57,7 +59,7 @@ public class TreeManagerClient {
                 return null;
             }
         });
-        RegistryKey<World> worldKey = RegistryKey.of(Registry.WORLD_KEY, new Identifier(buf.readString()));
+        RegistryKey<World> worldKey = RegistryKey.of(RegistryKeys.WORLD, new Identifier(buf.readString()));
 
         // Recreates the mappings from the structure IDs and the structures.
         Hashtable<String, TreeStructure> treeStructureMappings = new Hashtable<>(IntStream.range(0, addedStructureIDs.size()).boxed()
