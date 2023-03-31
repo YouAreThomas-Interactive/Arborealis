@@ -35,7 +35,6 @@ public class WarpCoreEntityRenderer implements BlockEntityRenderer<WarpCoreEntit
 
         // If the player is in the warp chamber box
         if (player != null) {
-
             if (player.getBoundingBox().intersects(new Box(new Vec3d(thisCorePos.getX() - 1D, thisCorePos.getY() + 1D, thisCorePos.getZ() - 1D), new Vec3d(thisCorePos.getX() + 1D, thisCorePos.getY() + 3D, thisCorePos.getZ() + 1D)))) {
                 entity.fadeAmount = Math.min(100, entity.fadeAmount + 5);
             } else {

@@ -124,7 +124,37 @@ public class Arborealis implements ModInitializer {
 	public static final TagKey<Item> SAPS = TagKey.of(RegistryKeys.ITEM, new Identifier(MOD_ID, "saps"));
 
 	// Item Groups
-	public static final ItemGroup ARBOREALIS_GROUP = FabricItemGroup.builder(new Identifier(MOD_ID, "arborealis")).icon(() -> new ItemStack(CARVING_KNIFE)).build();
+	public static final ItemGroup ARBOREALIS_GROUP = FabricItemGroup.builder(new Identifier(MOD_ID, "arborealis"))
+			.icon(() -> new ItemStack(CARVING_KNIFE))
+			.entries(((displayContext, entries) -> {
+				entries.add(CARVING_KNIFE);
+				entries.add(REGROWTH_SPOON);
+				entries.add(TUNING_FORK);
+				entries.add(LOG_DRILL);
+				entries.add(LIFE_CORE);
+				entries.add(BOTTLED_SAP);
+				entries.add(GLOWING_SAP);
+				entries.add(INFUSED_SAP);
+				entries.add(WOODEN_BUCKET);
+
+				entries.add(TREE_TAP);
+				entries.add(BLANK_STENCIL);
+				entries.add(STENCIL_BAG);
+				entries.add(WARP_GRAFT);
+				entries.add(WARP_SAPLING);
+				entries.add(WARP_LEAVES);
+				entries.add(WARP_CORE);
+				entries.add(WARP_WOOD);
+				entries.add(WARP_LOG);
+
+				entries.add(STRIPPED_WARP_LOG);
+				entries.add(STRIPPED_WARP_WOOD);
+				entries.add(PROJECTOR);
+				entries.add(PRISM_BLOCK);
+				entries.add(INFUSION_LENS);
+				entries.add(IMPLOSION_LENS);
+			}))
+			.build();
 
 	@Override
 	public void onInitialize() {
@@ -194,36 +224,6 @@ public class Arborealis implements ModInitializer {
 
 		Registry.register(Registries.ITEM, new Identifier(MOD_ID, "infusion_lens"), INFUSION_LENS);
 		Registry.register(Registries.ITEM, new Identifier(MOD_ID, "implosion_lens"), IMPLOSION_LENS);
-
-		// Arborealis Creative Group
-		ItemGroupEvents.modifyEntriesEvent(ARBOREALIS_GROUP).register(stacks -> {
-			stacks.add(new ItemStack(CARVING_KNIFE));
-			stacks.add(new ItemStack(REGROWTH_SPOON));
-			stacks.add(new ItemStack(TUNING_FORK));
-			stacks.add(new ItemStack(LOG_DRILL));
-			stacks.add(new ItemStack(LIFE_CORE));
-			stacks.add(new ItemStack(BOTTLED_SAP));
-			stacks.add(new ItemStack(GLOWING_SAP));
-			stacks.add(new ItemStack(INFUSED_SAP));
-			stacks.add(new ItemStack(WOODEN_BUCKET));
-
-			stacks.add(new ItemStack(TREE_TAP));
-			stacks.add(new ItemStack(BLANK_STENCIL));
-			stacks.add(new ItemStack(STENCIL_BAG));
-			stacks.add(new ItemStack(WARP_GRAFT));
-			stacks.add(new ItemStack(WARP_SAPLING));
-			stacks.add(new ItemStack(WARP_LEAVES));
-			stacks.add(new ItemStack(WARP_CORE));
-			stacks.add(new ItemStack(WARP_WOOD));
-			stacks.add(new ItemStack(WARP_LOG));
-
-			stacks.add(new ItemStack(STRIPPED_WARP_LOG));
-			stacks.add(new ItemStack(STRIPPED_WARP_WOOD));
-			stacks.add(new ItemStack(PROJECTOR));
-			stacks.add(new ItemStack(PRISM_BLOCK));
-			stacks.add(new ItemStack(INFUSION_LENS));
-			stacks.add(new ItemStack(IMPLOSION_LENS));
-		});
 
 		// Screen Handler
 		STENCIL_BAG_SCREEN_HANDLER = ScreenHandlerRegistry.registerSimple(new Identifier(MOD_ID, "stencil_bag"), StencilBagScreenHandler::new);
