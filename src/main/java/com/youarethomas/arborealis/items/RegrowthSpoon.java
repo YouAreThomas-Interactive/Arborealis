@@ -47,7 +47,7 @@ public class RegrowthSpoon extends ToolItem {
                         be.setFaceArray(dir, Arrays.stream(be.getFaceArray(dir)).map(i -> i == 3 ? i : 0).toArray());
                         be.setFaceEmissive(dir, false);
 
-                        if (Arrays.deepEquals(ArrayUtils.toObject(be.getFaceArray(dir)), ArrayUtils.toObject(new int[49]))) {
+                        if (Arrays.deepEquals(ArrayUtils.toObject(be.getFaceArray(dir)), ArrayUtils.toObject(new int[25]))) {
                             be.setFaceCatalysed(dir, false);
                             be.setFaceRune(dir, null);
                         }
@@ -57,7 +57,7 @@ public class RegrowthSpoon extends ToolItem {
                     be.setFaceArray(dir, Arrays.stream(be.getFaceArray(dir)).map(i -> i == 3 ? i : 0).toArray()); // reset side of face (except light runes)
                     be.setFaceEmissive(dir, false);
 
-                    if (Arrays.deepEquals(ArrayUtils.toObject(be.getFaceArray(dir)), ArrayUtils.toObject(new int[49]))) {
+                    if (Arrays.deepEquals(ArrayUtils.toObject(be.getFaceArray(dir)), ArrayUtils.toObject(new int[25]))) {
                         be.setFaceCatalysed(dir, false);
                         be.setFaceRune(dir, null);
                     }
@@ -74,7 +74,7 @@ public class RegrowthSpoon extends ToolItem {
                 // Check to see if any sides are carved
                 boolean blockReset = true;
                 for (Direction dir : Direction.values()) {
-                    if (!Arrays.deepEquals(ArrayUtils.toObject(be.getFaceArray(dir)), ArrayUtils.toObject(new int[49]))) {
+                    if (!Arrays.deepEquals(ArrayUtils.toObject(be.getFaceArray(dir)), ArrayUtils.toObject(new int[25]))) {
                         blockReset = false;
                     }
                 }

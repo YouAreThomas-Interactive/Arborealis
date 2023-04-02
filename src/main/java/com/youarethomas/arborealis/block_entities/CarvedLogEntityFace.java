@@ -26,7 +26,7 @@ public class CarvedLogEntityFace  {
 
     // Create a new face
     public CarvedLogEntityFace() {
-        faceArray = new int[49];
+        faceArray = new int[25];
         catalysed = false;
         emissive = false;
         rune = null;

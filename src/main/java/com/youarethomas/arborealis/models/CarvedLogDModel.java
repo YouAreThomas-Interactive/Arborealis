@@ -106,8 +106,8 @@ public class CarvedLogDModel extends DynamicModel {
 
         // Carved side north
         int northSideCount = 0;
-        for (int y = 13; y >= 1; y -= 2) {
-            for (int x = 13; x >= 1; x -= 2) {
+        for (int y = 11; y >= 3; y -= 2) {
+            for (int x = 11; x >= 3; x -= 2) {
                 if (northSideCount < be.getFaceArray(Direction.NORTH).length) {
                     int carveState = be.getFaceArray(Direction.NORTH)[northSideCount];
 
@@ -135,8 +135,8 @@ public class CarvedLogDModel extends DynamicModel {
 
         // Carved side east
         int eastSideCount = 0;
-        for (int y = 13; y >= 1; y -= 2) {
-            for (int z = 13; z >= 1; z -= 2) {
+        for (int y = 11; y >= 3; y -= 2) {
+            for (int z = 11; z >= 3; z -= 2) {
                 if (eastSideCount < be.getFaceArray(Direction.EAST).length) {
                     int carveState = be.getFaceArray(Direction.EAST)[eastSideCount];
 
@@ -162,8 +162,8 @@ public class CarvedLogDModel extends DynamicModel {
 
         // Carved side south
         int southSideCount = 0;
-        for (int y = 13; y >= 1; y -= 2) {
-            for (int x = 1; x <= 13; x += 2) {
+        for (int y = 11; y >= 3; y -= 2) {
+            for (int x = 3; x <= 11; x += 2) {
                 if (southSideCount < be.getFaceArray(Direction.SOUTH).length) {
                     int carveState = be.getFaceArray(Direction.SOUTH)[southSideCount];
 
@@ -189,8 +189,8 @@ public class CarvedLogDModel extends DynamicModel {
 
         // Carved side west
         int westSideCount = 0;
-        for (int y = 13; y >= 1; y -= 2) {
-            for (int z = 1; z <= 13; z += 2) {
+        for (int y = 11; y >= 3; y -= 2) {
+            for (int z = 3; z <= 11; z += 2) {
                 if (westSideCount < be.getFaceArray(Direction.WEST).length) {
                     int carveState = be.getFaceArray(Direction.WEST)[westSideCount];
 
@@ -216,8 +216,8 @@ public class CarvedLogDModel extends DynamicModel {
 
         // Carved side top
         int topSideCount = 0;
-        for (int x = 13; x >= 1; x -= 2) {
-            for (int z = 1; z <= 13; z += 2) {
+        for (int x = 11; x >= 3; x -= 2) {
+            for (int z = 3; z <= 11; z += 2) {
                 if (topSideCount < be.getFaceArray(Direction.UP).length) {
                     int carveState = be.getFaceArray(Direction.UP)[topSideCount];
 
@@ -243,8 +243,8 @@ public class CarvedLogDModel extends DynamicModel {
 
         // Carved side top
         int bottomSideCount = 0;
-        for (int x = 13; x >= 1; x -= 2) {
-            for (int z = 1; z <= 13; z += 2) {
+        for (int x = 11; x >= 3; x -= 2) {
+            for (int z = 3; z <= 11; z += 2) {
                 if (bottomSideCount < be.getFaceArray(Direction.UP).length) {
                     int carveState = be.getFaceArray(Direction.DOWN)[bottomSideCount];
 

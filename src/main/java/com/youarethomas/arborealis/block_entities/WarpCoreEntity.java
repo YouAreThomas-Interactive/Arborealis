@@ -145,7 +145,7 @@ public class WarpCoreEntity extends BlockEntity {
                             }
                         }
 
-                        if (!otherCorePassRunes.values().stream().allMatch(ints -> Arrays.equals(ints, new int[49]))) {
+                        if (!otherCorePassRunes.values().stream().allMatch(ints -> Arrays.equals(ints, new int[25]))) {
                             // Check all blocks to see if any of our current tree's password runes are found
                             for (Map.Entry<BlockPos, Direction> otherCorePass : otherCorePasses.entrySet()) {
                                 if (world.getBlockState(otherCorePass.getKey()).isOf(Arborealis.CARVED_LOG)) {

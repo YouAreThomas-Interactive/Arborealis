@@ -102,29 +102,33 @@ public class CarvingKnife extends ToolItem {
             if (y < 0) y = 1 - Math.abs(y);
             if (z < 0) z = 1 - Math.abs(z);
 
-            // Convert into 7x7 segments
-            int segmentX = (int)Math.ceil((x - pixelSize) * 8);
-            int segmentY = (int)Math.ceil((y - pixelSize) * 8);
-            int segmentZ = (int)Math.ceil((z - pixelSize) * 8);
+            // Convert into 7x7 segments, offset by one from the edge
+            int segmentX = (int)Math.ceil((x - (pixelSize * 3)) * 8);
+            int segmentY = (int)Math.ceil((y - (pixelSize * 3)) * 8);
+            int segmentZ = (int)Math.ceil((z - (pixelSize * 3)) * 8);
+
+            System.out.println("Segment - X: " + segmentX + " Y: " + segmentY + " Z: " + segmentZ);
 
             // Stop clicking on the left or right of the valid area from registering
-            if ((segmentX == 0 || segmentX == 8) && segmentZ == 0) return ActionResult.FAIL;
-            if ((segmentZ == 0 || segmentZ == 8) && segmentX == 0) return ActionResult.FAIL;
-            if ((segmentZ == 0 || segmentZ == 8) && segmentY == 0) return ActionResult.FAIL;
+            if ((segmentX < 1 || segmentX > 5) && segmentZ == -1) return ActionResult.FAIL;
+            if ((segmentZ < 1 || segmentZ > 5) && segmentX == -1) return ActionResult.FAIL;
+            if ((segmentZ < 1 || segmentZ > 5) && segmentY == -1) return ActionResult.FAIL;
 
             int segmentID = -1;
 
             // Convert array position
             switch (side) {
-                case NORTH -> segmentID = ((7 - segmentY) * 7) + (7 - segmentX);
-                case SOUTH -> segmentID = ((7 - segmentY) * 7) + (segmentX - 1);
-                case EAST  -> segmentID = ((7 - segmentY) * 7) + (7 - segmentZ);
-                case WEST  -> segmentID = ((7 - segmentY) * 7) + (segmentZ - 1);
-                case UP, DOWN -> segmentID = ((7 - segmentX) * 7) + (segmentZ - 1);
+                case NORTH -> segmentID = ((5 - segmentY) * 5) + (5 - segmentX);
+                case SOUTH -> segmentID = ((5 - segmentY) * 5) + (segmentX - 1);
+                case EAST  -> segmentID = ((5 - segmentY) * 5) + (5 - segmentZ);
+                case WEST  -> segmentID = ((5 - segmentY) * 5) + (segmentZ - 1);
+                case UP, DOWN -> segmentID = ((5 - segmentX) * 5) + (segmentZ - 1);
             }
 
+            System.out.println(segmentID);
+
             // Stop click on the top or bottom of the valid area from registering
-            if (segmentID > 48 || segmentID < 0) return ActionResult.FAIL;
+            if (segmentID > 24 || segmentID < 0) return ActionResult.FAIL;
 
             // Then set array position value to highlighted if normal, normal if highlighted, or do nothing if carved out
             int[] faceArray = carvedWoodEntity.getFaceArray(side);

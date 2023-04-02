@@ -51,7 +51,7 @@ public class ProjectorBlockEntity extends BeamEmittingBlockEntity implements Imp
     @Override
     public ItemStack removeStack(int slot) {
         ItemStack removedStack = Inventories.removeStack(getItems(), slot);
-        setStencilPattern(new int[49]);
+        setStencilPattern(new int[25]);
         setBeamModifier(BeamModifier.NONE);
         markDirty();
         recalculateAllBeams();

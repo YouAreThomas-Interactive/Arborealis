@@ -183,7 +183,7 @@ public class RuneManager {
             return false;
 
         // Convert 1D rune array into a 2D rune array
-        int runeSize = 7;
+        int runeSize = 5;
         int[][] faceMatrix = new int[runeSize][runeSize];
         for (int y = 0; y < runeSize; y++) {
             System.arraycopy(faceArray, (y * runeSize), faceMatrix[y], 0, runeSize);
@@ -203,19 +203,19 @@ public class RuneManager {
             }
 
             // Turn the 2D array back into a 1D array and test the rune. End loop if found.
-            int[][] newFaceMatrix = new int[rows.size()][7];
+            int[][] newFaceMatrix = new int[rows.size()][runeSize];
             faceArray = Stream.of(rows.toArray(newFaceMatrix)).flatMapToInt(IntStream::of).toArray();
             int trimmedLength = faceArray.length;
 
             // Remove all leading 0s
             int carvingsRemoved = 0;
-            while (faceArray[0] == 0 && carvingsRemoved < 7) {
+            while (faceArray[0] == 0 && carvingsRemoved < runeSize) {
                 faceArray = Arrays.copyOfRange(faceArray, 1, faceArray.length);
                 carvingsRemoved++;
             }
 
             // Then add them in systematically to check for offsets
-            for (int offset = 0; offset < 7; offset++) {
+            for (int offset = 0; offset < runeSize; offset++) {
                 int[] newFaceArray = Arrays.copyOf(faceArray, faceArray.length + 1);
                 newFaceArray[0] = 0;
                 System.arraycopy(faceArray, 0, newFaceArray, 1, faceArray.length);

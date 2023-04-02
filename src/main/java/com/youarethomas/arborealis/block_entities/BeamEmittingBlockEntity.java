@@ -318,11 +318,11 @@ public class BeamEmittingBlockEntity extends BlockEntity {
 
             if (carvedLog != null) {
                 carvedLog.setFaceCatalysed(dir.getOpposite(), false);
-                carvedLog.showProjectedRune(dir.getOpposite(), new int[49]);
+                carvedLog.showProjectedRune(dir.getOpposite(), new int[25]);
 
                 boolean blockReset = true;
                 for (Direction faceDir : Direction.values()) {
-                    if (!Arrays.deepEquals(ArrayUtils.toObject(carvedLog.getFaceArray(faceDir)), ArrayUtils.toObject(new int[49]))) {
+                    if (!Arrays.deepEquals(ArrayUtils.toObject(carvedLog.getFaceArray(faceDir)), ArrayUtils.toObject(new int[25]))) {
                         blockReset = false;
                     }
                 }

@@ -99,7 +99,7 @@ public class CarvedLogEntity extends BlockEntity {
 
     public void markRune(Direction dir, int[] pattern) {
         int[] currentPattern = getFaceArray(dir);
-        int[] combinedPattern = new int[49];
+        int[] combinedPattern = new int[25];
 
         for (int i = 0; i < pattern.length; i++) {
             if (currentPattern[i] == 1) {
