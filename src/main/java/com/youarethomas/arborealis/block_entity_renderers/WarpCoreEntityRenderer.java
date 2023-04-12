@@ -21,7 +21,6 @@ import org.joml.Quaternionf;
 import java.util.Map;
 
 public class WarpCoreEntityRenderer implements BlockEntityRenderer<WarpCoreEntity> {
-
     TextRenderer textRenderer;
 
     public WarpCoreEntityRenderer(BlockEntityRendererFactory.Context ctx) {

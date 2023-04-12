@@ -1,14 +1,14 @@
 {
 	"credit": "Made with Blockbench",
-	"texture_size": [32, 32],
+	"texture_size": [64, 64],
 	"textures": {
-		"1": "arborealis:block/prism_cover_test",
-		"particle": "arborealis:block/prism_cover_test"
+		"1": "arborealis:block/prism/prism_cover"
 	},
 	"elements": [
 		{
-			"from": [2, 2, 0],
-			"to": [14, 14, 1],
+			"name": "cover",
+			"from": [2, 2, 1],
+			"to": [14, 14, 2],
 			"faces": {
 				"north": {"uv": [0, 0, 6, 6], "texture": "#1"},
 				"east": {"uv": [6, 0, 6.5, 6], "texture": "#1"},
@@ -18,5 +18,31 @@
 				"down": {"uv": [12.5, 0.5, 6.5, 1], "texture": "#1"}
 			}
 		}
-	]
+	],
+	"gui_light": "front",
+	"display": {
+		"thirdperson_righthand": {
+			"translation": [-2, 1, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"thirdperson_lefthand": {
+			"translation": [-2, 1, 0],
+			"scale": [0.25, 0.25, 0.25]
+		},
+		"firstperson_righthand": {
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"firstperson_lefthand": {
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"ground": {
+			"translation": [0, 7, 0]
+		},
+		"gui": {
+			"scale": [0.9, 0.9, 0.9]
+		},
+		"fixed": {
+			"translation": [0, 0, 0.5]
+		}
+	}
 }

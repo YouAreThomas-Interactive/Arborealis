@@ -47,12 +47,12 @@ public class InfusedSap extends Item {
             return ActionResult.SUCCESS;
         } else if (be instanceof PrismBlockEntity prismBlockEntity) {
             System.out.println("Face: " + context.getSide());
-            System.out.println("State: " + prismBlockEntity.getBeamActive(context.getSide()));
+            System.out.println("State: " + prismBlockEntity.getShowBeam(context.getSide()));
 
             return ActionResult.SUCCESS;
         } else if (be instanceof ProjectorBlockEntity projectorBlockEntity) {
             System.out.println("Face: " + context.getSide());
-            System.out.println("State: " + projectorBlockEntity.getBeamActive(context.getSide()));
+            System.out.println("State: " + projectorBlockEntity.getShowBeam(context.getSide()));
             System.out.println("Light Level: " + projectorBlockEntity.getLightLevel());
             System.out.println("Throw Distance: " + projectorBlockEntity.getThrowDistance(context.getSide()));
             System.out.println("Item: " + projectorBlockEntity.getStack(0).getName());

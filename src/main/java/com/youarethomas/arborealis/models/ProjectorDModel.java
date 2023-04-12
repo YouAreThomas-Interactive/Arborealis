@@ -33,13 +33,14 @@ public class ProjectorDModel extends DynamicModel {
             if (nbt != null && nbt.contains("pattern")) {
                 int[] pattern = nbt.getIntArray("pattern");
 
+                // TODO: currently doesn't render out borders - waiting for new projector model
                 int segmentCount = 0;
-                for (int y = 13; y >= 1; y -= 2) {
-                    for (int x = 1; x <= 13; x += 2) {
+                for (int y = 9; y >= 1; y -= 2) {
+                    for (int x = 1; x <= 9; x += 2) {
                         int carvingSegment = pattern[segmentCount];
 
                         if (carvingSegment == 0) {
-                            DynamicCuboid cuboid = new DynamicCuboid(x, y, 1, 2, 2, 1);
+                            DynamicCuboid cuboid = new DynamicCuboid(x + 2, y + 2, 1, 2, 2, 1);
                             cuboid.applyTexturesFromBlock(Blocks.STRIPPED_OAK_LOG.getDefaultState());
 
                             builder.addCuboid(cuboid, new DynamicModelBuilder.RotateToFacing(facing));

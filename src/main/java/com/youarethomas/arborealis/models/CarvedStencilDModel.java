@@ -29,12 +29,13 @@ public class CarvedStencilDModel extends DynamicModel {
         if (nbt != null && nbt.contains("pattern")) {
             int[] pattern = nbt.getIntArray("pattern");
 
-            for (int y = 1; y < 8; y++) {
-                for (int x = 1; x < 8; x++) {
-                    int carveState = pattern[(x - 1) + ((y - 1) * 7)];
+            // TODO: make pixels 2x2 instead of 1x1 with new 5x5 runes
+            for (int y = 1; y < 6; y++) {
+                for (int x = 1; x < 6; x++) {
+                    int carveState = pattern[(x - 1) + ((y - 1) * 5)];
 
                     if (carveState != 0) {
-                        DynamicPlane runePlane = new DynamicPlane(Direction.SOUTH, x + 3, y + 4, x + 4, y + 3, 7.4f);
+                        DynamicPlane runePlane = new DynamicPlane(Direction.SOUTH, x + 4, y + 5, x + 5, y + 4, 7.4f);
                         runePlane.applyTexture(STENCIL_TEXTURE.getSprite());
                         builder.addPlane(runePlane);
                     }

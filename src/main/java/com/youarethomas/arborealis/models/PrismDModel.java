@@ -20,7 +20,7 @@ public class PrismDModel extends DynamicModel {
 
         if (prismBlockEntity != null) {
             for (Direction dir : Direction.values()) {
-                if (!prismBlockEntity.getBeamActive(dir)) {
+                if (!prismBlockEntity.getShowBeam(dir) || prismBlockEntity.getInputSide(dir)) {
                     BakedModel prismCover = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/prism/prism_cover"));
                     builder.addBakedModel(prismCover, new DynamicModelBuilder.RotateToFacing(dir));
                 }

@@ -44,10 +44,10 @@ public abstract class BeamEmittingBlockEntityRenderer {
 
         // Render stencil beams
         if (entity.getBeamModifier() == BeamEmittingBlockEntity.BeamModifier.STENCIL) {
-            for(int ii = 0; ii < 49; ii++) {
+            for(int ii = 0; ii < 25; ii++) {
                 matrices.push();
-                matrices.translate((float)(ii / 7) * PIXEL_SIZE * 2, 0.0f, (ii % 7) * PIXEL_SIZE * 2);
-                if(entity.getStencilPattern() != null && entity.getStencilPattern().length == 49 && entity.getStencilPattern()[ii] == 2)
+                matrices.translate((float)(ii / 5) * PIXEL_SIZE * 2 + (PIXEL_SIZE * 2), 0.0f, (ii % 5) * PIXEL_SIZE * 2 + (PIXEL_SIZE * 2));
+                if(entity.getStencilPattern() != null && entity.getStencilPattern().length == 25 && entity.getStencilPattern()[ii] == 2)
                     renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, alphaStart, alphaEnd, -PIXEL_SIZE, entity.getThrowDistance(direction), -PIXEL_SIZE, -PIXEL_SIZE, PIXEL_SIZE, -PIXEL_SIZE, -PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE, 0, 1, 0, 1);
                 matrices.pop();
             }

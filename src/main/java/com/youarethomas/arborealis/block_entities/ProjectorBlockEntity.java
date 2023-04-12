@@ -20,7 +20,7 @@ public class ProjectorBlockEntity extends BeamEmittingBlockEntity implements Imp
     public ProjectorBlockEntity(BlockPos pos, BlockState state) {
         super(Arborealis.PROJECTOR_ENTITY, pos, state);
 
-        setBeamActive(state.get(HorizontalFacingBlock.FACING), true);
+        setShowBeam(state.get(HorizontalFacingBlock.FACING), true);
     }
 
     @Override

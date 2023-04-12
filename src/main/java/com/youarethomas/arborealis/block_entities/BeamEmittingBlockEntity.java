@@ -31,7 +31,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.*;
 
 public class BeamEmittingBlockEntity extends BlockEntity {
-
     public enum BeamModifier {
         NONE,
         STENCIL,
@@ -39,7 +38,7 @@ public class BeamEmittingBlockEntity extends BlockEntity {
         IMPLOSION
     }
 
-    public Map<Direction, Boolean> faceBeamActive = new HashMap<>() {{
+    public Map<Direction, Boolean> faceShowBeam = new HashMap<>() {{
         put(Direction.UP, false);
         put(Direction.DOWN, false);
         put(Direction.NORTH, false);
@@ -75,11 +74,11 @@ public class BeamEmittingBlockEntity extends BlockEntity {
     }
 
     // region NBT Properties
-    public boolean getBeamActive(Direction direction) {
-        return faceBeamActive.get(direction);
+    public boolean getShowBeam(Direction direction) {
+        return faceShowBeam.get(direction);
     }
-    public void setBeamActive(Direction direction, boolean active) {
-        faceBeamActive.replace(direction, active);
+    public void setShowBeam(Direction direction, boolean show) {
+        faceShowBeam.replace(direction, show);
         markDirty();
     }
 
@@ -146,7 +145,7 @@ public class BeamEmittingBlockEntity extends BlockEntity {
     public void createBeamParticles(World world, BlockPos pos, BlockState state, BeamEmittingBlockEntity be) {
         // Beam particles
         for (Direction dir : Direction.values()) {
-            if (be.getBeamActive(dir) && be.getLightLevel() > 0 && be.getThrowDistance(dir) > 0 && world.random.nextInt(be.getLightLevel() * 4) < be.getThrowDistance(dir)) {
+            if (be.getShowBeam(dir) && be.getLightLevel() > 0 && be.getThrowDistance(dir) > 0 && world.random.nextInt(be.getLightLevel() * 4) < be.getThrowDistance(dir)) {
                 // Get the box for the beam
                 Box beamBox = new Box(pos.offset(dir, 1), pos.offset(dir, 1 + be.getThrowDistance(dir)));
 
@@ -164,7 +163,7 @@ public class BeamEmittingBlockEntity extends BlockEntity {
         // Recalculate beam lengths
         boolean beamChanged = false;
 
-        if (getBeamActive(dir) && getLightLevel() > 0) {
+        if (getShowBeam(dir) && getLightLevel() > 0) {
             int beamRange = -1;
             boolean hitBlock = false;
             for (int i = 0; i < getLightLevel(); i++) {
@@ -203,6 +202,7 @@ public class BeamEmittingBlockEntity extends BlockEntity {
                     prismBlockEntity.setBeamModifier(beamModifier);
                     prismBlockEntity.setBeamColour(beamColour);
                     prismBlockEntity.setStencilPattern(stencilPattern);
+                    prismBlockEntity.setInputSide(dir.getOpposite(), true);
                     prismBlockEntity.recalculateAllBeams();
                 }
             }
@@ -347,7 +347,7 @@ public class BeamEmittingBlockEntity extends BlockEntity {
         super.writeNbt(tag);
 
         for (Direction face : Direction.values()) {
-            tag.putBoolean("active_" + face.getName(), faceBeamActive.get(face));
+            tag.putBoolean("active_" + face.getName(), faceShowBeam.get(face));
             tag.putInt("throw_" + face.getName(), faceThrowDistance.get(face));
 
             if (faceBeamEndBlock.get(face) != null)
@@ -367,7 +367,7 @@ public class BeamEmittingBlockEntity extends BlockEntity {
         super.readNbt(tag);
 
         for (Direction face : Direction.values()) {
-            faceBeamActive.replace(face, tag.getBoolean("active_" + face.getName()));
+            faceShowBeam.replace(face, tag.getBoolean("active_" + face.getName()));
             faceThrowDistance.replace(face, tag.getInt("throw_" + face.getName()));
             if (tag.contains("last_block_" + face.getName()))
                 faceBeamEndBlock.replace(face, NbtHelper.toBlockPos(tag.getCompound("last_block_" + face.getName())));

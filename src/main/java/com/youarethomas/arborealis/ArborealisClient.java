@@ -47,13 +47,14 @@ public class ArborealisClient implements ClientModInitializer {
 
         ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/prism/prism_base"))));
         ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/prism/prism_cover"))));
+        ModelLoadingRegistry.INSTANCE.registerModelProvider(((manager, out) -> out.accept(new Identifier(Arborealis.MOD_ID, "block/prism/prism_core"))));
 
         // Model registration
         DynamicModelRegistry.register(new CarvedLogDModel(), new Identifier(Arborealis.MOD_ID, "block/carved_log"));
         DynamicModelRegistry.register(new HollowedLogDModel(), new Identifier(Arborealis.MOD_ID, "block/hollowed_log"));
         DynamicModelRegistry.register(new WarpCoreDModel(), new Identifier(Arborealis.MOD_ID, "block/warp_core"));
         DynamicModelRegistry.register(new WarpCoreDModel(), new Identifier(Arborealis.MOD_ID, "item/warp_core"));
-        DynamicModelRegistry.register(new CarvedStencilDModel(), new ModelIdentifier(new Identifier("arborealis:item"), "stencil_carved#inventory"));
+        DynamicModelRegistry.register(new CarvedStencilDModel(), new ModelIdentifier(new Identifier(Arborealis.MOD_ID, "item/stencil_carved"), "inventory"));
         DynamicModelRegistry.register(new ProjectorDModel(), new Identifier(Arborealis.MOD_ID, "block/projector"));
         DynamicModelRegistry.register(new PrismDModel(), new Identifier(Arborealis.MOD_ID, "block/prism"));
 

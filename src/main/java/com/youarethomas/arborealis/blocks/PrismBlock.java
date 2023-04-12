@@ -44,13 +44,16 @@ public class PrismBlock extends BlockWithEntity implements BlockEntityProvider {
             PrismBlockEntity prismBlockEntity = (PrismBlockEntity) world.getBlockEntity(pos);
 
             if (prismBlockEntity != null) {
+                Direction side = hit.getSide();
+
                 // Toggle face state for clicked sides
-                if (world.isClient) {
-                    world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1.0F, 0.5F);
-                } else {
-                    Direction side = hit.getSide();
-                    prismBlockEntity.setBeamActive(side, !prismBlockEntity.getBeamActive(side));
-                    prismBlockEntity.recalculateBeam(side);
+                if (!prismBlockEntity.getInputSide(side)) {
+                    if (world.isClient) {
+                        world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1.0F, 0.5F);
+                    } else {
+                        prismBlockEntity.setShowBeam(side, !prismBlockEntity.getShowBeam(side));
+                        prismBlockEntity.recalculateBeam(side);
+                    }
                 }
             }
 
