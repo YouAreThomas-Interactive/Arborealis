@@ -1,6 +1,7 @@
 package com.youarethomas.arborealis.block_entity_renderers;
 
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.block_entities.BeamEmittingBlockEntity;
 import com.youarethomas.arborealis.block_entities.PrismBlockEntity;
 import net.fabricmc.fabric.api.client.model.BakedModelManagerHelper;
 import net.minecraft.client.MinecraftClient;
@@ -31,7 +32,9 @@ public class PrismBlockEntityRenderer extends BeamEmittingBlockEntityRenderer im
 
         if (entity.getLightLevel() > 0) {
             for (Direction dir : Direction.values()) {
-                if (!entity.getShowBeam(dir) || entity.getThrowDistance(dir) == 0)
+                BeamEmittingBlockEntity.ProjectionBeam beam = entity.getBeam(dir);
+
+                if (!beam.getShowBeam() || entity.getSideInput(dir) || beam.getThrowDistance() == 0)
                     continue;
 
                 renderFullBeam(entity, matrices, vertexConsumers, dir);

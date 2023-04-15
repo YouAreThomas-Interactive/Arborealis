@@ -1,6 +1,7 @@
 package com.youarethomas.arborealis.blocks;
 
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.block_entities.BeamEmittingBlockEntity;
 import com.youarethomas.arborealis.block_entities.PrismBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -47,13 +48,11 @@ public class PrismBlock extends BlockWithEntity implements BlockEntityProvider {
                 Direction side = hit.getSide();
 
                 // Toggle face state for clicked sides
-                if (!prismBlockEntity.getInputSide(side)) {
-                    if (world.isClient) {
-                        world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1.0F, 0.5F);
-                    } else {
-                        prismBlockEntity.setShowBeam(side, !prismBlockEntity.getShowBeam(side));
-                        prismBlockEntity.recalculateBeam(side);
-                    }
+                if (world.isClient) {
+                    world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1.0F, 0.5F);
+                } else {
+                    prismBlockEntity.setSideOpen(side, !prismBlockEntity.getSideOpen(side));
+                    prismBlockEntity.checkBeamInputs();
                 }
             }
 

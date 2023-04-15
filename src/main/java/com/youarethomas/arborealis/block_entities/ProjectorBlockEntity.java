@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -20,7 +21,8 @@ public class ProjectorBlockEntity extends BeamEmittingBlockEntity implements Imp
     public ProjectorBlockEntity(BlockPos pos, BlockState state) {
         super(Arborealis.PROJECTOR_ENTITY, pos, state);
 
-        setShowBeam(state.get(HorizontalFacingBlock.FACING), true);
+        // Enable only the front-facing beam
+        getBeam(state.get(Properties.HORIZONTAL_FACING)).setShowBeam(true);
     }
 
     @Override
@@ -31,35 +33,20 @@ public class ProjectorBlockEntity extends BeamEmittingBlockEntity implements Imp
             stack.setCount(getMaxCountPerStack());
         }
 
-        // Assign pattern if stencil
-        if (stack.isOf(Arborealis.CARVED_STENCIL)) {
-            NbtCompound nbt = stack.getNbt();
-            if (nbt != null && nbt.contains("pattern")) {
-                int[] pattern = nbt.getIntArray("pattern");
-                setStencilPattern(pattern);
-            }
-            setBeamModifier(BeamModifier.STENCIL);
-        } else if (stack.isOf(Arborealis.INFUSION_LENS)) {
-            setBeamModifier(BeamModifier.INFUSION);
-        } else if (stack.isOf(Arborealis.IMPLOSION_LENS)) {
-            setBeamModifier(BeamModifier.IMPLOSION);
-        }
-
+        setAllBeamItemStacks(stack);
         markDirty();
     }
 
     @Override
     public ItemStack removeStack(int slot) {
         ItemStack removedStack = Inventories.removeStack(getItems(), slot);
-        setStencilPattern(new int[25]);
-        setBeamModifier(BeamModifier.NONE);
+        setAllBeamItemStacks(ItemStack.EMPTY);
         markDirty();
-        recalculateAllBeams();
         return removedStack;
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState state, ProjectorBlockEntity be) {
-        be.createBeamParticles(world, pos, state, be);
+
     }
 
     public static void serverTick(World world, BlockPos pos, BlockState state, ProjectorBlockEntity pbe) {

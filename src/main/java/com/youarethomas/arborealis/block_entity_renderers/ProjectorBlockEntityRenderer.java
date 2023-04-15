@@ -1,18 +1,13 @@
 package com.youarethomas.arborealis.block_entity_renderers;
 
 import com.youarethomas.arborealis.Arborealis;
-import com.youarethomas.arborealis.block_entities.BeamEmittingBlockEntity;
 import com.youarethomas.arborealis.block_entities.ProjectorBlockEntity;
-import com.youarethomas.arborealis.items.lenses.LensItem;
 import com.youarethomas.arborealis.rendering.BeamRenderLayer;
-import com.youarethomas.arborealis.util.ArborealisUtil;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.*;
 import org.joml.Quaternionf;

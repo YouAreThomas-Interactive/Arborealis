@@ -1,9 +1,12 @@
 package com.youarethomas.arborealis.items;
 
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.block_entities.BeamEmittingBlockEntity;
 import com.youarethomas.arborealis.block_entities.CarvedLogEntity;
+import com.youarethomas.arborealis.items.lenses.ProjectionModifierItem;
 import com.youarethomas.arborealis.runes.Rune;
 import com.youarethomas.arborealis.runes.RuneManager;
+import com.youarethomas.arborealis.util.ArborealisUtil;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.item.TooltipContext;
@@ -17,15 +20,82 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class StencilCarved extends Item {
+public class StencilCarved extends Item implements ProjectionModifierItem {
 
     public StencilCarved(Settings settings) {
         super(settings);
+    }
+
+    @Override
+    public ArborealisUtil.Colour getLensColor() {
+        return null;
+    }
+
+    @Override
+    public void onActivated(BlockPos hitBlockPos, World world, BeamEmittingBlockEntity emittingBlock, BeamEmittingBlockEntity.ProjectionBeam projectionBeam) {
+        BlockState stateAtEndPos = world.getBlockState(hitBlockPos);
+        int[] pattern = projectionBeam.getBeamItemStack().getNbt().getIntArray("pattern");
+
+        if ((stateAtEndPos.isIn(BlockTags.LOGS) || stateAtEndPos.isOf(Blocks.PUMPKIN)) && pattern != null) {
+            // Swap the block out with a carved wood block...
+            if (stateAtEndPos.isIn(BlockTags.LOGS_THAT_BURN)) {
+                world.setBlockState(hitBlockPos, Arborealis.CARVED_LOG.getDefaultState());
+            } else {
+                world.setBlockState(hitBlockPos, Arborealis.CARVED_NETHER_LOG.getDefaultState());
+            }
+
+            CarvedLogEntity carvedLog = (CarvedLogEntity) world.getBlockEntity(hitBlockPos);
+
+            // ... and assign relevant NBT data
+            if (carvedLog != null) {
+                carvedLog.setLogState(stateAtEndPos);
+
+                carvedLog.setFaceCatalysed(projectionBeam.getDirection().getOpposite(), true);
+                carvedLog.showProjectedRune(projectionBeam.getDirection().getOpposite(), pattern);
+            }
+        } else if (stateAtEndPos.isIn(Arborealis.CARVED_LOGS) && pattern != null) {
+            CarvedLogEntity carvedLog = (CarvedLogEntity) world.getBlockEntity(hitBlockPos);
+
+            if (carvedLog != null) {
+                carvedLog.setFaceCatalysed(projectionBeam.getDirection().getOpposite(), true);
+                carvedLog.showProjectedRune(projectionBeam.getDirection().getOpposite(), pattern);
+            }
+        }
+    }
+
+    @Override
+    public void onDeactivated(BlockPos hitBlockPos, World world, BeamEmittingBlockEntity emittingBlock, BeamEmittingBlockEntity.ProjectionBeam projectionBeam) {
+        BlockState stateAtEndPos = world.getBlockState(hitBlockPos);
+
+        if (stateAtEndPos.isIn(Arborealis.CARVED_LOGS)) {
+            CarvedLogEntity carvedLog = (CarvedLogEntity) world.getBlockEntity(hitBlockPos);
+            Direction dir = projectionBeam.getDirection();
+
+            if (carvedLog != null) {
+                carvedLog.setFaceCatalysed(dir.getOpposite(), false);
+                carvedLog.showProjectedRune(dir.getOpposite(), new int[25]);
+
+                boolean blockReset = true;
+                for (Direction faceDir : Direction.values()) {
+                    if (!Arrays.deepEquals(ArrayUtils.toObject(carvedLog.getFaceArray(faceDir)), ArrayUtils.toObject(new int[25]))) {
+                        blockReset = false;
+                    }
+                }
+
+                // If no sides are carved, reset to respective log block.
+                if (blockReset) {
+                    if (!world.isClient) {
+                        world.setBlockState(hitBlockPos, carvedLog.getLogState());
+                    }
+                }
+            }
+        }
     }
 
     @Override

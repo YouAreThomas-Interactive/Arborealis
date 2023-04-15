@@ -2,7 +2,7 @@ package com.youarethomas.arborealis.blocks;
 
 import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.ProjectorBlockEntity;
-import com.youarethomas.arborealis.items.lenses.LensItem;
+import com.youarethomas.arborealis.items.lenses.ProjectionModifierItem;
 import com.youarethomas.arborealis.util.ArborealisUtil;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
@@ -101,15 +101,12 @@ public class ProjectorBlock extends BlockWithEntity implements BlockEntityProvid
         ItemStack stackInHand = player.getStackInHand(Hand.MAIN_HAND);
 
         if (pbe.getStack(0).isEmpty()) {
-            if (stackInHand.isOf(Arborealis.CARVED_STENCIL) || stackInHand.getItem() instanceof LensItem) {
+            if (stackInHand.getItem() instanceof ProjectionModifierItem) {
                 if (world.isClient) {
                     world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 0.75F, 0.3F);
                 } else {
-                    if (stackInHand.getItem() instanceof LensItem lensItem)
-                        pbe.setBeamColour(lensItem.getLensColor());
                     pbe.setStack(0, stackInHand.copy().split(1));
                     stackInHand.decrement(1);
-                    pbe.recalculateAllBeams();
                 }
 
                 return ActionResult.SUCCESS;
@@ -120,8 +117,6 @@ public class ProjectorBlock extends BlockWithEntity implements BlockEntityProvid
             } else {
                 player.getInventory().offerOrDrop(pbe.getStack(0).copy());
                 pbe.removeStack(0);
-                pbe.setBeamColour(new ArborealisUtil.Colour(0xFFFFFF));
-                pbe.recalculateAllBeams();
             }
 
             return ActionResult.SUCCESS;
@@ -137,7 +132,6 @@ public class ProjectorBlock extends BlockWithEntity implements BlockEntityProvid
         ItemScatterer.spawn(world, pos, pbe.getItems());
         pbe.removeStack(0);
         pbe.setLightLevel(0);
-        pbe.recalculateAllBeams();
         super.onBreak(world, pos, state, player);
     }
 

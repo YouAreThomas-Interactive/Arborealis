@@ -1,9 +1,12 @@
 package com.youarethomas.arborealis.models;
 
 import com.youarethomas.arborealis.Arborealis;
+import com.youarethomas.arborealis.block_entities.BeamEmittingBlockEntity;
 import com.youarethomas.arborealis.block_entities.PrismBlockEntity;
 import com.youarethomas.arborealis.models.model_utils.DynamicModel;
 import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -20,7 +23,7 @@ public class PrismDModel extends DynamicModel {
 
         if (prismBlockEntity != null) {
             for (Direction dir : Direction.values()) {
-                if (!prismBlockEntity.getShowBeam(dir) || prismBlockEntity.getInputSide(dir)) {
+                if (!prismBlockEntity.getSideOpen(dir)) {
                     BakedModel prismCover = builder.getModel(new Identifier(Arborealis.MOD_ID, "block/prism/prism_cover"));
                     builder.addBakedModel(prismCover, new DynamicModelBuilder.RotateToFacing(dir));
                 }
@@ -31,5 +34,10 @@ public class PrismDModel extends DynamicModel {
     @Override
     public void createItemQuads(DynamicModelBuilder builder, ItemStack itemStack) {
 
+    }
+
+    @Override
+    public SpriteIdentifier getParticleSpriteId() {
+        return new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier(Arborealis.MOD_ID, "block/prism/prism_base"));
     }
 }

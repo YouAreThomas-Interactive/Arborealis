@@ -47,17 +47,18 @@ public class InfusedSap extends Item {
             return ActionResult.SUCCESS;
         } else if (be instanceof PrismBlockEntity prismBlockEntity) {
             System.out.println("Face: " + context.getSide());
-            System.out.println("State: " + prismBlockEntity.getShowBeam(context.getSide()));
+            System.out.println("Open: " + prismBlockEntity.getBeam(context.getSide()).getShowBeam());
+            System.out.println("Input: " + prismBlockEntity.getSideInput(context.getSide()));
 
             return ActionResult.SUCCESS;
         } else if (be instanceof ProjectorBlockEntity projectorBlockEntity) {
             System.out.println("Face: " + context.getSide());
-            System.out.println("State: " + projectorBlockEntity.getShowBeam(context.getSide()));
+            System.out.println("State: " + projectorBlockEntity.getBeam(context.getSide()).getShowBeam());
             System.out.println("Light Level: " + projectorBlockEntity.getLightLevel());
-            System.out.println("Throw Distance: " + projectorBlockEntity.getThrowDistance(context.getSide()));
+            System.out.println("Throw Distance: " + projectorBlockEntity.getBeam(context.getSide()).getThrowDistance());
             System.out.println("Item: " + projectorBlockEntity.getStack(0).getName());
-            System.out.println("Current Mod: " + projectorBlockEntity.getBeamModifier());
-            System.out.println("Last Mod: " + projectorBlockEntity.getBeamModifierLastCheck());
+            System.out.println("Current Mod: " + projectorBlockEntity.getBeam(context.getSide()).getBeamItemStack().getName().getString());
+            System.out.println("End Block: " + projectorBlockEntity.getBeam(context.getSide()).getBeamEndBlock());
 
             return ActionResult.SUCCESS;
         } else if (be instanceof HollowedLogEntity hollowedLogEntity) {

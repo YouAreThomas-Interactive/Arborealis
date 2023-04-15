@@ -1,7 +1,9 @@
 package com.youarethomas.arborealis.block_entity_renderers;
 
+import com.youarethomas.arborealis.Arborealis;
 import com.youarethomas.arborealis.block_entities.BeamEmittingBlockEntity;
 import com.youarethomas.arborealis.block_entities.ProjectorBlockEntity;
+import com.youarethomas.arborealis.items.lenses.ProjectionModifierItem;
 import com.youarethomas.arborealis.rendering.BeamRenderLayer;
 import com.youarethomas.arborealis.util.ArborealisUtil;
 import net.minecraft.client.render.LightmapTextureManager;
@@ -39,30 +41,34 @@ public abstract class BeamEmittingBlockEntityRenderer {
         matrices.multiply(new Quaternionf().rotationXYZ(0.0f, -(float)(Math.PI / 2.0), 0.0f));
         matrices.translate(-0.5 + PIXEL_SIZE * 2, 0.5, -0.5 + PIXEL_SIZE * 2);
 
+        BeamEmittingBlockEntity.ProjectionBeam beam = entity.getBeam(direction);
+
+        // TODO: figure out why prisms are dimmer but have the same range...
         float alphaStart = ((0.2f / 15f) * entity.getLightLevel()); // Create light level based on light level
-        float alphaEnd = alphaStart - ((0.2f / 15f) * entity.getThrowDistance(direction));
+        float alphaEnd = alphaStart - ((0.2f / 15f) * beam.getThrowDistance());
 
         // Render stencil beams
-        if (entity.getBeamModifier() == BeamEmittingBlockEntity.BeamModifier.STENCIL) {
-            for(int ii = 0; ii < 25; ii++) {
+        if (beam.getBeamItemStack().isOf(Arborealis.CARVED_STENCIL)) {
+            int[] pattern = beam.getBeamItemStack().getNbt().getIntArray("pattern");
+            for(int runePixel = 0; runePixel < 25; runePixel++) {
                 matrices.push();
-                matrices.translate((float)(ii / 5) * PIXEL_SIZE * 2 + (PIXEL_SIZE * 2), 0.0f, (ii % 5) * PIXEL_SIZE * 2 + (PIXEL_SIZE * 2));
-                if(entity.getStencilPattern() != null && entity.getStencilPattern().length == 25 && entity.getStencilPattern()[ii] == 2)
-                    renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, alphaStart, alphaEnd, -PIXEL_SIZE, entity.getThrowDistance(direction), -PIXEL_SIZE, -PIXEL_SIZE, PIXEL_SIZE, -PIXEL_SIZE, -PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE, 0, 1, 0, 1);
+                matrices.translate((float)(runePixel / 5) * PIXEL_SIZE * 2 + (PIXEL_SIZE * 2), 0.0f, (runePixel % 5) * PIXEL_SIZE * 2 + (PIXEL_SIZE * 2));
+                if(pattern != null && pattern.length == 25 && pattern[runePixel] == 2)
+                    renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, alphaStart, alphaEnd, -PIXEL_SIZE, beam.getThrowDistance(), -PIXEL_SIZE, -PIXEL_SIZE, PIXEL_SIZE, -PIXEL_SIZE, -PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE, 0, 1, 0, 1);
                 matrices.pop();
             }
-        } else if (entity.getBeamModifier().ordinal() > BeamEmittingBlockEntity.BeamModifier.STENCIL.ordinal()) {
+        } else if (beam.getBeamItemStack().getItem() instanceof ProjectionModifierItem modifierItem) {
             // Render the slightly smaller beam of that lens' colour
             matrices.push();
             matrices.translate(6 * PIXEL_SIZE, 0.0f, 6 * PIXEL_SIZE);
-            ArborealisUtil.Colour lensColour = entity.getBeamColour();
-            if (lensColour != null) renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), lensColour.red / 255f, lensColour.green / 255f, lensColour.blue / 255f, alphaStart, alphaEnd, -PIXEL_SIZE, entity.getThrowDistance(direction), -(PIXEL_SIZE * 6), -(PIXEL_SIZE * 6), PIXEL_SIZE * 6, -(PIXEL_SIZE * 6), -(PIXEL_SIZE * 6), PIXEL_SIZE * 6, PIXEL_SIZE * 6, PIXEL_SIZE * 6, 0, 1, 0, 1);
+            ArborealisUtil.Colour lensColour = modifierItem.getLensColor();
+            if (lensColour != null) renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), lensColour.red / 255f, lensColour.green / 255f, lensColour.blue / 255f, alphaStart, alphaEnd, -PIXEL_SIZE, beam.getThrowDistance(), -(PIXEL_SIZE * 6), -(PIXEL_SIZE * 6), PIXEL_SIZE * 6, -(PIXEL_SIZE * 6), -(PIXEL_SIZE * 6), PIXEL_SIZE * 6, PIXEL_SIZE * 6, PIXEL_SIZE * 6, 0, 1, 0, 1);
             matrices.pop();
-        } else if (entity.getBeamModifier() == BeamEmittingBlockEntity.BeamModifier.NONE) {
+        } else if (beam.getBeamItemStack().isEmpty()) {
             // Render the default full
             matrices.push();
             matrices.translate(6 * PIXEL_SIZE, 0.0f, 6 * PIXEL_SIZE);
-            renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, alphaStart, alphaEnd, -(PIXEL_SIZE * 2), entity.getThrowDistance(direction), -(PIXEL_SIZE * 7), -(PIXEL_SIZE * 7), PIXEL_SIZE * 7, -(PIXEL_SIZE * 7), -(PIXEL_SIZE * 7), PIXEL_SIZE * 7, PIXEL_SIZE * 7, PIXEL_SIZE * 7, 0, 1, 0, 1);
+            renderBeamSegment(matrices, vertexConsumers.getBuffer(BeamRenderLayer.BEAM_RENDER_LAYER_TEXTURED), 1, 0.905f, 0.619f, alphaStart, alphaEnd, -(PIXEL_SIZE * 2), beam.getThrowDistance(), -(PIXEL_SIZE * 7), -(PIXEL_SIZE * 7), PIXEL_SIZE * 7, -(PIXEL_SIZE * 7), -(PIXEL_SIZE * 7), PIXEL_SIZE * 7, PIXEL_SIZE * 7, PIXEL_SIZE * 7, 0, 1, 0, 1);
             matrices.pop();
         }
 
