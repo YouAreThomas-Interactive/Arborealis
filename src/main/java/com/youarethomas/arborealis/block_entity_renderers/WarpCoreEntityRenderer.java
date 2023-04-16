@@ -47,10 +47,10 @@ public class WarpCoreEntityRenderer implements BlockEntityRenderer<WarpCoreEntit
                     Vec3d coreToOther = otherCorePos.subtract(thisCorePos);
 
                     double xzMagnitude = Math.sqrt(coreToOther.x * coreToOther.x + coreToOther.z * coreToOther.z);
-                    float x = (float)((MathHelper.atan2(coreToOther.z, coreToOther.x)) - Math.PI / 2f);
-                    float y = (float)(-(MathHelper.atan2(coreToOther.y, xzMagnitude)));
+                    float y = (float)((MathHelper.atan2(coreToOther.z, coreToOther.x)) - Math.PI / 2f);
+                    float x = (float)(-(MathHelper.atan2(coreToOther.y, xzMagnitude)));
                     float z = 0f;
-                    Quaternionf angleToPos = new Quaternionf().rotationXYZ(-x, y, z);
+                    Quaternionf angleToPos = new Quaternionf().rotationYXZ(-y, x, z);
 
                     float hoverScaleMultiplier = 1f;
                     boolean showText = false;
